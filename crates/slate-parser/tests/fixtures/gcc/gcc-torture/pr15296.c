@@ -103,11 +103,15 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -123,21 +127,25 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "exit",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -148,14 +156,25 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Typedef {
-// DEFAULT-NEXT:       name: "intptr_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Long,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Long,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "intptr_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -165,11 +184,22 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Typedef {
-// DEFAULT-NEXT:       name: "W",
-// DEFAULT-NEXT:       ty: Named(
-// DEFAULT-NEXT:           "intptr_t",
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "intptr_t",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "W",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -188,22 +218,24 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Union,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "u0",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "r",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "r",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -216,16 +248,18 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "W",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "W",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -256,25 +290,27 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Union,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "u0",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "m0",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "m0",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -287,26 +323,28 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Union,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "u0",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Array {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "m1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               size: Expression(
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       4,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "m1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -333,72 +371,76 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Void,
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "f",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Tagged {
-// DEFAULT-NEXT:                           kind: Struct,
-// DEFAULT-NEXT:                           name: Some(
-// DEFAULT-NEXT:                               "s1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Qualified {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                               is_const: true,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           ty: Tagged {
-// DEFAULT-NEXT:                               kind: Union,
-// DEFAULT-NEXT:                               name: Some(
-// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Void,
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Tagged {
+// DEFAULT-NEXT:                                   kind: Struct,
+// DEFAULT-NEXT:                                   name: Some(
+// DEFAULT-NEXT:                                       "s1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Qualified {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                       is_const: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Union,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "u0",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "W",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "W",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "W",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "W",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "W",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "W",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoInline,
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       NoInline,
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -415,37 +457,41 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "g",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Void,
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "g",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Void,
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Char {
-// DEFAULT-NEXT:                               signed: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoInline,
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       NoInline,
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -552,148 +598,168 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "e",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "e",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Tagged {
-// DEFAULT-NEXT:                               kind: Union,
-// DEFAULT-NEXT:                               name: Some(
-// DEFAULT-NEXT:                                   "u0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "k",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Tagged {
-// DEFAULT-NEXT:                               kind: Union,
-// DEFAULT-NEXT:                               name: Some(
-// DEFAULT-NEXT:                                   "u0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "v5",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "m0",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Tagged {
-// DEFAULT-NEXT:                               kind: Union,
-// DEFAULT-NEXT:                               name: Some(
-// DEFAULT-NEXT:                                   "u0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "m1",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Tagged {
-// DEFAULT-NEXT:                               kind: Union,
-// DEFAULT-NEXT:                               name: Some(
-// DEFAULT-NEXT:                                   "u0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "d",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   AddrOf(
-// DEFAULT-NEXT:                                       Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "v5",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "k",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "v5",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Arrow {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "m0",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "c",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Arrow {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "m1",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Union,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "u0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "d",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "v5",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Labeled(
@@ -1172,102 +1238,106 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "uv",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Unspecified,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               111,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "uv",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       111,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               222,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       222,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               333,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       333,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               444,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       444,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -1280,116 +1350,120 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "s",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "s",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [],
-// DEFAULT-NEXT:                                                   value: List(
-// DEFAULT-NEXT:                                                       [
-// DEFAULT-NEXT:                                                           InitializerItem {
-// DEFAULT-NEXT:                                                               designators: [
-// DEFAULT-NEXT:                                                                   Field(
-// DEFAULT-NEXT:                                                                       "i",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               value: Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Integer(
-// DEFAULT-NEXT:                                                                           555,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [
+// DEFAULT-NEXT:                                                                           Field(
+// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           Const(
+// DEFAULT-NEXT:                                                                               Integer(
+// DEFAULT-NEXT:                                                                                   555,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [],
-// DEFAULT-NEXT:                                                   value: List(
-// DEFAULT-NEXT:                                                       [
-// DEFAULT-NEXT:                                                           InitializerItem {
-// DEFAULT-NEXT:                                                               designators: [
-// DEFAULT-NEXT:                                                                   Field(
-// DEFAULT-NEXT:                                                                       "i",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               value: Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Integer(
-// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [
+// DEFAULT-NEXT:                                                                           Field(
+// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           Const(
+// DEFAULT-NEXT:                                                                               Integer(
+// DEFAULT-NEXT:                                                                                   0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [],
-// DEFAULT-NEXT:                                                   value: List(
-// DEFAULT-NEXT:                                                       [
-// DEFAULT-NEXT:                                                           InitializerItem {
-// DEFAULT-NEXT:                                                               designators: [
-// DEFAULT-NEXT:                                                                   Field(
-// DEFAULT-NEXT:                                                                       "i",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               value: Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Integer(
-// DEFAULT-NEXT:                                                                           999,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [
+// DEFAULT-NEXT:                                                                           Field(
+// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           Const(
+// DEFAULT-NEXT:                                                                               Integer(
+// DEFAULT-NEXT:                                                                                   999,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [],
-// DEFAULT-NEXT:                                                   value: List(
-// DEFAULT-NEXT:                                                       [
-// DEFAULT-NEXT:                                                           InitializerItem {
-// DEFAULT-NEXT:                                                               designators: [
-// DEFAULT-NEXT:                                                                   Field(
-// DEFAULT-NEXT:                                                                       "i",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               value: Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Integer(
-// DEFAULT-NEXT:                                                                           777,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [
+// DEFAULT-NEXT:                                                                           Field(
+// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           Const(
+// DEFAULT-NEXT:                                                                               Integer(
+// DEFAULT-NEXT:                                                                                   777,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

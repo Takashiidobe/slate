@@ -54,24 +54,42 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Typedef {
-// DEFAULT-NEXT:       name: "v4qi",
-// DEFAULT-NEXT:       ty: Vector(
-// DEFAULT-NEXT:           VectorType {
-// DEFAULT-NEXT:               element: Integer(
-// DEFAULT-NEXT:                   Char {
-// DEFAULT-NEXT:                       signed: Some(
-// DEFAULT-NEXT:                           false,
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Vector(
+// DEFAULT-NEXT:                   VectorType {
+// DEFAULT-NEXT:                       element: Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: Some(
+// DEFAULT-NEXT:                                   false,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Bytes(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Bytes(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       4,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "v4qi",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       VectorSize(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -80,13 +98,6 @@ int main() {
 // DEFAULT-NEXT:           line: 2,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       attributes: [
-// DEFAULT-NEXT:           VectorSize(
-// DEFAULT-NEXT:               Integer(
-// DEFAULT-NEXT:                   4,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
@@ -301,141 +312,153 @@ int main() {
 // DEFAULT-NEXT:                               "v4qi",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   5,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   5,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   5,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   5,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "v4qi",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "v4qi",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "z",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "f1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           5,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           5,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           5,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           5,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "v4qi",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "v4qi",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "z",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "f1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "x",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {

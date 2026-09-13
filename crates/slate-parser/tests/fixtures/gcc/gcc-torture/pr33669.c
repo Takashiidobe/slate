@@ -44,11 +44,15 @@ int main() {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -68,19 +72,21 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "blksz",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "blksz",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -93,19 +99,21 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "bf_cnt",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "bf_cnt",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -127,13 +135,24 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Typedef {
-// DEFAULT-NEXT:       name: "foo_t",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "foo_t",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: Some(
+// DEFAULT-NEXT:                       "foo_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "foo_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -207,81 +226,89 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "blkoffset",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Sub,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "offset",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "blkoffset",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "offset",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Binary {
+// DEFAULT-NEXT:                                                   op: Rem,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "offset",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Cast {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Arrow {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "pxp",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "blksz",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Rem,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "offset",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Cast {
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "diff",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Cast {
 // DEFAULT-NEXT:                                               ty: Integer(
 // DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: LongLong,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: false,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                               value: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "pxp",
+// DEFAULT-NEXT:                                               value: Binary {
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "offset",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "blksz",
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "blkoffset",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Decl(
-// DEFAULT-NEXT:                   Declaration {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "diff",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       value: Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "offset",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "blkoffset",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -294,27 +321,40 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "blkextent",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: Div,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "blkextent",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Mul,
 // DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Add,
+// DEFAULT-NEXT:                                                   op: Div,
 // DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "diff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Identifier(
-// DEFAULT-NEXT:                                                           "extent",
+// DEFAULT-NEXT:                                                       op: Sub,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Add,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                   "diff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                   "extent",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Arrow {
+// DEFAULT-NEXT:                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                   "pxp",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "blksz",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Integer(
+// DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Arrow {
@@ -324,27 +364,18 @@ int main() {
 // DEFAULT-NEXT:                                                       field: "blksz",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Arrow {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "pxp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "blksz",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Arrow {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "pxp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "blksz",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "pxp",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "blksz",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
@@ -452,9 +483,13 @@ int main() {
 // DEFAULT-NEXT:                               "foo_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -467,9 +502,13 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "xx",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "xx",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

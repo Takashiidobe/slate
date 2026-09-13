@@ -61,11 +61,15 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -83,22 +87,26 @@ int main() {
 // DEFAULT-NEXT:                   LongDouble,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "dfrom",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Float(
-// DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x3fff8ccccccccccccccd,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "dfrom",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Float(
+// DEFAULT-NEXT:                                   FloatLiteral {
+// DEFAULT-NEXT:                                       value: LongDouble(
+// DEFAULT-NEXT:                                           0x3fff8ccccccccccccccd,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -116,9 +124,13 @@ int main() {
 // DEFAULT-NEXT:                   LongDouble,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "m1",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "m1",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -136,9 +148,13 @@ int main() {
 // DEFAULT-NEXT:                   LongDouble,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "m2",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "m2",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -159,9 +175,13 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "mant_long",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "mant_long",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

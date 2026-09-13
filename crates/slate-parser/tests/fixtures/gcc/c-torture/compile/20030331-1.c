@@ -45,11 +45,15 @@ void foo (int a, int b, int c, int d, int e)
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "bar",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "bar",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

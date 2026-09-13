@@ -59,29 +59,33 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "f",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Short,
-// DEFAULT-NEXT:                               signed: false,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "f",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Short,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "usVlanID",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "usVlanID",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoInline,
-// DEFAULT-NEXT:               NoClone,
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       NoInline,
+// DEFAULT-NEXT:                       NoClone,
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -128,18 +132,22 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "uiVlanID",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967295,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "uiVlanID",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               4294967295,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -152,9 +160,13 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {

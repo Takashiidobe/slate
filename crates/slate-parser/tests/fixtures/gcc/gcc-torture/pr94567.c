@@ -60,18 +60,27 @@ int main() {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "a",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "a",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "b",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -87,24 +96,58 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       rank: Short,
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                   is_volatile: true,
-// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "b",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "c",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "g",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
+// DEFAULT-NEXT:           line: 3,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -114,132 +157,26 @@ int main() {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
 // DEFAULT-NEXT:                       rank: Short,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "c",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Short,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Short,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           2,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Short,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "g",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[7]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Short,
 // DEFAULT-NEXT:                       signed: false,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "e",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           53736,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "e",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   53736,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -250,7 +187,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -326,7 +263,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Function(
+// DEFAULT-NEXT: decl[5]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -369,18 +306,22 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "k",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "e",
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "k",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "e",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(

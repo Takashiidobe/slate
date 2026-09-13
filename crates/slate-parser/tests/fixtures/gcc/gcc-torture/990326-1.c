@@ -340,11 +340,15 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -360,21 +364,25 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "exit",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -394,18 +402,25 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Char {
-// DEFAULT-NEXT:                                       signed: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -418,43 +433,21 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Char {
-// DEFAULT-NEXT:                                       signed: None,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Short,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 4,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Short,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -486,19 +479,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "a1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -542,18 +535,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -597,8 +579,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -667,19 +649,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "a2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -723,18 +705,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -778,8 +749,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -848,19 +819,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "a3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -904,18 +875,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -959,8 +919,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -1055,19 +1015,21 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1080,44 +1042,26 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Short,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Short,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 28,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Short,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1149,19 +1093,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "b1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -1205,18 +1149,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -1260,8 +1193,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -1330,19 +1263,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "b2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -1386,18 +1319,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -1441,8 +1363,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -1511,19 +1433,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "b3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -1567,18 +1489,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -1622,8 +1533,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -1718,90 +1629,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 50,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 50,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1840,19 +1713,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "c1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -1896,18 +1769,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -1951,8 +1813,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -2021,19 +1883,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "c2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -2077,18 +1939,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -2132,8 +1983,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -2202,19 +2053,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "c3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -2258,18 +2109,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "c",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -2313,8 +2153,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -2409,90 +2249,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 72,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 72,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -2531,19 +2333,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "d1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -2587,18 +2389,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -2642,8 +2433,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -2712,19 +2503,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "d2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -2768,18 +2559,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -2823,8 +2603,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -2893,19 +2673,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "d3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -2949,18 +2729,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -3004,8 +2773,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -3100,90 +2869,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 94,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 94,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -3222,19 +2953,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "e1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "e",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -3284,18 +3015,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -3345,8 +3065,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -3415,19 +3135,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "e2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "e",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -3477,18 +3197,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -3538,8 +3247,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -3608,19 +3317,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "e3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "e",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -3670,18 +3379,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "e",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -3731,8 +3429,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -3839,51 +3537,55 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -3937,90 +3639,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 122,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 122,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4059,19 +3723,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "f1",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "f",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -4121,18 +3785,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -4182,8 +3835,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -4252,19 +3905,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "f2",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "f",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -4314,18 +3967,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -4375,8 +4017,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -4445,19 +4087,19 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "f3",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "f",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           storage: Static,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
@@ -4507,18 +4149,7 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   storage: Static,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "y",
 // DEFAULT-NEXT:                               ),
@@ -4568,8 +4199,8 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -4676,51 +4307,55 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -4774,90 +4409,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 150,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 150,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -4895,90 +4492,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 153,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 153,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -5028,54 +4587,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       65,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               65,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -5089,54 +4652,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -5217,54 +4784,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -5278,54 +4849,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       66,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               66,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -5406,54 +4981,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       18,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               18,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       33,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               33,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -5467,54 +5046,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       66,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               66,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       9,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               9,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -5622,48 +5205,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   32,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   16,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           32,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           16,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -5677,48 +5264,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   512,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   256,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           512,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           256,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -5814,48 +5405,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   512,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   256,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           512,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           256,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -5869,48 +5464,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   32,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   16,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           32,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           16,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -6006,48 +5605,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   65056,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   64784,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           65056,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           64784,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -6061,48 +5664,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49711,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49439,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49711,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49439,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -6198,48 +5805,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49711,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49439,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49711,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49439,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -6253,48 +5864,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   65056,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   64784,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           65056,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           64784,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -6378,90 +5993,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 206,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 206,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -6499,90 +6076,52 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 209,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 209,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           14,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   14,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -6632,54 +6171,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       65,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               65,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -6693,54 +6236,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -6821,54 +6368,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -6882,54 +6433,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       66,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               66,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -7010,54 +6565,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       33,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               33,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       18,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               18,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -7071,54 +6630,58 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       9,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               9,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       66,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               66,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -7226,48 +6789,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   16,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   32,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           16,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           32,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -7281,48 +6848,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   256,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   512,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           256,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           512,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -7418,48 +6989,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   256,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   512,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           256,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           512,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -7473,48 +7048,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   16,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           16,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           32,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -7610,48 +7189,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   64784,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   65056,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           64784,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           65056,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -7665,48 +7248,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49439,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49711,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49439,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49711,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -7802,48 +7389,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49439,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   49711,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49439,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           49711,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -7857,48 +7448,52 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: BitNot,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   64784,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   65056,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           64784,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           65056,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(

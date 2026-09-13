@@ -124,11 +124,15 @@ main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -149,16 +153,20 @@ main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "a",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1024,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1024,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -182,9 +190,13 @@ main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "v",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "v",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -268,18 +280,22 @@ main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "b",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
@@ -317,24 +333,28 @@ main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "c",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   4,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
@@ -372,23 +392,27 @@ main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "d",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "d",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
@@ -426,29 +450,33 @@ main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "e",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               6,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "e",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Binary {
+// DEFAULT-NEXT:                                                   op: Add,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "i",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       6,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -505,9 +533,13 @@ main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "l",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "l",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(

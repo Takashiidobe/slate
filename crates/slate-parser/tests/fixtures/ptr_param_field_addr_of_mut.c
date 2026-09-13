@@ -73,34 +73,38 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "printf",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Qualified {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                               is_const: true,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_restrict: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Qualified {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                       is_const: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       variadic: true,
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               variadic: true,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -122,19 +126,21 @@ int main(void) {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -156,11 +162,22 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Typedef {
-// DEFAULT-NEXT:       name: "FIO_Dict_t",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "FIO_Dict_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -178,19 +195,21 @@ int main(void) {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "y",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -212,11 +231,22 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Typedef {
-// DEFAULT-NEXT:       name: "FIO_SyncCompressIO",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "FIO_SyncCompressIO",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -234,16 +264,18 @@ int main(void) {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "FIO_Dict_t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "dict",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "FIO_Dict_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "dict",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -256,19 +288,21 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "cctx",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "cctx",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -281,16 +315,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "FIO_SyncCompressIO",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "io",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "FIO_SyncCompressIO",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "io",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -312,11 +348,22 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Typedef {
-// DEFAULT-NEXT:       name: "cRess_t",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "cRess_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -512,79 +559,83 @@ int main(void) {
 // DEFAULT-NEXT:                               "cRess_t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "r",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [
-// DEFAULT-NEXT:                                           Field(
-// DEFAULT-NEXT:                                               "dict",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "x",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               5,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "r",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [
+// DEFAULT-NEXT:                                                   Field(
+// DEFAULT-NEXT:                                                       "dict",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [
-// DEFAULT-NEXT:                                           Field(
-// DEFAULT-NEXT:                                               "cctx",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   9,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "x",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       5,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [
-// DEFAULT-NEXT:                                           Field(
-// DEFAULT-NEXT:                                               "io",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       value: List(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               InitializerItem {
-// DEFAULT-NEXT:                                                   designators: [
-// DEFAULT-NEXT:                                                       Field(
-// DEFAULT-NEXT:                                                           "y",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   value: Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               7,
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [
+// DEFAULT-NEXT:                                                   Field(
+// DEFAULT-NEXT:                                                       "cctx",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           9,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [
+// DEFAULT-NEXT:                                                   Field(
+// DEFAULT-NEXT:                                                       "io",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               value: List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [
+// DEFAULT-NEXT:                                                               Field(
+// DEFAULT-NEXT:                                                                   "y",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           value: Expr(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       7,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

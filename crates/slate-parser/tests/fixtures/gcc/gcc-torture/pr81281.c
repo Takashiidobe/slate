@@ -111,24 +111,28 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "q",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           7,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "q",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   7,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
@@ -179,24 +183,28 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "d",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "d",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -209,24 +217,28 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "c",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
@@ -315,24 +327,28 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "q",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           7,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "q",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   7,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
@@ -383,18 +399,22 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "c",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "p",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -407,24 +427,28 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "d",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "d",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {

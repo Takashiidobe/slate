@@ -82,33 +82,37 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "w",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Sub,
-// DEFAULT-NEXT:                                       left: Float(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   0x3ffccccccccccccccccd,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Float(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   0x3ffd999999999999999a,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               imaginary: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "w",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: LongDouble(
+// DEFAULT-NEXT:                                                           0x3ffccccccccccccccccd,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: LongDouble(
+// DEFAULT-NEXT:                                                           0x3ffd999999999999999a,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       imaginary: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

@@ -79,16 +79,20 @@ foo (void)
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "chars_1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1073741823,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "chars_1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1073741823,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -112,16 +116,20 @@ foo (void)
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "chars_2",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "chars_2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

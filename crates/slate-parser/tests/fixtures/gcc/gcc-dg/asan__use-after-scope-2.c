@@ -166,12 +166,16 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "p",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
@@ -185,18 +189,22 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "a",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
@@ -275,12 +283,16 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "ptr",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "ptr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
@@ -294,16 +306,20 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "my_char",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           9,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "my_char",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                                   9,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
@@ -338,30 +354,34 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   16,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           16,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Name(
@@ -369,17 +389,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Name(
@@ -396,8 +406,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
@@ -411,16 +421,20 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "b",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           16,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "b",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                                   16,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
@@ -477,16 +491,20 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "c",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           16,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "c",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                                   16,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
@@ -524,30 +542,34 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "v",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Deref(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "bar",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "v",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Deref(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "bar",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "a",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "q",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "a",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "q",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(

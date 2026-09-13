@@ -92,21 +92,25 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "appended",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Unspecified,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "/./",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "appended",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "/./",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -118,36 +122,40 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "buf",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_alloca",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "len",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "buf",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "__builtin_alloca",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: SizeOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "appended",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Binary {
+// DEFAULT-NEXT:                                                       op: Add,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "len",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: SizeOf(
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "appended",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -281,21 +289,25 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "arg",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "test1234/",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "arg",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "test1234/",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

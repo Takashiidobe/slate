@@ -29,18 +29,22 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "yf",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "yf",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -94,18 +98,22 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "hp",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "q5",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "hp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "q5",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -118,38 +126,42 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "zx",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Ternary {
-// DEFAULT-NEXT:                                       condition: Binary {
-// DEFAULT-NEXT:                                           op: Equal,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "q5",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_value: Identifier(
-// DEFAULT-NEXT:                                           "hp",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       else_value: Binary {
-// DEFAULT-NEXT:                                           op: Div,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "hp",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "q5",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "zx",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Ternary {
+// DEFAULT-NEXT:                                               condition: Binary {
+// DEFAULT-NEXT:                                                   op: Equal,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "q5",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               then_value: Identifier(
+// DEFAULT-NEXT:                                                   "hp",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               else_value: Binary {
+// DEFAULT-NEXT:                                                   op: Div,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "hp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "q5",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

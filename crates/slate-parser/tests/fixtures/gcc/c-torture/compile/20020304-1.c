@@ -826,26 +826,26 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "pair",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   body: Some(
-// DEFAULT-NEXT:                                       Fields(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                               kind: Union,
-// DEFAULT-NEXT:                                                               name: Some(
-// DEFAULT-NEXT:                                                                   "scmobj",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "pair",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               body: Some(
+// DEFAULT-NEXT:                                   Fields(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                       kind: Union,
+// DEFAULT-NEXT:                                                       name: Some(
+// DEFAULT-NEXT:                                                           "scmobj",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Pointer {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                           inner: Name(
@@ -853,25 +853,27 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                       kind: Union,
+// DEFAULT-NEXT:                                                       name: Some(
+// DEFAULT-NEXT:                                                           "scmobj",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                               kind: Union,
-// DEFAULT-NEXT:                                                               name: Some(
-// DEFAULT-NEXT:                                                                   "scmobj",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Pointer {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                           inner: Name(
@@ -879,24 +881,28 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "pair_t",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "pair_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -909,72 +915,76 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "vector",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   body: Some(
-// DEFAULT-NEXT:                                       Fields(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: true,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "vector",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               body: Some(
+// DEFAULT-NEXT:                                   Fields(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Long,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Name(
 // DEFAULT-NEXT:                                                           "header",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Name(
 // DEFAULT-NEXT:                                                           "length",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                       kind: Union,
+// DEFAULT-NEXT:                                                       name: Some(
+// DEFAULT-NEXT:                                                           "scmobj",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                               kind: Union,
-// DEFAULT-NEXT:                                                               name: Some(
-// DEFAULT-NEXT:                                                                   "scmobj",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Pointer {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                           inner: Name(
@@ -982,24 +992,28 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "vector_t",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "vector_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1021,15 +1035,27 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Typedef {
-// DEFAULT-NEXT:       name: "obj_t",
-// DEFAULT-NEXT:       ty: Pointer {
-// DEFAULT-NEXT:           pointee: Tagged {
-// DEFAULT-NEXT:               kind: Union,
-// DEFAULT-NEXT:               name: Some(
-// DEFAULT-NEXT:                   "scmobj",
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Union,
+// DEFAULT-NEXT:                   name: Some(
+// DEFAULT-NEXT:                       "scmobj",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "obj_t",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1048,21 +1074,25 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "create_vector",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "create_vector",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1081,23 +1111,27 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "make_pair",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "make_pair",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1119,18 +1153,22 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "bgl_list_length",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "bgl_list_length",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1152,23 +1190,27 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "BGl_equalzf3zf3zz__r4_equivalence_6_2z00",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "BGl_equalzf3zf3zz__r4_equivalence_6_2z00",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1187,63 +1229,67 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "BGl_evcompilezd2lambdazd2zz__evcompilez00",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "BGl_evcompilezd2lambdazd2zz__evcompilez00",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "BgL_formalsz00_39",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "BgL_formalsz00_39",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "BgL_bodyz00_40",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "BgL_wherez00_41",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "BgL_namedzf3zf3_42",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "obj_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "BgL_locz00_43",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "BgL_bodyz00_40",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "BgL_wherez00_41",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "BgL_namedzf3zf3_42",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Named(
-// DEFAULT-NEXT:                           "obj_t",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "BgL_locz00_43",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1437,9 +1483,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                               "obj_t",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "BgL_v1042z00_998",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "BgL_v1042z00_998",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Block(
@@ -1454,9 +1504,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "BgL_auxz00_4066",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "BgL_auxz00_4066",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
@@ -1521,9 +1575,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       "obj_t",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "BgL_arg1586z00_1000",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "BgL_arg1586z00_1000",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
@@ -1561,9 +1619,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "BgL_auxz00_4070",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "BgL_auxz00_4070",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Expr(
@@ -1692,9 +1754,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "BgL_auxz00_4073",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "BgL_auxz00_4073",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
@@ -1818,9 +1884,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       "obj_t",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "BgL_auxz00_4078",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "BgL_auxz00_4078",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Decl(
@@ -1833,9 +1903,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "BgL_auxz00_4076",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "BgL_auxz00_4076",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Block(
@@ -1850,9 +1924,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "BgL_auxz00_4079",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "BgL_auxz00_4079",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Block(
@@ -1867,9 +1945,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_auxz00_4080",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_auxz00_4080",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Expr(
@@ -2102,9 +2184,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                   "obj_t",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           declarator: Name(
-// DEFAULT-NEXT:                                               "BgL_v1043z00_1005",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclarator {
+// DEFAULT-NEXT:                                                   declarator: Name(
+// DEFAULT-NEXT:                                                       "BgL_v1043z00_1005",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   Block(
@@ -2119,9 +2205,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "BgL_auxz00_4085",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "BgL_auxz00_4085",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Expr(
@@ -2189,9 +2279,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "BgL_auxz00_4088",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "BgL_auxz00_4088",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Expr(
@@ -2318,9 +2412,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "BgL_auxz00_4091",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "BgL_auxz00_4091",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Expr(
@@ -2444,9 +2542,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           "obj_t",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "BgL_auxz00_4096",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "BgL_auxz00_4096",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Decl(
@@ -2459,9 +2561,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "BgL_auxz00_4094",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "BgL_auxz00_4094",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Block(
@@ -2476,9 +2582,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           declarator: Name(
-// DEFAULT-NEXT:                                                               "BgL_auxz00_4097",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarators: [
+// DEFAULT-NEXT:                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                       "BgL_auxz00_4097",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Block(
@@ -2493,9 +2603,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4098",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4098",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Expr(
@@ -2863,9 +2977,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                               "obj_t",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "BgL_cdrzd21979zd2_953",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "BgL_cdrzd21979zd2_953",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Expr(
@@ -3047,9 +3165,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "BgL_cdrzd21986zd2_956",
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarators: [
+// DEFAULT-NEXT:                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                       "BgL_cdrzd21986zd2_956",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   Expr(
@@ -3231,9 +3353,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_cdrzd21994zd2_959",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_cdrzd21994zd2_959",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Block(
@@ -3245,9 +3371,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4120",
-// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                   "BgL_auxz00_4120",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               Expr(
@@ -3474,9 +3604,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                       "BgL_testz00_4128",
-// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                               "BgL_testz00_4128",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           Block(
@@ -3488,9 +3622,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                               "BgL_auxz00_4129",
-// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4129",
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   Expr(
@@ -3653,9 +3791,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_v1052z00_1026",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_v1052z00_1026",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Block(
@@ -3670,9 +3812,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4134",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4134",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Expr(
@@ -3737,9 +3883,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_arg1606z00_1028",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_arg1606z00_1028",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Block(
@@ -3751,9 +3901,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                       "BgL_v1053z00_1029",
-// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                               "BgL_v1053z00_1029",
+// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           Block(
@@ -3768,9 +3922,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4137",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4137",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Expr(
@@ -3838,9 +3996,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4140",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4140",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Expr(
@@ -3967,9 +4129,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4143",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4143",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Expr(
@@ -4096,9 +4262,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4146",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4146",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Expr(
@@ -4240,9 +4410,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4149",
-// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4149",
+// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           Expr(
@@ -4371,9 +4545,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4152",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4152",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Expr(
@@ -4497,9 +4675,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4157",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4157",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Decl(
@@ -4512,9 +4694,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4155",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4155",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Expr(
@@ -4704,9 +4890,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                           "BgL_v1054z00_1030",
-// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                   "BgL_v1054z00_1030",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                               Block(
@@ -4721,9 +4911,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4160",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4160",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Expr(
@@ -4788,9 +4982,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_arg1608z00_1032",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_arg1608z00_1032",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Expr(
@@ -4828,9 +5026,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4164",
-// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                   "BgL_auxz00_4164",
+// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               Expr(
@@ -4959,9 +5161,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4167",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4167",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Expr(
@@ -5085,9 +5291,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4172",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4172",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Decl(
@@ -5100,9 +5310,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4170",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4170",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Expr(
@@ -5298,9 +5512,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_testz00_4175",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_testz00_4175",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Block(
@@ -5312,9 +5530,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4176",
-// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4176",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                               Block(
@@ -5326,9 +5548,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4177",
-// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                           "BgL_auxz00_4177",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                       Expr(
@@ -5484,9 +5710,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_testz00_4181",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_testz00_4181",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Block(
@@ -5498,9 +5728,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4182",
-// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4182",
+// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           Block(
@@ -5512,9 +5746,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4183",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4183",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Block(
@@ -5526,9 +5764,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4184",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4184",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Expr(
@@ -5744,9 +5986,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                               "BgL_testz00_4189",
-// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                       "BgL_testz00_4189",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                   Block(
@@ -5758,9 +6004,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                       "BgL_auxz00_4190",
-// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                               "BgL_auxz00_4190",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           Expr(
@@ -5874,9 +6124,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                           "BgL_testz00_4193",
-// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                   "BgL_testz00_4193",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               Block(
@@ -5888,9 +6142,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_auxz00_4194",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4194",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Block(
@@ -5902,9 +6160,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4195",
-// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4195",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                               Expr(
@@ -6060,9 +6322,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_testz00_4199",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_testz00_4199",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Block(
@@ -6074,9 +6340,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4200",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4200",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                   Block(
@@ -6088,9 +6358,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                       "BgL_auxz00_4201",
-// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4201",
+// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           Block(
@@ -6102,9 +6376,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_auxz00_4202",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4202",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Expr(
@@ -6354,9 +6632,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                           "BgL_v1050z00_1022",
-// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                   "BgL_v1050z00_1022",
+// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               Block(
@@ -6371,9 +6653,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                   "BgL_auxz00_4209",
-// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                           "BgL_auxz00_4209",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       Expr(
@@ -6438,9 +6724,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                   "BgL_arg1604z00_1024",
-// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                           "BgL_arg1604z00_1024",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       Expr(
@@ -6478,9 +6768,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                           "BgL_auxz00_4213",
-// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                                   "BgL_auxz00_4213",
+// DEFAULT-NEXT:                                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                               Expr(
@@ -6609,9 +6903,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                   "BgL_auxz00_4216",
-// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                           "BgL_auxz00_4216",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       Expr(
@@ -6735,9 +7033,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                   "BgL_auxz00_4221",
-// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                           "BgL_auxz00_4221",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       Decl(
@@ -6750,9 +7052,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                   "BgL_auxz00_4219",
-// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                           "BgL_auxz00_4219",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       Expr(
@@ -6942,9 +7248,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                               "BgL_v1051z00_1025",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                       "BgL_v1051z00_1025",
+// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   Block(
@@ -6959,9 +7269,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4224",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4224",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Expr(
@@ -7029,9 +7343,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4227",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4227",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Expr(
@@ -7158,9 +7476,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4230",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4230",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Expr(
@@ -7284,9 +7606,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4235",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4235",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Decl(
@@ -7299,9 +7625,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                                                       "BgL_auxz00_4233",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4233",
+// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           Expr(
@@ -7512,9 +7842,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                           "BgL_testz00_4238",
-// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                   "BgL_testz00_4238",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ],
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               Block(
@@ -7526,9 +7860,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_auxz00_4239",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4239",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Expr(
@@ -7642,9 +7980,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_testz00_4242",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_testz00_4242",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Block(
@@ -7656,9 +7998,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4243",
-// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                       "BgL_auxz00_4243",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                   Expr(
@@ -7824,9 +8170,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                           "BgL_v1048z00_1018",
-// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                   "BgL_v1048z00_1018",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               Block(
@@ -7841,9 +8191,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_auxz00_4248",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4248",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Expr(
@@ -7908,9 +8262,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_arg1602z00_1020",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_arg1602z00_1020",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Expr(
@@ -7948,9 +8306,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4252",
-// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                                   "BgL_auxz00_4252",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                               Expr(
@@ -8079,9 +8441,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_auxz00_4255",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4255",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Expr(
@@ -8205,9 +8571,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_auxz00_4260",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4260",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Decl(
@@ -8220,9 +8590,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                   "BgL_auxz00_4258",
-// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                           "BgL_auxz00_4258",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ],
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       Expr(
@@ -8412,9 +8786,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                                                               "BgL_v1049z00_1021",
-// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                       "BgL_v1049z00_1021",
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ],
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   Block(
@@ -8429,9 +8807,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4263",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4263",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Expr(
@@ -8499,9 +8881,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4266",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4266",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Expr(
@@ -8628,9 +9014,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4269",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4269",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Expr(
@@ -8754,9 +9144,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4274",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4274",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Decl(
@@ -8769,9 +9163,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                                                       "BgL_auxz00_4272",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4272",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ],
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           Expr(
@@ -8979,9 +9377,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_testz00_4277",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_testz00_4277",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Block(
@@ -8993,9 +9395,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "BgL_auxz00_4278",
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarators: [
+// DEFAULT-NEXT:                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                       "BgL_auxz00_4278",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   Expr(
@@ -9161,9 +9567,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               "obj_t",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                           "BgL_v1046z00_1014",
-// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                   "BgL_v1046z00_1014",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ],
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               Block(
@@ -9178,9 +9588,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_auxz00_4283",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4283",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Expr(
@@ -9245,9 +9659,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_arg1600z00_1016",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_arg1600z00_1016",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Expr(
@@ -9285,9 +9703,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4287",
-// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       declarators: [
+// DEFAULT-NEXT:                                                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                                                   "BgL_auxz00_4287",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ],
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               Expr(
@@ -9416,9 +9838,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_auxz00_4290",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4290",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Expr(
@@ -9542,9 +9968,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_auxz00_4295",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4295",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Decl(
@@ -9557,9 +9987,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                                                   "BgL_auxz00_4293",
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarators: [
+// DEFAULT-NEXT:                                                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                                                           "BgL_auxz00_4293",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ],
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       Expr(
@@ -9749,9 +10183,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                   "obj_t",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                                               "BgL_v1047z00_1017",
-// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           declarators: [
+// DEFAULT-NEXT:                                                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                                       "BgL_v1047z00_1017",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ],
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   Block(
@@ -9766,9 +10204,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_auxz00_4298",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4298",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Expr(
@@ -9836,9 +10278,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_auxz00_4301",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4301",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Expr(
@@ -9965,9 +10411,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_auxz00_4304",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4304",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Expr(
@@ -10091,9 +10541,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_auxz00_4309",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4309",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Decl(
@@ -10106,9 +10560,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                                       "BgL_auxz00_4307",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarators: [
+// DEFAULT-NEXT:                                                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                                                               "BgL_auxz00_4307",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ],
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           Expr(
@@ -10365,9 +10823,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                               "obj_t",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "BgL_v1044z00_1010",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "BgL_v1044z00_1010",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Block(
@@ -10382,9 +10844,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_auxz00_4314",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_auxz00_4314",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Expr(
@@ -10449,9 +10915,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_arg1598z00_1012",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_arg1598z00_1012",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Expr(
@@ -10489,9 +10959,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                           "BgL_auxz00_4318",
-// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "BgL_auxz00_4318",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               Expr(
@@ -10620,9 +11094,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_auxz00_4321",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_auxz00_4321",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Expr(
@@ -10746,9 +11224,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       "obj_t",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_auxz00_4326",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_auxz00_4326",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Decl(
@@ -10761,9 +11243,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "BgL_auxz00_4324",
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "BgL_auxz00_4324",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Expr(
@@ -10953,9 +11439,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   "obj_t",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           declarator: Name(
-// DEFAULT-NEXT:                                                               "BgL_v1045z00_1013",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarators: [
+// DEFAULT-NEXT:                                                               InitDeclarator {
+// DEFAULT-NEXT:                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                       "BgL_v1045z00_1013",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Block(
@@ -10970,9 +11460,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4329",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4329",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Expr(
@@ -11040,9 +11534,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4332",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4332",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Expr(
@@ -11169,9 +11667,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4335",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4335",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Expr(
@@ -11295,9 +11797,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           "obj_t",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4340",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4340",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Decl(
@@ -11310,9 +11816,13 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "BgL_auxz00_4338",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "BgL_auxz00_4338",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           Expr(

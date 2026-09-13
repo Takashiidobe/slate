@@ -31,34 +31,38 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "printf",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Qualified {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                               is_const: true,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_restrict: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Qualified {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                       is_const: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       variadic: true,
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               variadic: true,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -105,16 +109,18 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                                   Fields(
 // DEFAULT-NEXT:                                       [
 // DEFAULT-NEXT:                                           FieldDecl {
-// DEFAULT-NEXT:                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "f80",
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "f80",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -125,23 +131,25 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           FieldDecl {
-// DEFAULT-NEXT:                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "uint64_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Array {
-// DEFAULT-NEXT:                                                       inner: Name(
-// DEFAULT-NEXT:                                                           "u64",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       size: Expression(
-// DEFAULT-NEXT:                                                           IntLit(
-// DEFAULT-NEXT:                                                               2,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "uint64_t",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Array {
+// DEFAULT-NEXT:                                                           inner: Name(
+// DEFAULT-NEXT:                                                               "u64",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           size: Expression(
+// DEFAULT-NEXT:                                                               IntLit(
+// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -156,9 +164,13 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "bits",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "bits",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

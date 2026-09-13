@@ -60,14 +60,18 @@ extern __typeof (__finite) __finite __asm__ ("" "__GI___finite");
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "__finite",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "__GI___finite",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "__finite",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "__GI___finite",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

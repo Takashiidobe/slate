@@ -22,16 +22,20 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "unknown_register",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               Other(
-// DEFAULT-NEXT:                                   "not_a_register",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "unknown_register",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       Other(
+// DEFAULT-NEXT:                                           "not_a_register",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

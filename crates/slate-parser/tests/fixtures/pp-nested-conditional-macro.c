@@ -22,16 +22,20 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "nested",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "nested",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -52,16 +56,20 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "wrapped",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       2,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "wrapped",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -84,16 +92,20 @@ int wrapped[WRAP(1)];
 // A-NEXT:                   },
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Array {
-// A-NEXT:               inner: Name(
-// A-NEXT:                   "nested",
-// A-NEXT:               ),
-// A-NEXT:               size: Expression(
-// A-NEXT:                   IntLit(
-// A-NEXT:                       2,
-// A-NEXT:                   ),
-// A-NEXT:               ),
-// A-NEXT:           },
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Array {
+// A-NEXT:                       inner: Name(
+// A-NEXT:                           "nested",
+// A-NEXT:                       ),
+// A-NEXT:                       size: Expression(
+// A-NEXT:                           IntLit(
+// A-NEXT:                               2,
+// A-NEXT:                           ),
+// A-NEXT:                       ),
+// A-NEXT:                   },
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -114,16 +126,20 @@ int wrapped[WRAP(1)];
 // A-NEXT:                   },
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Array {
-// A-NEXT:               inner: Name(
-// A-NEXT:                   "wrapped",
-// A-NEXT:               ),
-// A-NEXT:               size: Expression(
-// A-NEXT:                   IntLit(
-// A-NEXT:                       3,
-// A-NEXT:                   ),
-// A-NEXT:               ),
-// A-NEXT:           },
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Array {
+// A-NEXT:                       inner: Name(
+// A-NEXT:                           "wrapped",
+// A-NEXT:                       ),
+// A-NEXT:                       size: Expression(
+// A-NEXT:                           IntLit(
+// A-NEXT:                               3,
+// A-NEXT:                           ),
+// A-NEXT:                       ),
+// A-NEXT:                   },
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(

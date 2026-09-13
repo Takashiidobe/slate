@@ -275,7 +275,6 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Abstract,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -311,14 +310,25 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Typedef {
-// DEFAULT-NEXT:       name: "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: LongLong,
-// DEFAULT-NEXT:               signed: false,
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -328,11 +338,29 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Typedef {
-// DEFAULT-NEXT:       name: "HARD_REG_SET",
-// DEFAULT-NEXT:       ty: Named(
-// DEFAULT-NEXT:           "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "HARD_REG_SET",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -379,285 +407,314 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Typedef {
-// DEFAULT-NEXT:       name: "addr_diff_vec_flags",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: None,
-// DEFAULT-NEXT:           body: Some(
-// DEFAULT-NEXT:               Fields(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: None,
+// DEFAULT-NEXT:                   body: Some(
+// DEFAULT-NEXT:                       Fields(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "min_align",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       8,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "min_align",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "base_after_vec",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "base_after_vec",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "min_after_vec",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "min_after_vec",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "max_after_vec",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "max_after_vec",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "min_after_base",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "min_after_base",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "max_after_base",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "max_after_base",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "offset_unsigned",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "offset_unsigned",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "scale",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       8,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "scale",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "addr_diff_vec_flags",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -668,315 +725,350 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: Typedef {
-// DEFAULT-NEXT:       name: "rtunion",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Union,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "rtunion_def",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           body: Some(
-// DEFAULT-NEXT:               Fields(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: LongLong,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT: decl[8]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Union,
+// DEFAULT-NEXT:                   name: Some(
+// DEFAULT-NEXT:                       "rtunion_def",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: Some(
+// DEFAULT-NEXT:                       Fields(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: LongLong,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rtwint",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "rtwint",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rtint",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "rtint",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rtuint",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "rtuint",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Char {
-// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Char {
+// DEFAULT-NEXT:                                               signed: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_const: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                       is_const: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rtstr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rtstr",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "rtx_def",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rtx",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "rtx_def",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "rtvec_def",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rtvec",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Enum,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "machine_mode",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rttype",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "addr_diff_vec_flags",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rtx",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "rtvec_def",
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "rt_addr_diff_vec_flags",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rtvec",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Enum,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "machine_mode",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "cselib_val_struct",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rt_cselib",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "rttype",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "addr_diff_vec_flags",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "rt_addr_diff_vec_flags",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "cselib_val_struct",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "bitmap_head_def",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rtbit",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rt_cselib",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "bitmap_head_def",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Union,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "tree_node",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "rttree",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rtbit",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Union,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "tree_node",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "basic_block_def",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "bb",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "rttree",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "basic_block_def",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "bb",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "rtunion",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -987,346 +1079,382 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[9]: Typedef {
-// DEFAULT-NEXT:       name: "rtx",
-// DEFAULT-NEXT:       ty: Tagged {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "rtx_def",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           body: Some(
-// DEFAULT-NEXT:               Fields(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Enum,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "rtx_code",
+// DEFAULT-NEXT: decl[9]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tagged {
+// DEFAULT-NEXT:                   kind: Struct,
+// DEFAULT-NEXT:                   name: Some(
+// DEFAULT-NEXT:                       "rtx_def",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: Some(
+// DEFAULT-NEXT:                       Fields(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Enum,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "rtx_code",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "code",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       16,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "code",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       16,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Enum,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "machine_mode",
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tagged {
+// DEFAULT-NEXT:                                           kind: Enum,
+// DEFAULT-NEXT:                                           name: Some(
+// DEFAULT-NEXT:                                               "machine_mode",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "mode",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       8,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "mode",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "jump",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "call",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "unchanging",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "volatil",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "in_struct",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "used",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "integrated",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "frame_related",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           bit_width: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       FieldDecl {
-// DEFAULT-NEXT:                           declaration: Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "rtunion",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "fld",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "jump",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           provenance: Provenance {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               kind: System,
-// DEFAULT-NEXT:                               line: 0,
-// DEFAULT-NEXT:                               header: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "call",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "unchanging",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "volatil",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "in_struct",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "used",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "integrated",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "frame_related",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           bit_width: Some(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               FieldDecl {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "rtunion",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       FieldDeclarator {
+// DEFAULT-NEXT:                                           declarator: Array {
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "fld",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               size: Expression(
+// DEFAULT-NEXT:                                                   IntLit(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   provenance: Provenance {
+// DEFAULT-NEXT:                                       file: FileId(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       kind: System,
+// DEFAULT-NEXT:                                       line: 0,
+// DEFAULT-NEXT:                                       header: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               storage: Typedef,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "rtx",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1407,16 +1535,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "in",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "in",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1429,16 +1559,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "out",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1476,19 +1608,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "machine_mode",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "machine_mode",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "inmode",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "inmode",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1501,19 +1635,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "machine_mode",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "machine_mode",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "outmode",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "outmode",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1526,19 +1662,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "machine_mode",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "machine_mode",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "mode",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "mode",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1551,19 +1689,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "nregs",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "nregs",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1576,19 +1716,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "inc",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "inc",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1601,16 +1743,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "in_reg",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "in_reg",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1623,16 +1767,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "out_reg",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "out_reg",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1645,19 +1791,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "regno",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "regno",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1670,16 +1818,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "reg_rtx",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "reg_rtx",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1692,19 +1842,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "opnum",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "opnum",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1717,19 +1869,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "secondary_in_reload",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "secondary_in_reload",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1742,19 +1896,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "secondary_out_reload",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "secondary_out_reload",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1767,19 +1923,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "insn_code",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "insn_code",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "secondary_in_icode",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "secondary_in_icode",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1792,19 +1950,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "insn_code",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "insn_code",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "secondary_out_icode",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "secondary_out_icode",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1817,19 +1977,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Enum,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "reload_type",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Enum,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "reload_type",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "when_needed",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "when_needed",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1842,26 +2004,28 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "optional",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "optional",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1874,26 +2038,28 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "nocombine",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "nocombine",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1906,26 +2072,28 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "secondary_p",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "secondary_p",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1938,26 +2106,28 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "nongroup",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       bit_width: Some(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "nongroup",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               bit_width: Some(
+// DEFAULT-NEXT:                                   Const(
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1988,16 +2158,18 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "rtx",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "insn",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "insn",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -2030,9 +2202,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "n_reloads",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "n_reloads",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2054,16 +2230,20 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "reload_order",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       60,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "reload_order",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               60,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2084,16 +2264,20 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "reload_spill_index",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       60,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "reload_spill_index",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               60,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2115,16 +2299,20 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "rld",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       60,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "rld",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               60,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2143,12 +2331,16 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Pointer {
-// DEFAULT-NEXT:               qualifiers: Qualifiers,
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "reg_last_reload_reg",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "reg_last_reload_reg",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2167,9 +2359,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "reg_reloaded_valid",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "reg_reloaded_valid",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2188,9 +2384,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "reg_reloaded_dead",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "reg_reloaded_dead",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2209,9 +2409,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "reg_reloaded_died",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "reg_reloaded_died",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2230,9 +2434,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "reg_is_output_reload",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "reg_is_output_reload",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2257,12 +2465,16 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "mode_size",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Unspecified,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "mode_size",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Unspecified,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2284,9 +2496,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "target_flags",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "target_flags",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -2327,21 +2543,25 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "insn",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "chain",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "insn",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "insn",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Arrow {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "chain",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "insn",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -2355,9 +2575,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "j",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "j",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -2367,29 +2591,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "following_insn",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Member {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "insn",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "fld",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "rtx",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "following_insn",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Member {
+// DEFAULT-NEXT:                                               base: Index {
+// DEFAULT-NEXT:                                                   base: Arrow {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "insn",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "fld",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               field: "rtx",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -2399,29 +2627,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               "rtx",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "before_insn",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Member {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "insn",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "fld",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "rtx",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "before_insn",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Member {
+// DEFAULT-NEXT:                                               base: Index {
+// DEFAULT-NEXT:                                                   base: Arrow {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "insn",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "fld",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               field: "rtx",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {
@@ -2474,23 +2706,27 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   storage: Register,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "r",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "reload_order",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "j",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "r",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "reload_order",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "j",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -2504,23 +2740,27 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   storage: Register,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "reload_spill_index",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "r",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "reload_spill_index",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "r",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Block(
@@ -2532,68 +2772,72 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "rtx",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "out",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Cast {
-// DEFAULT-NEXT:                                                               ty: Tagged {
-// DEFAULT-NEXT:                                                                   kind: Enum,
-// DEFAULT-NEXT:                                                                   name: Some(
-// DEFAULT-NEXT:                                                                       "rtx_code",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Arrow {
-// DEFAULT-NEXT:                                                                   base: Member {
-// DEFAULT-NEXT:                                                                       base: Index {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "rld",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                               "r",
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "out",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Equal,
+// DEFAULT-NEXT:                                                                   left: Cast {
+// DEFAULT-NEXT:                                                                       ty: Tagged {
+// DEFAULT-NEXT:                                                                           kind: Enum,
+// DEFAULT-NEXT:                                                                           name: Some(
+// DEFAULT-NEXT:                                                                               "rtx_code",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       field: "out",
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Arrow {
+// DEFAULT-NEXT:                                                                           base: Member {
+// DEFAULT-NEXT:                                                                               base: Index {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "rld",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   index: Identifier(
+// DEFAULT-NEXT:                                                                                       "r",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               field: "out",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           field: "code",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   field: "code",
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "REG",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Member {
+// DEFAULT-NEXT:                                                                   base: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "rld",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                           "r",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   field: "out",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Member {
+// DEFAULT-NEXT:                                                                   base: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "rld",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                           "r",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   field: "out_reg",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "REG",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Member {
-// DEFAULT-NEXT:                                                           base: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "rld",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                   "r",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           field: "out",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Member {
-// DEFAULT-NEXT:                                                           base: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "rld",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                   "r",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           field: "out_reg",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -2607,29 +2851,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Register,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "nregno",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Member {
-// DEFAULT-NEXT:                                                       base: Index {
-// DEFAULT-NEXT:                                                           base: Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "out",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "fld",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           index: Integer(
-// DEFAULT-NEXT:                                                               0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "rtuint",
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "nregno",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Member {
+// DEFAULT-NEXT:                                                               base: Index {
+// DEFAULT-NEXT:                                                                   base: Arrow {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "out",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "fld",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   index: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               field: "rtuint",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               If {
@@ -2645,27 +2893,20 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Block(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               Decl(
-// DEFAULT-NEXT:                                                   Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "rtx",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                       Decl(
+// DEFAULT-NEXT:                                           Declaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "rtx",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Name(
 // DEFAULT-NEXT:                                                           "src_reg",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Decl(
-// DEFAULT-NEXT:                                                   Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "rtx",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   InitDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Name(
 // DEFAULT-NEXT:                                                           "store_insn",
 // DEFAULT-NEXT:                                                       ),
@@ -2685,8 +2926,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
 // DEFAULT-NEXT:                                           Const(
@@ -2770,29 +3011,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "src_regno",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       initializer: Some(
-// DEFAULT-NEXT:                                                           Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Index {
-// DEFAULT-NEXT:                                                                           base: Arrow {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_reg",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "fld",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                               0,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       field: "rtuint",
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "src_regno",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                               initializer: Some(
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                           Member {
+// DEFAULT-NEXT:                                                                               base: Index {
+// DEFAULT-NEXT:                                                                                   base: Arrow {
+// DEFAULT-NEXT:                                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                                           "src_reg",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "fld",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   index: Integer(
+// DEFAULT-NEXT:                                                                                       0,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               field: "rtuint",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Decl(
@@ -2805,107 +3050,134 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "nr",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       initializer: Some(
-// DEFAULT-NEXT:                                                           Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Ternary {
-// DEFAULT-NEXT:                                                                       condition: Binary {
-// DEFAULT-NEXT:                                                                           op: And,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: GreaterEqual,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   32,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                               op: LessEqual,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   63,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       then_value: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                   op: Add,
-// DEFAULT-NEXT:                                                                                   left: Index {
-// DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "mode_size",
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "nr",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               initializer: Some(
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                           Ternary {
+// DEFAULT-NEXT:                                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                                   op: And,
+// DEFAULT-NEXT:                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                       op: GreaterEqual,
+// DEFAULT-NEXT:                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                           "src_regno",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       index: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: true,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Member {
-// DEFAULT-NEXT:                                                                                               base: Index {
-// DEFAULT-NEXT:                                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                                       "rld",
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           32,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Binary {
+// DEFAULT-NEXT:                                                                                       op: LessEqual,
+// DEFAULT-NEXT:                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           63,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               then_value: Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                       left: Binary {
+// DEFAULT-NEXT:                                                                                           op: Add,
+// DEFAULT-NEXT:                                                                                           left: Index {
+// DEFAULT-NEXT:                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                   "mode_size",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               index: Cast {
+// DEFAULT-NEXT:                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   index: Identifier(
-// DEFAULT-NEXT:                                                                                                       "r",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   value: Member {
+// DEFAULT-NEXT:                                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               field: "mode",
 // DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                               8,
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           1,
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                                       8,
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   1,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               8,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       else_value: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                   op: Add,
-// DEFAULT-NEXT:                                                                                   left: Index {
-// DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "mode_size",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       index: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: true,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Member {
-// DEFAULT-NEXT:                                                                                               base: Index {
-// DEFAULT-NEXT:                                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                                       "rld",
+// DEFAULT-NEXT:                                                                               else_value: Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                       left: Binary {
+// DEFAULT-NEXT:                                                                                           op: Add,
+// DEFAULT-NEXT:                                                                                           left: Index {
+// DEFAULT-NEXT:                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                   "mode_size",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               index: Cast {
+// DEFAULT-NEXT:                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   index: Identifier(
-// DEFAULT-NEXT:                                                                                                       "r",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   value: Member {
+// DEFAULT-NEXT:                                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               field: "mode",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           right: Ternary {
+// DEFAULT-NEXT:                                                                                               condition: Unary {
+// DEFAULT-NEXT:                                                                                                   op: Not,
+// DEFAULT-NEXT:                                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                                           "target_flags",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           32,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               then_value: Integer(
+// DEFAULT-NEXT:                                                                                                   4,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                                                   8,
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           1,
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   right: Ternary {
 // DEFAULT-NEXT:                                                                                       condition: Unary {
@@ -2928,35 +3200,12 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   1,
-// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Ternary {
-// DEFAULT-NEXT:                                                                               condition: Unary {
-// DEFAULT-NEXT:                                                                                   op: Not,
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: BitAnd,
-// DEFAULT-NEXT:                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                           "target_flags",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           32,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               then_value: Integer(
-// DEFAULT-NEXT:                                                                                   4,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               else_value: Integer(
-// DEFAULT-NEXT:                                                                                   8,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Decl(
@@ -2966,18 +3215,22 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               "rtx",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "note",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       initializer: Some(
-// DEFAULT-NEXT:                                                           Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "note",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               initializer: Some(
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                           Integer(
+// DEFAULT-NEXT:                                                                               0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               While {
@@ -3446,131 +3699,158 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Name(
-// DEFAULT-NEXT:                                                       "num_regs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   initializer: Some(
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Ternary {
-// DEFAULT-NEXT:                                                                   condition: Binary {
-// DEFAULT-NEXT:                                                                       op: And,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: GreaterEqual,
-// DEFAULT-NEXT:                                                                           left: Identifier(
-// DEFAULT-NEXT:                                                                               "nregno",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               32,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: LessEqual,
-// DEFAULT-NEXT:                                                                           left: Identifier(
-// DEFAULT-NEXT:                                                                               "nregno",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               63,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   then_value: Binary {
-// DEFAULT-NEXT:                                                                       op: Div,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: Sub,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Index {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "mode_size",
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "num_regs",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           initializer: Some(
+// DEFAULT-NEXT:                                                               Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Ternary {
+// DEFAULT-NEXT:                                                                           condition: Binary {
+// DEFAULT-NEXT:                                                                               op: And,
+// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                   op: GreaterEqual,
+// DEFAULT-NEXT:                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                       "nregno",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: true,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       value: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                                                               kind: Enum,
-// DEFAULT-NEXT:                                                                                               name: Some(
-// DEFAULT-NEXT:                                                                                                   "machine_mode",
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       32,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               right: Binary {
+// DEFAULT-NEXT:                                                                                   op: LessEqual,
+// DEFAULT-NEXT:                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                       "nregno",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       63,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           then_value: Binary {
+// DEFAULT-NEXT:                                                                               op: Div,
+// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Index {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Arrow {
-// DEFAULT-NEXT:                                                                                               base: Member {
-// DEFAULT-NEXT:                                                                                                   base: Index {
-// DEFAULT-NEXT:                                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                                           "rld",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                                                           "r",
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Cast {
+// DEFAULT-NEXT:                                                                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                                                                       kind: Enum,
+// DEFAULT-NEXT:                                                                                                       name: Some(
+// DEFAULT-NEXT:                                                                                                           "machine_mode",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   field: "out",
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   value: Arrow {
+// DEFAULT-NEXT:                                                                                                       base: Member {
+// DEFAULT-NEXT:                                                                                                           base: Index {
+// DEFAULT-NEXT:                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           field: "out",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               field: "mode",
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           8,
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               right: Integer(
 // DEFAULT-NEXT:                                                                                   8,
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           8,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   else_value: Binary {
-// DEFAULT-NEXT:                                                                       op: Div,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: Sub,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Index {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "mode_size",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: true,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       value: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                                                               kind: Enum,
-// DEFAULT-NEXT:                                                                                               name: Some(
-// DEFAULT-NEXT:                                                                                                   "machine_mode",
+// DEFAULT-NEXT:                                                                           else_value: Binary {
+// DEFAULT-NEXT:                                                                               op: Div,
+// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Index {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Arrow {
-// DEFAULT-NEXT:                                                                                               base: Member {
-// DEFAULT-NEXT:                                                                                                   base: Index {
-// DEFAULT-NEXT:                                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                                           "rld",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                                                           "r",
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Cast {
+// DEFAULT-NEXT:                                                                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                                                                       kind: Enum,
+// DEFAULT-NEXT:                                                                                                       name: Some(
+// DEFAULT-NEXT:                                                                                                           "machine_mode",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   field: "out",
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   value: Arrow {
+// DEFAULT-NEXT:                                                                                                       base: Member {
+// DEFAULT-NEXT:                                                                                                           base: Index {
+// DEFAULT-NEXT:                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           field: "out",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               field: "mode",
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Ternary {
+// DEFAULT-NEXT:                                                                                           condition: Unary {
+// DEFAULT-NEXT:                                                                                               op: Not,
+// DEFAULT-NEXT:                                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                       "target_flags",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           then_value: Integer(
+// DEFAULT-NEXT:                                                                                               4,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           else_value: Integer(
+// DEFAULT-NEXT:                                                                                               8,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               right: Ternary {
 // DEFAULT-NEXT:                                                                                   condition: Unary {
@@ -3593,35 +3873,12 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Ternary {
-// DEFAULT-NEXT:                                                                           condition: Unary {
-// DEFAULT-NEXT:                                                                               op: Not,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: BitAnd,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "target_flags",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       32,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           then_value: Integer(
-// DEFAULT-NEXT:                                                                               4,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           else_value: Integer(
-// DEFAULT-NEXT:                                                                               8,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           While {

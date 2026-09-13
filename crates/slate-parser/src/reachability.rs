@@ -28,7 +28,7 @@ impl<'a> Reachability<'a> {
     fn new(tu: &'a TranslationUnit) -> Self {
         let mut symbols: HashMap<String, Vec<usize>> = HashMap::new();
         for (id, decl) in tu.decls.iter().enumerate() {
-            if let Some(name) = decl.name() {
+            for name in decl.names() {
                 symbols.entry(name.to_string()).or_default().push(id);
             }
             if let Decl::Enum(enumeration) = &decl.value {
@@ -64,11 +64,13 @@ impl<'a> Reachability<'a> {
             Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             Decl::Function(function) => self.mark_function(function),
             Decl::Declaration { declaration, .. } => self.mark_declaration(declaration),
-            Decl::Typedef { ty, .. } => self.mark_type(ty),
             Decl::Record(record) => {
                 for field in &record.fields {
                     if let FieldItem::Field(field) = &field.value {
-                        self.mark_declaration(&field.declaration);
+                        self.mark_type(&field.specifiers.ty);
+                        for declarator in &field.declarators {
+                            self.mark_declarator(&declarator.declarator);
+                        }
                     }
                 }
             }
@@ -100,9 +102,12 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_declaration(&mut self, declaration: &Declaration) {
-        self.mark_type_name(&declaration.specifiers.ty, &declaration.declarator);
-        if let Some(initializer) = &declaration.initializer {
-            self.mark_initializer(initializer);
+        self.mark_type(&declaration.specifiers.ty);
+        for declarator in &declaration.declarators {
+            self.mark_declarator(&declarator.declarator);
+            if let Some(initializer) = &declarator.initializer {
+                self.mark_initializer(initializer);
+            }
         }
     }
 

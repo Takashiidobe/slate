@@ -32,18 +32,22 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "scalar",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "scalar",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -63,25 +67,29 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "message",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       6,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       StringLit(
-// DEFAULT-NEXT:                           "hello",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "message",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               6,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "hello",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -102,83 +110,87 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Array {
-// DEFAULT-NEXT:                   inner: Name(
-// DEFAULT-NEXT:                       "matrix",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   size: Expression(
-// DEFAULT-NEXT:                       IntLit(
-// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Array {
+// DEFAULT-NEXT:                           inner: Name(
+// DEFAULT-NEXT:                               "matrix",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           size: Expression(
+// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       List(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [],
+// DEFAULT-NEXT:                                   value: List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [],
+// DEFAULT-NEXT:                                   value: List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           3,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           4,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       2,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               List(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [],
-// DEFAULT-NEXT:                           value: List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [],
-// DEFAULT-NEXT:                           value: List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   3,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   4,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -198,19 +210,21 @@ int main() {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -223,19 +237,21 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "y",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -267,43 +283,47 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "point",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               List(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [
-// DEFAULT-NEXT:                               Field(
-// DEFAULT-NEXT:                                   "y",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       9,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "point",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       List(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [
+// DEFAULT-NEXT:                                       Field(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               9,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [
-// DEFAULT-NEXT:                               Field(
-// DEFAULT-NEXT:                                   "x",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [
+// DEFAULT-NEXT:                                       Field(
+// DEFAULT-NEXT:                                           "x",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -324,50 +344,54 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "values",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       4,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "values",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       List(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [
+// DEFAULT-NEXT:                                       Array(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               8,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [
+// DEFAULT-NEXT:                                       Array(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               List(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [
-// DEFAULT-NEXT:                               Array(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [
-// DEFAULT-NEXT:                               Array(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -388,18 +412,22 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "selected",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           22,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "selected",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   22,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -450,18 +478,22 @@ int main() {
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Name(
-// ENABLED-NEXT:               "scalar",
-// ENABLED-NEXT:           ),
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   Const(
-// ENABLED-NEXT:                       Integer(
-// ENABLED-NEXT:                           7,
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Name(
+// ENABLED-NEXT:                       "scalar",
+// ENABLED-NEXT:                   ),
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       Expr(
+// ENABLED-NEXT:                           Const(
+// ENABLED-NEXT:                               Integer(
+// ENABLED-NEXT:                                   7,
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:               },
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
@@ -481,25 +513,29 @@ int main() {
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Array {
-// ENABLED-NEXT:               inner: Name(
-// ENABLED-NEXT:                   "message",
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:               size: Expression(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       6,
-// ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           },
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   Const(
-// ENABLED-NEXT:                       StringLit(
-// ENABLED-NEXT:                           "hello",
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Array {
+// ENABLED-NEXT:                       inner: Name(
+// ENABLED-NEXT:                           "message",
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                       size: Expression(
+// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                               6,
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       Expr(
+// ENABLED-NEXT:                           Const(
+// ENABLED-NEXT:                               StringLit(
+// ENABLED-NEXT:                                   "hello",
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:               },
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
@@ -520,83 +556,87 @@ int main() {
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Array {
-// ENABLED-NEXT:               inner: Array {
-// ENABLED-NEXT:                   inner: Name(
-// ENABLED-NEXT:                       "matrix",
-// ENABLED-NEXT:                   ),
-// ENABLED-NEXT:                   size: Expression(
-// ENABLED-NEXT:                       IntLit(
-// ENABLED-NEXT:                           2,
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Array {
+// ENABLED-NEXT:                       inner: Array {
+// ENABLED-NEXT:                           inner: Name(
+// ENABLED-NEXT:                               "matrix",
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                           size: Expression(
+// ENABLED-NEXT:                               IntLit(
+// ENABLED-NEXT:                                   2,
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       },
+// ENABLED-NEXT:                       size: Expression(
+// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                               2,
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       List(
+// ENABLED-NEXT:                           [
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [],
+// ENABLED-NEXT:                                   value: List(
+// ENABLED-NEXT:                                       [
+// ENABLED-NEXT:                                           InitializerItem {
+// ENABLED-NEXT:                                               designators: [],
+// ENABLED-NEXT:                                               value: Expr(
+// ENABLED-NEXT:                                                   Const(
+// ENABLED-NEXT:                                                       Integer(
+// ENABLED-NEXT:                                                           1,
+// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   ),
+// ENABLED-NEXT:                                               ),
+// ENABLED-NEXT:                                           },
+// ENABLED-NEXT:                                           InitializerItem {
+// ENABLED-NEXT:                                               designators: [],
+// ENABLED-NEXT:                                               value: Expr(
+// ENABLED-NEXT:                                                   Const(
+// ENABLED-NEXT:                                                       Integer(
+// ENABLED-NEXT:                                                           2,
+// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   ),
+// ENABLED-NEXT:                                               ),
+// ENABLED-NEXT:                                           },
+// ENABLED-NEXT:                                       ],
+// ENABLED-NEXT:                                   ),
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [],
+// ENABLED-NEXT:                                   value: List(
+// ENABLED-NEXT:                                       [
+// ENABLED-NEXT:                                           InitializerItem {
+// ENABLED-NEXT:                                               designators: [],
+// ENABLED-NEXT:                                               value: Expr(
+// ENABLED-NEXT:                                                   Const(
+// ENABLED-NEXT:                                                       Integer(
+// ENABLED-NEXT:                                                           3,
+// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   ),
+// ENABLED-NEXT:                                               ),
+// ENABLED-NEXT:                                           },
+// ENABLED-NEXT:                                           InitializerItem {
+// ENABLED-NEXT:                                               designators: [],
+// ENABLED-NEXT:                                               value: Expr(
+// ENABLED-NEXT:                                                   Const(
+// ENABLED-NEXT:                                                       Integer(
+// ENABLED-NEXT:                                                           4,
+// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   ),
+// ENABLED-NEXT:                                               ),
+// ENABLED-NEXT:                                           },
+// ENABLED-NEXT:                                       ],
+// ENABLED-NEXT:                                   ),
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                           ],
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               },
-// ENABLED-NEXT:               size: Expression(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       2,
-// ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           },
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               List(
-// ENABLED-NEXT:                   [
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [],
-// ENABLED-NEXT:                           value: List(
-// ENABLED-NEXT:                               [
-// ENABLED-NEXT:                                   InitializerItem {
-// ENABLED-NEXT:                                       designators: [],
-// ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           Const(
-// ENABLED-NEXT:                                               Integer(
-// ENABLED-NEXT:                                                   1,
-// ENABLED-NEXT:                                               ),
-// ENABLED-NEXT:                                           ),
-// ENABLED-NEXT:                                       ),
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                                   InitializerItem {
-// ENABLED-NEXT:                                       designators: [],
-// ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           Const(
-// ENABLED-NEXT:                                               Integer(
-// ENABLED-NEXT:                                                   2,
-// ENABLED-NEXT:                                               ),
-// ENABLED-NEXT:                                           ),
-// ENABLED-NEXT:                                       ),
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                               ],
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [],
-// ENABLED-NEXT:                           value: List(
-// ENABLED-NEXT:                               [
-// ENABLED-NEXT:                                   InitializerItem {
-// ENABLED-NEXT:                                       designators: [],
-// ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           Const(
-// ENABLED-NEXT:                                               Integer(
-// ENABLED-NEXT:                                                   3,
-// ENABLED-NEXT:                                               ),
-// ENABLED-NEXT:                                           ),
-// ENABLED-NEXT:                                       ),
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                                   InitializerItem {
-// ENABLED-NEXT:                                       designators: [],
-// ENABLED-NEXT:                                       value: Expr(
-// ENABLED-NEXT:                                           Const(
-// ENABLED-NEXT:                                               Integer(
-// ENABLED-NEXT:                                                   4,
-// ENABLED-NEXT:                                               ),
-// ENABLED-NEXT:                                           ),
-// ENABLED-NEXT:                                       ),
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                               ],
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                   ],
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
@@ -616,19 +656,21 @@ int main() {
 // ENABLED-NEXT:           fields: [
 // ENABLED-NEXT:               Field(
 // ENABLED-NEXT:                   FieldDecl {
-// ENABLED-NEXT:                       declaration: Declaration {
-// ENABLED-NEXT:                           specifiers: DeclarationSpecifiers {
-// ENABLED-NEXT:                               ty: Integer(
-// ENABLED-NEXT:                                   Ranked {
-// ENABLED-NEXT:                                       rank: Int,
-// ENABLED-NEXT:                                       signed: true,
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           },
-// ENABLED-NEXT:                           declarator: Name(
-// ENABLED-NEXT:                               "x",
+// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:                           ty: Integer(
+// ENABLED-NEXT:                               Ranked {
+// ENABLED-NEXT:                                   rank: Int,
+// ENABLED-NEXT:                                   signed: true,
+// ENABLED-NEXT:                               },
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
+// ENABLED-NEXT:                       declarators: [
+// ENABLED-NEXT:                           FieldDeclarator {
+// ENABLED-NEXT:                               declarator: Name(
+// ENABLED-NEXT:                                   "x",
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           },
+// ENABLED-NEXT:                       ],
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
 // ENABLED-NEXT:                               3,
@@ -641,19 +683,21 @@ int main() {
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:               Field(
 // ENABLED-NEXT:                   FieldDecl {
-// ENABLED-NEXT:                       declaration: Declaration {
-// ENABLED-NEXT:                           specifiers: DeclarationSpecifiers {
-// ENABLED-NEXT:                               ty: Integer(
-// ENABLED-NEXT:                                   Ranked {
-// ENABLED-NEXT:                                       rank: Int,
-// ENABLED-NEXT:                                       signed: true,
-// ENABLED-NEXT:                                   },
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           },
-// ENABLED-NEXT:                           declarator: Name(
-// ENABLED-NEXT:                               "y",
+// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:                           ty: Integer(
+// ENABLED-NEXT:                               Ranked {
+// ENABLED-NEXT:                                   rank: Int,
+// ENABLED-NEXT:                                   signed: true,
+// ENABLED-NEXT:                               },
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
+// ENABLED-NEXT:                       declarators: [
+// ENABLED-NEXT:                           FieldDeclarator {
+// ENABLED-NEXT:                               declarator: Name(
+// ENABLED-NEXT:                                   "y",
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           },
+// ENABLED-NEXT:                       ],
 // ENABLED-NEXT:                       provenance: Provenance {
 // ENABLED-NEXT:                           file: FileId(
 // ENABLED-NEXT:                               3,
@@ -685,43 +729,47 @@ int main() {
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               },
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Name(
-// ENABLED-NEXT:               "point",
-// ENABLED-NEXT:           ),
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               List(
-// ENABLED-NEXT:                   [
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [
-// ENABLED-NEXT:                               Field(
-// ENABLED-NEXT:                                   "y",
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ],
-// ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               Const(
-// ENABLED-NEXT:                                   Integer(
-// ENABLED-NEXT:                                       9,
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Name(
+// ENABLED-NEXT:                       "point",
+// ENABLED-NEXT:                   ),
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       List(
+// ENABLED-NEXT:                           [
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [
+// ENABLED-NEXT:                                       Field(
+// ENABLED-NEXT:                                           "y",
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ],
+// ENABLED-NEXT:                                   value: Expr(
+// ENABLED-NEXT:                                       Const(
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               9,
+// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [
-// ENABLED-NEXT:                               Field(
-// ENABLED-NEXT:                                   "x",
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ],
-// ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               Const(
-// ENABLED-NEXT:                                   Integer(
-// ENABLED-NEXT:                                       4,
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [
+// ENABLED-NEXT:                                       Field(
+// ENABLED-NEXT:                                           "x",
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ],
+// ENABLED-NEXT:                                   value: Expr(
+// ENABLED-NEXT:                                       Const(
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               4,
+// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                   ],
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                           ],
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   ),
+// ENABLED-NEXT:               },
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
@@ -742,50 +790,54 @@ int main() {
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Array {
-// ENABLED-NEXT:               inner: Name(
-// ENABLED-NEXT:                   "values",
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:               size: Expression(
-// ENABLED-NEXT:                   IntLit(
-// ENABLED-NEXT:                       4,
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Array {
+// ENABLED-NEXT:                       inner: Name(
+// ENABLED-NEXT:                           "values",
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                       size: Expression(
+// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                               4,
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       List(
+// ENABLED-NEXT:                           [
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [
+// ENABLED-NEXT:                                       Array(
+// ENABLED-NEXT:                                           2,
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ],
+// ENABLED-NEXT:                                   value: Expr(
+// ENABLED-NEXT:                                       Const(
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               8,
+// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ),
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                               InitializerItem {
+// ENABLED-NEXT:                                   designators: [
+// ENABLED-NEXT:                                       Array(
+// ENABLED-NEXT:                                           0,
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ],
+// ENABLED-NEXT:                                   value: Expr(
+// ENABLED-NEXT:                                       Const(
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               1,
+// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       ),
+// ENABLED-NEXT:                                   ),
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                           ],
+// ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           },
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               List(
-// ENABLED-NEXT:                   [
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [
-// ENABLED-NEXT:                               Array(
-// ENABLED-NEXT:                                   2,
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ],
-// ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               Const(
-// ENABLED-NEXT:                                   Integer(
-// ENABLED-NEXT:                                       8,
-// ENABLED-NEXT:                                   ),
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                       InitializerItem {
-// ENABLED-NEXT:                           designators: [
-// ENABLED-NEXT:                               Array(
-// ENABLED-NEXT:                                   0,
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ],
-// ENABLED-NEXT:                           value: Expr(
-// ENABLED-NEXT:                               Const(
-// ENABLED-NEXT:                                   Integer(
-// ENABLED-NEXT:                                       1,
-// ENABLED-NEXT:                                   ),
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                   ],
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:               },
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(
@@ -806,18 +858,22 @@ int main() {
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
-// ENABLED-NEXT:           declarator: Name(
-// ENABLED-NEXT:               "selected",
-// ENABLED-NEXT:           ),
-// ENABLED-NEXT:           initializer: Some(
-// ENABLED-NEXT:               Expr(
-// ENABLED-NEXT:                   Const(
-// ENABLED-NEXT:                       Integer(
-// ENABLED-NEXT:                           11,
+// ENABLED-NEXT:           declarators: [
+// ENABLED-NEXT:               InitDeclarator {
+// ENABLED-NEXT:                   declarator: Name(
+// ENABLED-NEXT:                       "selected",
+// ENABLED-NEXT:                   ),
+// ENABLED-NEXT:                   initializer: Some(
+// ENABLED-NEXT:                       Expr(
+// ENABLED-NEXT:                           Const(
+// ENABLED-NEXT:                               Integer(
+// ENABLED-NEXT:                                   11,
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ),
+// ENABLED-NEXT:               },
+// ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:       provenance: Provenance {
 // ENABLED-NEXT:           file: FileId(

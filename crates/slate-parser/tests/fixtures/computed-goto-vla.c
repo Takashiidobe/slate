@@ -55,45 +55,49 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                           ty: Void,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "labels",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "labels",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       LabelAddr(
+// DEFAULT-NEXT:                                                           "L0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       LabelAddr(
+// DEFAULT-NEXT:                                                           "L1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               LabelAddr(
-// DEFAULT-NEXT:                                                   "L0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               LabelAddr(
-// DEFAULT-NEXT:                                                   "L1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Goto(
@@ -187,18 +191,22 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "local",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "n",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "local",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
@@ -267,45 +275,49 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                       specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:                           ty: Void,
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                       declarator: Array {
-// COMPUTED-NEXT:                           inner: Pointer {
-// COMPUTED-NEXT:                               qualifiers: Qualifiers,
-// COMPUTED-NEXT:                               inner: Name(
-// COMPUTED-NEXT:                                   "labels",
+// COMPUTED-NEXT:                       declarators: [
+// COMPUTED-NEXT:                           InitDeclarator {
+// COMPUTED-NEXT:                               declarator: Array {
+// COMPUTED-NEXT:                                   inner: Pointer {
+// COMPUTED-NEXT:                                       qualifiers: Qualifiers,
+// COMPUTED-NEXT:                                       inner: Name(
+// COMPUTED-NEXT:                                           "labels",
+// COMPUTED-NEXT:                                       ),
+// COMPUTED-NEXT:                                   },
+// COMPUTED-NEXT:                                   size: Expression(
+// COMPUTED-NEXT:                                       IntLit(
+// COMPUTED-NEXT:                                           2,
+// COMPUTED-NEXT:                                       ),
+// COMPUTED-NEXT:                                   ),
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                               initializer: Some(
+// COMPUTED-NEXT:                                   List(
+// COMPUTED-NEXT:                                       [
+// COMPUTED-NEXT:                                           InitializerItem {
+// COMPUTED-NEXT:                                               designators: [],
+// COMPUTED-NEXT:                                               value: Expr(
+// COMPUTED-NEXT:                                                   Const(
+// COMPUTED-NEXT:                                                       LabelAddr(
+// COMPUTED-NEXT:                                                           "L0",
+// COMPUTED-NEXT:                                                       ),
+// COMPUTED-NEXT:                                                   ),
+// COMPUTED-NEXT:                                               ),
+// COMPUTED-NEXT:                                           },
+// COMPUTED-NEXT:                                           InitializerItem {
+// COMPUTED-NEXT:                                               designators: [],
+// COMPUTED-NEXT:                                               value: Expr(
+// COMPUTED-NEXT:                                                   Const(
+// COMPUTED-NEXT:                                                       LabelAddr(
+// COMPUTED-NEXT:                                                           "L1",
+// COMPUTED-NEXT:                                                       ),
+// COMPUTED-NEXT:                                                   ),
+// COMPUTED-NEXT:                                               ),
+// COMPUTED-NEXT:                                           },
+// COMPUTED-NEXT:                                       ],
+// COMPUTED-NEXT:                                   ),
 // COMPUTED-NEXT:                               ),
 // COMPUTED-NEXT:                           },
-// COMPUTED-NEXT:                           size: Expression(
-// COMPUTED-NEXT:                               IntLit(
-// COMPUTED-NEXT:                                   2,
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                       initializer: Some(
-// COMPUTED-NEXT:                           List(
-// COMPUTED-NEXT:                               [
-// COMPUTED-NEXT:                                   InitializerItem {
-// COMPUTED-NEXT:                                       designators: [],
-// COMPUTED-NEXT:                                       value: Expr(
-// COMPUTED-NEXT:                                           Const(
-// COMPUTED-NEXT:                                               LabelAddr(
-// COMPUTED-NEXT:                                                   "L0",
-// COMPUTED-NEXT:                                               ),
-// COMPUTED-NEXT:                                           ),
-// COMPUTED-NEXT:                                       ),
-// COMPUTED-NEXT:                                   },
-// COMPUTED-NEXT:                                   InitializerItem {
-// COMPUTED-NEXT:                                       designators: [],
-// COMPUTED-NEXT:                                       value: Expr(
-// COMPUTED-NEXT:                                           Const(
-// COMPUTED-NEXT:                                               LabelAddr(
-// COMPUTED-NEXT:                                                   "L1",
-// COMPUTED-NEXT:                                               ),
-// COMPUTED-NEXT:                                           ),
-// COMPUTED-NEXT:                                       ),
-// COMPUTED-NEXT:                                   },
-// COMPUTED-NEXT:                               ],
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                       ),
+// COMPUTED-NEXT:                       ],
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               ComputedGoto(
@@ -408,18 +420,22 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                               },
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                       declarator: Array {
-// COMPUTED-NEXT:                           inner: Name(
-// COMPUTED-NEXT:                               "local",
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                           size: Expression(
-// COMPUTED-NEXT:                               Const(
-// COMPUTED-NEXT:                                   Identifier(
-// COMPUTED-NEXT:                                       "n",
+// COMPUTED-NEXT:                       declarators: [
+// COMPUTED-NEXT:                           InitDeclarator {
+// COMPUTED-NEXT:                               declarator: Array {
+// COMPUTED-NEXT:                                   inner: Name(
+// COMPUTED-NEXT:                                       "local",
 // COMPUTED-NEXT:                                   ),
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                       },
+// COMPUTED-NEXT:                                   size: Expression(
+// COMPUTED-NEXT:                                       Const(
+// COMPUTED-NEXT:                                           Identifier(
+// COMPUTED-NEXT:                                               "n",
+// COMPUTED-NEXT:                                           ),
+// COMPUTED-NEXT:                                       ),
+// COMPUTED-NEXT:                                   ),
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                           },
+// COMPUTED-NEXT:                       ],
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
@@ -488,45 +504,49 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                       specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                           ty: Void,
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                       declarator: Array {
-// DOUBLED-NEXT:                           inner: Pointer {
-// DOUBLED-NEXT:                               qualifiers: Qualifiers,
-// DOUBLED-NEXT:                               inner: Name(
-// DOUBLED-NEXT:                                   "labels",
+// DOUBLED-NEXT:                       declarators: [
+// DOUBLED-NEXT:                           InitDeclarator {
+// DOUBLED-NEXT:                               declarator: Array {
+// DOUBLED-NEXT:                                   inner: Pointer {
+// DOUBLED-NEXT:                                       qualifiers: Qualifiers,
+// DOUBLED-NEXT:                                       inner: Name(
+// DOUBLED-NEXT:                                           "labels",
+// DOUBLED-NEXT:                                       ),
+// DOUBLED-NEXT:                                   },
+// DOUBLED-NEXT:                                   size: Expression(
+// DOUBLED-NEXT:                                       IntLit(
+// DOUBLED-NEXT:                                           2,
+// DOUBLED-NEXT:                                       ),
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                               initializer: Some(
+// DOUBLED-NEXT:                                   List(
+// DOUBLED-NEXT:                                       [
+// DOUBLED-NEXT:                                           InitializerItem {
+// DOUBLED-NEXT:                                               designators: [],
+// DOUBLED-NEXT:                                               value: Expr(
+// DOUBLED-NEXT:                                                   Const(
+// DOUBLED-NEXT:                                                       LabelAddr(
+// DOUBLED-NEXT:                                                           "L0",
+// DOUBLED-NEXT:                                                       ),
+// DOUBLED-NEXT:                                                   ),
+// DOUBLED-NEXT:                                               ),
+// DOUBLED-NEXT:                                           },
+// DOUBLED-NEXT:                                           InitializerItem {
+// DOUBLED-NEXT:                                               designators: [],
+// DOUBLED-NEXT:                                               value: Expr(
+// DOUBLED-NEXT:                                                   Const(
+// DOUBLED-NEXT:                                                       LabelAddr(
+// DOUBLED-NEXT:                                                           "L1",
+// DOUBLED-NEXT:                                                       ),
+// DOUBLED-NEXT:                                                   ),
+// DOUBLED-NEXT:                                               ),
+// DOUBLED-NEXT:                                           },
+// DOUBLED-NEXT:                                       ],
+// DOUBLED-NEXT:                                   ),
 // DOUBLED-NEXT:                               ),
 // DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                           size: Expression(
-// DOUBLED-NEXT:                               IntLit(
-// DOUBLED-NEXT:                                   2,
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                       initializer: Some(
-// DOUBLED-NEXT:                           List(
-// DOUBLED-NEXT:                               [
-// DOUBLED-NEXT:                                   InitializerItem {
-// DOUBLED-NEXT:                                       designators: [],
-// DOUBLED-NEXT:                                       value: Expr(
-// DOUBLED-NEXT:                                           Const(
-// DOUBLED-NEXT:                                               LabelAddr(
-// DOUBLED-NEXT:                                                   "L0",
-// DOUBLED-NEXT:                                               ),
-// DOUBLED-NEXT:                                           ),
-// DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                   },
-// DOUBLED-NEXT:                                   InitializerItem {
-// DOUBLED-NEXT:                                       designators: [],
-// DOUBLED-NEXT:                                       value: Expr(
-// DOUBLED-NEXT:                                           Const(
-// DOUBLED-NEXT:                                               LabelAddr(
-// DOUBLED-NEXT:                                                   "L1",
-// DOUBLED-NEXT:                                               ),
-// DOUBLED-NEXT:                                           ),
-// DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                   },
-// DOUBLED-NEXT:                               ],
-// DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                       ),
+// DOUBLED-NEXT:                       ],
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Goto(
@@ -620,24 +640,28 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                       declarator: Array {
-// DOUBLED-NEXT:                           inner: Name(
-// DOUBLED-NEXT:                               "local",
-// DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           size: Expression(
-// DOUBLED-NEXT:                               Const(
-// DOUBLED-NEXT:                                   Binary {
-// DOUBLED-NEXT:                                       op: Mul,
-// DOUBLED-NEXT:                                       left: Identifier(
-// DOUBLED-NEXT:                                           "n",
+// DOUBLED-NEXT:                       declarators: [
+// DOUBLED-NEXT:                           InitDeclarator {
+// DOUBLED-NEXT:                               declarator: Array {
+// DOUBLED-NEXT:                                   inner: Name(
+// DOUBLED-NEXT:                                       "local",
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                                   size: Expression(
+// DOUBLED-NEXT:                                       Const(
+// DOUBLED-NEXT:                                           Binary {
+// DOUBLED-NEXT:                                               op: Mul,
+// DOUBLED-NEXT:                                               left: Identifier(
+// DOUBLED-NEXT:                                                   "n",
+// DOUBLED-NEXT:                                               ),
+// DOUBLED-NEXT:                                               right: Integer(
+// DOUBLED-NEXT:                                                   2,
+// DOUBLED-NEXT:                                               ),
+// DOUBLED-NEXT:                                           },
 // DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                       right: Integer(
-// DOUBLED-NEXT:                                           2,
-// DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                   },
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           },
+// DOUBLED-NEXT:                       ],
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(

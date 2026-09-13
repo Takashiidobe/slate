@@ -28,16 +28,20 @@ int nested[X];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "redefined",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "redefined",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -58,16 +62,20 @@ int nested[X];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "nested",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "nested",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -90,16 +98,20 @@ int nested[X];
 // A-NEXT:                   },
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Array {
-// A-NEXT:               inner: Name(
-// A-NEXT:                   "redefined",
-// A-NEXT:               ),
-// A-NEXT:               size: Expression(
-// A-NEXT:                   IntLit(
-// A-NEXT:                       2,
-// A-NEXT:                   ),
-// A-NEXT:               ),
-// A-NEXT:           },
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Array {
+// A-NEXT:                       inner: Name(
+// A-NEXT:                           "redefined",
+// A-NEXT:                       ),
+// A-NEXT:                       size: Expression(
+// A-NEXT:                           IntLit(
+// A-NEXT:                               2,
+// A-NEXT:                           ),
+// A-NEXT:                       ),
+// A-NEXT:                   },
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -120,16 +132,20 @@ int nested[X];
 // A-NEXT:                   },
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Array {
-// A-NEXT:               inner: Name(
-// A-NEXT:                   "nested",
-// A-NEXT:               ),
-// A-NEXT:               size: Expression(
-// A-NEXT:                   IntLit(
-// A-NEXT:                       2,
-// A-NEXT:                   ),
-// A-NEXT:               ),
-// A-NEXT:           },
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Array {
+// A-NEXT:                       inner: Name(
+// A-NEXT:                           "nested",
+// A-NEXT:                       ),
+// A-NEXT:                       size: Expression(
+// A-NEXT:                           IntLit(
+// A-NEXT:                               2,
+// A-NEXT:                           ),
+// A-NEXT:                       ),
+// A-NEXT:                   },
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -152,16 +168,20 @@ int nested[X];
 // B-NEXT:                   },
 // B-NEXT:               ),
 // B-NEXT:           },
-// B-NEXT:           declarator: Array {
-// B-NEXT:               inner: Name(
-// B-NEXT:                   "redefined",
-// B-NEXT:               ),
-// B-NEXT:               size: Expression(
-// B-NEXT:                   IntLit(
-// B-NEXT:                       1,
-// B-NEXT:                   ),
-// B-NEXT:               ),
-// B-NEXT:           },
+// B-NEXT:           declarators: [
+// B-NEXT:               InitDeclarator {
+// B-NEXT:                   declarator: Array {
+// B-NEXT:                       inner: Name(
+// B-NEXT:                           "redefined",
+// B-NEXT:                       ),
+// B-NEXT:                       size: Expression(
+// B-NEXT:                           IntLit(
+// B-NEXT:                               1,
+// B-NEXT:                           ),
+// B-NEXT:                       ),
+// B-NEXT:                   },
+// B-NEXT:               },
+// B-NEXT:           ],
 // B-NEXT:       },
 // B-NEXT:       provenance: Provenance {
 // B-NEXT:           file: FileId(
@@ -182,16 +202,20 @@ int nested[X];
 // B-NEXT:                   },
 // B-NEXT:               ),
 // B-NEXT:           },
-// B-NEXT:           declarator: Array {
-// B-NEXT:               inner: Name(
-// B-NEXT:                   "nested",
-// B-NEXT:               ),
-// B-NEXT:               size: Expression(
-// B-NEXT:                   IntLit(
-// B-NEXT:                       1,
-// B-NEXT:                   ),
-// B-NEXT:               ),
-// B-NEXT:           },
+// B-NEXT:           declarators: [
+// B-NEXT:               InitDeclarator {
+// B-NEXT:                   declarator: Array {
+// B-NEXT:                       inner: Name(
+// B-NEXT:                           "nested",
+// B-NEXT:                       ),
+// B-NEXT:                       size: Expression(
+// B-NEXT:                           IntLit(
+// B-NEXT:                               1,
+// B-NEXT:                           ),
+// B-NEXT:                       ),
+// B-NEXT:                   },
+// B-NEXT:               },
+// B-NEXT:           ],
 // B-NEXT:       },
 // B-NEXT:       provenance: Provenance {
 // B-NEXT:           file: FileId(
@@ -214,16 +238,20 @@ int nested[X];
 // AB-NEXT:                   },
 // AB-NEXT:               ),
 // AB-NEXT:           },
-// AB-NEXT:           declarator: Array {
-// AB-NEXT:               inner: Name(
-// AB-NEXT:                   "redefined",
-// AB-NEXT:               ),
-// AB-NEXT:               size: Expression(
-// AB-NEXT:                   IntLit(
-// AB-NEXT:                       2,
-// AB-NEXT:                   ),
-// AB-NEXT:               ),
-// AB-NEXT:           },
+// AB-NEXT:           declarators: [
+// AB-NEXT:               InitDeclarator {
+// AB-NEXT:                   declarator: Array {
+// AB-NEXT:                       inner: Name(
+// AB-NEXT:                           "redefined",
+// AB-NEXT:                       ),
+// AB-NEXT:                       size: Expression(
+// AB-NEXT:                           IntLit(
+// AB-NEXT:                               2,
+// AB-NEXT:                           ),
+// AB-NEXT:                       ),
+// AB-NEXT:                   },
+// AB-NEXT:               },
+// AB-NEXT:           ],
 // AB-NEXT:       },
 // AB-NEXT:       provenance: Provenance {
 // AB-NEXT:           file: FileId(
@@ -244,16 +272,20 @@ int nested[X];
 // AB-NEXT:                   },
 // AB-NEXT:               ),
 // AB-NEXT:           },
-// AB-NEXT:           declarator: Array {
-// AB-NEXT:               inner: Name(
-// AB-NEXT:                   "nested",
-// AB-NEXT:               ),
-// AB-NEXT:               size: Expression(
-// AB-NEXT:                   IntLit(
-// AB-NEXT:                       5,
-// AB-NEXT:                   ),
-// AB-NEXT:               ),
-// AB-NEXT:           },
+// AB-NEXT:           declarators: [
+// AB-NEXT:               InitDeclarator {
+// AB-NEXT:                   declarator: Array {
+// AB-NEXT:                       inner: Name(
+// AB-NEXT:                           "nested",
+// AB-NEXT:                       ),
+// AB-NEXT:                       size: Expression(
+// AB-NEXT:                           IntLit(
+// AB-NEXT:                               5,
+// AB-NEXT:                           ),
+// AB-NEXT:                       ),
+// AB-NEXT:                   },
+// AB-NEXT:               },
+// AB-NEXT:           ],
 // AB-NEXT:       },
 // AB-NEXT:       provenance: Provenance {
 // AB-NEXT:           file: FileId(

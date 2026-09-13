@@ -15,16 +15,20 @@
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "old_api",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Deprecated(
-// DEFAULT-NEXT:                   Some(
-// DEFAULT-NEXT:                       "old",
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Deprecated(
+// DEFAULT-NEXT:                       Some(
+// DEFAULT-NEXT:                           "old",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "old_api",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -45,16 +49,20 @@
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   NoDiscard(
+// DEFAULT-NEXT:                       None,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "status",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoDiscard(
-// DEFAULT-NEXT:                   None,
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "status",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -75,12 +83,16 @@
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   MaybeUnused,
+// DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "unused_data",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               MaybeUnused,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "unused_data",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -101,16 +113,20 @@
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Unknown {
+// DEFAULT-NEXT:                       name: "vendor::custom",
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           "7",
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "vendor_data",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "vendor::custom",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "7",
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "vendor_data",
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

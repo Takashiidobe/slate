@@ -27,16 +27,20 @@ foo (void)
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Extern,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   10,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
@@ -51,12 +55,16 @@ foo (void)
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   storage: Extern,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Unspecified,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Unspecified,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -68,37 +76,41 @@ foo (void)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Ternary {
-// DEFAULT-NEXT:                                               condition: Binary {
-// DEFAULT-NEXT:                                                   op: Equal,
-// DEFAULT-NEXT:                                                   left: SizeOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "i",
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "x",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Ternary {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: Equal,
+// DEFAULT-NEXT:                                                           left: SizeOf(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               10,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       then_value: Integer(
+// DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       10,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               then_value: Integer(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                                       else_value: Unary {
+// DEFAULT-NEXT:                                                           op: Minus,
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               else_value: Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],

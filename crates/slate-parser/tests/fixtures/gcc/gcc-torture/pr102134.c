@@ -47,14 +47,25 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Typedef {
-// DEFAULT-NEXT:       name: "u64",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: LongLong,
-// DEFAULT-NEXT:               signed: false,
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: LongLong,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "u64",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -71,9 +82,13 @@ int main() {
 // DEFAULT-NEXT:                   "u64",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "g",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "g",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -154,60 +169,64 @@ int main() {
 // DEFAULT-NEXT:                               "u64",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: And,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: BitOr,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: ShiftRight,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: And,
 // DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: BitAnd,
-// DEFAULT-NEXT:                                                   left: Identifier(
-// DEFAULT-NEXT:                                                       "c",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       63,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Binary {
-// DEFAULT-NEXT:                                               op: BitAnd,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: ShiftLeft,
-// DEFAULT-NEXT:                                                   left: Identifier(
-// DEFAULT-NEXT:                                                       "b",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   op: BitOr,
+// DEFAULT-NEXT:                                                   left: Binary {
+// DEFAULT-NEXT:                                                       op: ShiftRight,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: BitAnd,
+// DEFAULT-NEXT:                                                           left: Identifier(
+// DEFAULT-NEXT:                                                               "c",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               63,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Binary {
 // DEFAULT-NEXT:                                                       op: BitAnd,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "c",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           63,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: ShiftLeft,
+// DEFAULT-NEXT:                                                           left: Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: BitAnd,
+// DEFAULT-NEXT:                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                   "c",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   63,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Identifier(
+// DEFAULT-NEXT:                                                           "g",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "g",
-// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -259,9 +278,13 @@ int main() {
 // DEFAULT-NEXT:                               "u64",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

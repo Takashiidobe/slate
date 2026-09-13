@@ -70,11 +70,15 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -92,19 +96,21 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -117,91 +123,89 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: None,
-// DEFAULT-NEXT:                                   body: Some(
-// DEFAULT-NEXT:                                       Fields(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: None,
+// DEFAULT-NEXT:                               body: Some(
+// DEFAULT-NEXT:                                   Fields(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
 // DEFAULT-NEXT:                                                       declarator: Name(
 // DEFAULT-NEXT:                                                           "a",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               FieldDecl {
-// DEFAULT-NEXT:                                                   declaration: Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Tagged {
-// DEFAULT-NEXT:                                                               kind: Union,
-// DEFAULT-NEXT:                                                               name: None,
-// DEFAULT-NEXT:                                                               body: Some(
-// DEFAULT-NEXT:                                                                   Fields(
-// DEFAULT-NEXT:                                                                       [
-// DEFAULT-NEXT:                                                                           FieldDecl {
-// DEFAULT-NEXT:                                                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: true,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                                       "b",
-// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           FieldDecl {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                       kind: Union,
+// DEFAULT-NEXT:                                                       name: None,
+// DEFAULT-NEXT:                                                       body: Some(
+// DEFAULT-NEXT:                                                           Fields(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   FieldDecl {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               provenance: Provenance {
-// DEFAULT-NEXT:                                                                                   file: FileId(
-// DEFAULT-NEXT:                                                                                       0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   kind: System,
-// DEFAULT-NEXT:                                                                                   line: 0,
-// DEFAULT-NEXT:                                                                                   header: None,
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           FieldDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "b",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ],
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   provenance: Provenance {
-// DEFAULT-NEXT:                                                       file: FileId(
-// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                                       provenance: Provenance {
+// DEFAULT-NEXT:                                                                           file: FileId(
+// DEFAULT-NEXT:                                                                               0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           kind: System,
+// DEFAULT-NEXT:                                                                           line: 0,
+// DEFAULT-NEXT:                                                                           header: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       kind: System,
-// DEFAULT-NEXT:                                                       line: 0,
-// DEFAULT-NEXT:                                                       header: None,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               provenance: Provenance {
+// DEFAULT-NEXT:                                                   file: FileId(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   kind: System,
+// DEFAULT-NEXT:                                                   line: 0,
+// DEFAULT-NEXT:                                                   header: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
@@ -232,9 +236,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                   name: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "foo",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "foo",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

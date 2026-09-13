@@ -1,5 +1,5 @@
 use super::attributes::{apply_vector_attributes, parse_attribute_groups};
-use super::decl::{evaluate_enum_expression, record_enum_value};
+use super::decl::{evaluate_enum_expression, record_enum_value, specifiers_with_type};
 use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, coalesce_string_literals, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
@@ -462,10 +462,11 @@ impl<'a> DeclaratorParser<'a> {
                 self.pos += 1;
             }
             let qualifiers = self.take_qualifiers();
-            let ty = self.parse_base_type()?;
-            loop {
-                let declarator = if matches!(self.peek(), Some(&Token::Semi) | Some(&Token::Colon))
-                {
+            let mut specifiers = specifiers_with_type(self.parse_base_type()?);
+            specifiers.qualifiers = qualifiers;
+            let mut declarators = Vec::new();
+            while !self.matches(Token::Semi) {
+                let declarator = if self.peek() == Some(&Token::Colon) {
                     Declarator::Abstract
                 } else {
                     self.parse_declarator(true)?
@@ -484,24 +485,10 @@ impl<'a> DeclaratorParser<'a> {
                     None
                 };
                 let attributes = self.parse_attributes()?;
-                fields.push(FieldDecl {
-                    declaration: Declaration {
-                        specifiers: DeclarationSpecifiers {
-                            ty: ty.clone(),
-                            qualifiers,
-                            storage: StorageClass::None,
-                            is_thread_local: false,
-                            is_inline: false,
-                            is_noreturn: false,
-                            is_constexpr: false,
-                        },
-                        declarator,
-                        asm_label: None,
-                        initializer: None,
-                        attributes,
-                    },
+                declarators.push(FieldDeclarator {
+                    declarator,
                     bit_width,
-                    provenance: Provenance::default(),
+                    attributes,
                 });
                 if self.matches(Token::Comma) {
                     continue;
@@ -512,6 +499,11 @@ impl<'a> DeclaratorParser<'a> {
                 )?;
                 break;
             }
+            fields.push(FieldDecl {
+                specifiers,
+                declarators,
+                provenance: Provenance::default(),
+            });
         }
         self.pos += 1;
         Ok(fields)
@@ -1025,7 +1017,7 @@ impl<'a> DeclaratorParser<'a> {
     }
 }
 
-pub(super) fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
+pub fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
     match declarator {
         Declarator::Abstract | Declarator::Name(_) => ty,
         Declarator::Grouped(inner) => apply_abstract_declarator(ty, *inner),

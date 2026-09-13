@@ -70,18 +70,22 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "size",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "size",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -94,27 +98,29 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                                   Fields(
 // DEFAULT-NEXT:                                       [
 // DEFAULT-NEXT:                                           FieldDecl {
-// DEFAULT-NEXT:                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Char {
-// DEFAULT-NEXT:                                                               signed: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarator: Array {
-// DEFAULT-NEXT:                                                       inner: Name(
-// DEFAULT-NEXT:                                                           "val",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       size: Expression(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "size",
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   FieldDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Array {
+// DEFAULT-NEXT:                                                           inner: Name(
+// DEFAULT-NEXT:                                                               "val",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           size: Expression(
+// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "size",
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                   file: FileId(
 // DEFAULT-NEXT:                                                       0,
@@ -130,9 +136,13 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           storage: Typedef,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "block",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "block",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               NestedFunction(

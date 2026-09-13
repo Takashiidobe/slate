@@ -426,9 +426,9 @@ the AST redesign epic.
 | Current | Target | Also fixes |
 | --- | --- | --- |
 | enum bodies drop comments | `CommentGroup` as an `EnumItem` (`lh7.3.11`) | |
-| `Decl::Declaration` holds one declarator; lists split by token hacks at file scope, in blocks, in tag definitions | `Declaration { specifiers, declarators }` everywhere, including `for` init | file-scope tag definitions drop declarators, initializers, storage (`lh7.1.11`); local `int a, b;` becomes `Block` (`lh7.1.12`); `typedef struct {..} T, *PT` drops `PT`; `for (int i = 0, j = 1;;)` fails to parse |
-| `Decl::Typedef`, `Decl::Record`, `Decl::Enum`; `CType::Tagged { body }` inline for local tags | storage `Typedef`; `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
-| `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` and `Typedef.ty` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
+| `InitDeclarator` and `FieldDeclarator` carry no provenance; `Stmt::Decl` has none at all | provenance on every declarator | |
+| `Decl::Record`, `Decl::Enum` emitted before a `Declaration` whose specifier is a bodiless `CType::Tagged`; `CType::Tagged { body }` inline for local tags | `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
+| `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
 | `FunctionDecl.parameters: []` for both `(void)` and `()` | `ParameterList::{Void, Empty, IdentifierList}` | |
 | `Expr` wrapper + unspanned `ConstExpr`; unused `Expr` variants | one spanned `Expr` | no sub-expression locations; nested `({ })` stored as raw tokens (`lh7.1.16`) |
 | `ConstExpr::Integer(i64)` for integer and char literals; raw string spelling | `IntegerLiteral`/`CharLiteral`/`StringLiteral`/`FloatLiteral` | suffix and char kind lost (`lh7.1.13`); escapes undecoded (`lh7.1.14`) |

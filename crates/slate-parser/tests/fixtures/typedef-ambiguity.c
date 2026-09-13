@@ -27,9 +27,13 @@ int call_main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "B",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "B",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -50,26 +54,30 @@ int call_main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "A",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "A",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Name(
+// DEFAULT-NEXT:                                       "value",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Name(
-// DEFAULT-NEXT:                               "value",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -134,9 +142,13 @@ int call_main() {
 // CAST-NEXT:                   },
 // CAST-NEXT:               ),
 // CAST-NEXT:           },
-// CAST-NEXT:           declarator: Name(
-// CAST-NEXT:               "B",
-// CAST-NEXT:           ),
+// CAST-NEXT:           declarators: [
+// CAST-NEXT:               InitDeclarator {
+// CAST-NEXT:                   declarator: Name(
+// CAST-NEXT:                       "B",
+// CAST-NEXT:                   ),
+// CAST-NEXT:               },
+// CAST-NEXT:           ],
 // CAST-NEXT:       },
 // CAST-NEXT:       provenance: Provenance {
 // CAST-NEXT:           file: FileId(
@@ -147,14 +159,25 @@ int call_main() {
 // CAST-NEXT:           header: None,
 // CAST-NEXT:       },
 // CAST-NEXT:   }
-// CAST-NEXT: decl[1]: Typedef {
-// CAST-NEXT:       name: "A",
-// CAST-NEXT:       ty: Integer(
-// CAST-NEXT:           Ranked {
-// CAST-NEXT:               rank: Int,
-// CAST-NEXT:               signed: true,
+// CAST-NEXT: decl[1]: Declaration {
+// CAST-NEXT:       declaration: Declaration {
+// CAST-NEXT:           specifiers: DeclarationSpecifiers {
+// CAST-NEXT:               ty: Integer(
+// CAST-NEXT:                   Ranked {
+// CAST-NEXT:                       rank: Int,
+// CAST-NEXT:                       signed: true,
+// CAST-NEXT:                   },
+// CAST-NEXT:               ),
+// CAST-NEXT:               storage: Typedef,
 // CAST-NEXT:           },
-// CAST-NEXT:       ),
+// CAST-NEXT:           declarators: [
+// CAST-NEXT:               InitDeclarator {
+// CAST-NEXT:                   declarator: Name(
+// CAST-NEXT:                       "A",
+// CAST-NEXT:                   ),
+// CAST-NEXT:               },
+// CAST-NEXT:           ],
+// CAST-NEXT:       },
 // CAST-NEXT:       provenance: Provenance {
 // CAST-NEXT:           file: FileId(
 // CAST-NEXT:               3,

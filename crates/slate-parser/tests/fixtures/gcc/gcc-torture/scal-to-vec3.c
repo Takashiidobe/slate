@@ -148,185 +148,148 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               VectorSize(
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "f0",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           1.0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "f0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           2.0,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   2.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           3.0,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   3.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           4.0,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   4.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       attributes: [
-// DEFAULT-NEXT:                           VectorSize(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       4,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Float,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Vector(
-// DEFAULT-NEXT:                                       VectorType {
-// DEFAULT-NEXT:                                           element: Floating(
-// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Vector(
+// DEFAULT-NEXT:                               VectorType {
+// DEFAULT-NEXT:                                   element: Floating(
+// DEFAULT-NEXT:                                       Float,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Bytes(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Mul,
+// DEFAULT-NEXT:                                           left: Integer(
+// DEFAULT-NEXT:                                               4,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Bytes(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: SizeOfType {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               VectorSize(
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "f1",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               attributes: [
-// DEFAULT-NEXT:                                   VectorSize(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: Integer(
-// DEFAULT-NEXT:                                               4,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Vector(
-// DEFAULT-NEXT:                                       VectorType {
-// DEFAULT-NEXT:                                           element: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Bytes(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "f2",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               attributes: [
-// DEFAULT-NEXT:                                   VectorSize(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: Integer(
-// DEFAULT-NEXT:                                               4,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -352,292 +315,259 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               VectorSize(
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: Integer(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "d0",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           1.0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "d0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           2.0,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   2.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       attributes: [
-// DEFAULT-NEXT:                           VectorSize(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Vector(
-// DEFAULT-NEXT:                                       VectorType {
-// DEFAULT-NEXT:                                           element: Floating(
-// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Vector(
+// DEFAULT-NEXT:                               VectorType {
+// DEFAULT-NEXT:                                   element: Floating(
+// DEFAULT-NEXT:                                       Double,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Bytes(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Mul,
+// DEFAULT-NEXT:                                           left: Integer(
+// DEFAULT-NEXT:                                               2,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Bytes(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Double,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: SizeOfType {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           attributes: [
+// DEFAULT-NEXT:                               VectorSize(
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: Mul,
+// DEFAULT-NEXT:                                       left: Integer(
+// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "d1",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               attributes: [
-// DEFAULT-NEXT:                                   VectorSize(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Vector(
-// DEFAULT-NEXT:                                       VectorType {
-// DEFAULT-NEXT:                                           element: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Bytes(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Double,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "d2",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               attributes: [
-// DEFAULT-NEXT:                                   VectorSize(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: Integer(
-// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "f1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                               op: Add,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "f0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "f2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                               op: Add,
+// DEFAULT-NEXT:                               left: CompoundLiteral {
+// DEFAULT-NEXT:                                   ty: Vector(
+// DEFAULT-NEXT:                                       VectorType {
+// DEFAULT-NEXT:                                           element: Floating(
+// DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           size: Bytes(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: Mul,
+// DEFAULT-NEXT:                                                   left: Integer(
+// DEFAULT-NEXT:                                                       4,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: SizeOfType {
+// DEFAULT-NEXT:                                                       ty: Floating(
+// DEFAULT-NEXT:                                                           Float,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   initializer: [
+// DEFAULT-NEXT:                                       InitializerItem {
+// DEFAULT-NEXT:                                           designators: [],
+// DEFAULT-NEXT:                                           value: Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Float(
+// DEFAULT-NEXT:                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                           value: Double(
+// DEFAULT-NEXT:                                                               2.0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       InitializerItem {
+// DEFAULT-NEXT:                                           designators: [],
+// DEFAULT-NEXT:                                           value: Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Float(
+// DEFAULT-NEXT:                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                           value: Double(
+// DEFAULT-NEXT:                                                               2.0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       InitializerItem {
+// DEFAULT-NEXT:                                           designators: [],
+// DEFAULT-NEXT:                                           value: Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Float(
+// DEFAULT-NEXT:                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                           value: Double(
+// DEFAULT-NEXT:                                                               2.0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       InitializerItem {
+// DEFAULT-NEXT:                                           designators: [],
+// DEFAULT-NEXT:                                           value: Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Float(
+// DEFAULT-NEXT:                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                           value: Double(
+// DEFAULT-NEXT:                                                               2.0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "f0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               DoWhile {
+// DEFAULT-NEXT:                   body: [
+// DEFAULT-NEXT:                       Decl(
+// DEFAULT-NEXT:                           Declaration {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "f1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "f0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "f2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: CompoundLiteral {
-// DEFAULT-NEXT:                                   ty: Vector(
-// DEFAULT-NEXT:                                       VectorType {
-// DEFAULT-NEXT:                                           element: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Bytes(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   initializer: [
-// DEFAULT-NEXT:                                       InitializerItem {
-// DEFAULT-NEXT:                                           designators: [],
-// DEFAULT-NEXT:                                           value: Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               2.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       InitializerItem {
-// DEFAULT-NEXT:                                           designators: [],
-// DEFAULT-NEXT:                                           value: Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               2.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       InitializerItem {
-// DEFAULT-NEXT:                                           designators: [],
-// DEFAULT-NEXT:                                           value: Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               2.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       InitializerItem {
-// DEFAULT-NEXT:                                           designators: [],
-// DEFAULT-NEXT:                                           value: Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               2.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "f0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               DoWhile {
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
 // DEFAULT-NEXT:                           init: Some(
 // DEFAULT-NEXT:                               Expr(
@@ -879,9 +809,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1125,9 +1059,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1371,9 +1309,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1617,9 +1559,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1863,9 +1809,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -2109,9 +2059,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -2355,9 +2309,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -2573,9 +2531,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -2791,9 +2753,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3009,9 +2975,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3227,9 +3197,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3445,9 +3419,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3663,9 +3641,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3881,9 +3863,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -4099,9 +4085,13 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "__i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "__i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {

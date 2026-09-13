@@ -40,34 +40,38 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "printf",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Qualified {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                               is_const: true,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Some(
-// DEFAULT-NEXT:                           Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_restrict: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Qualified {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                       is_const: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Some(
+// DEFAULT-NEXT:                                   Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       variadic: true,
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               variadic: true,
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -102,18 +106,22 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "value",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "value",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -126,107 +134,115 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "first",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StatementExpression(
-// DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       LocalLabelDecl(
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "first",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       StatementExpression(
 // DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               "failed",
-// DEFAULT-NEXT:                                               "done",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Decl(
-// DEFAULT-NEXT:                                           Declaration {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                               LocalLabelDecl(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       "failed",
+// DEFAULT-NEXT:                                                       "done",
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Decl(
+// DEFAULT-NEXT:                                                   Declaration {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "result",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               If {
+// DEFAULT-NEXT:                                                   condition: Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Not,
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: PreIncrement(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   then_branch: [
+// DEFAULT-NEXT:                                                       Goto(
+// DEFAULT-NEXT:                                                           "failed",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   else_branch: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "result",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Not,
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Equal,
-// DEFAULT-NEXT:                                                       left: PreIncrement(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "value",
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           then_branch: [
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               17,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Goto(
+// DEFAULT-NEXT:                                                   "done",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Labeled(
 // DEFAULT-NEXT:                                                   "failed",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           else_branch: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "result",
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   5,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       17,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Goto(
-// DEFAULT-NEXT:                                           "done",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "failed",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "result",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Integer(
-// DEFAULT-NEXT:                                                           5,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "done",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "result",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               Labeled(
+// DEFAULT-NEXT:                                                   "done",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "result",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -239,107 +255,115 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "second",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               StatementExpression(
-// DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       LocalLabelDecl(
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "second",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       StatementExpression(
 // DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               "failed",
-// DEFAULT-NEXT:                                               "done",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Decl(
-// DEFAULT-NEXT:                                           Declaration {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                               LocalLabelDecl(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       "failed",
+// DEFAULT-NEXT:                                                       "done",
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Decl(
+// DEFAULT-NEXT:                                                   Declaration {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "result",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               If {
+// DEFAULT-NEXT:                                                   condition: Const(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Not,
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: PreIncrement(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   9,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   then_branch: [
+// DEFAULT-NEXT:                                                       Goto(
+// DEFAULT-NEXT:                                                           "failed",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   else_branch: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "result",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Const(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Not,
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Equal,
-// DEFAULT-NEXT:                                                       left: PreIncrement(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "value",
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           9,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           then_branch: [
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               17,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Goto(
+// DEFAULT-NEXT:                                                   "done",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Labeled(
 // DEFAULT-NEXT:                                                   "failed",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           else_branch: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "result",
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   5,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       17,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Goto(
-// DEFAULT-NEXT:                                           "done",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "failed",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "result",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Integer(
-// DEFAULT-NEXT:                                                           5,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "done",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "result",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               Labeled(
+// DEFAULT-NEXT:                                                   "done",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "result",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(

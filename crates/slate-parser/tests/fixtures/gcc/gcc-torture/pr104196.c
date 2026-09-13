@@ -53,18 +53,22 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "a",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           6,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "a",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -102,53 +106,57 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Ternary {
-// DEFAULT-NEXT:                                               condition: Binary {
-// DEFAULT-NEXT:                                                   op: And,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Less,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "a",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Less,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Sub,
-// DEFAULT-NEXT:                                                           left: Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   2147483647,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "b",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Ternary {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: And,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Less,
+// DEFAULT-NEXT:                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                   "a",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Less,
+// DEFAULT-NEXT:                                                               left: Integer(
+// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                   left: Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Integer(
+// DEFAULT-NEXT:                                                                           2147483647,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       then_value: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       else_value: Identifier(
+// DEFAULT-NEXT:                                                           "a",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               then_value: Integer(
-// DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               else_value: Identifier(
-// DEFAULT-NEXT:                                                   "a",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {

@@ -322,53 +322,57 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "l",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: BitOr,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "foo",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   4276993704,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                           left: Cast {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: LongLong,
-// DEFAULT-NEXT:                                                       signed: false,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                               value: Call {
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "l",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: BitOr,
+// DEFAULT-NEXT:                                               left: Call {
 // DEFAULT-NEXT:                                                   callee: Identifier(
 // DEFAULT-NEXT:                                                       "foo",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   arguments: [
 // DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           3735928559,
+// DEFAULT-NEXT:                                                           4276993704,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Binary {
+// DEFAULT-NEXT:                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                   left: Cast {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Call {
+// DEFAULT-NEXT:                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                               "foo",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           arguments: [
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3735928559,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       32,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {

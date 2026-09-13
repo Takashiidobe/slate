@@ -104,33 +104,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f1",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       1.1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       2.2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f1",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               1.1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               2.2,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -153,33 +157,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f2",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       3.3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       4.4,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f2",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               3.3,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               4.4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -202,33 +210,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f3",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       5.5,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       6.6,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f3",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               5.5,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               6.6,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -251,33 +263,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f4",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       7.7,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       8.8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f4",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               7.7,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               8.8,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -300,33 +316,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f5",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       9.9,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       10.1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f5",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               9.9,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Single(
+// DEFAULT-NEXT:                                               10.1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -349,33 +369,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d1",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       1.1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       2.2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d1",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               1.1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               2.2,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -398,33 +422,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d2",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       3.3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       4.4,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d2",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               3.3,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               4.4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -447,33 +475,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d3",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       5.5,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       6.6,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d3",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               5.5,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               6.6,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -496,33 +528,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d4",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       7.7,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       8.8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d4",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               7.7,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               8.8,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -545,33 +581,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d5",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       9.9,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       10.1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d5",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               9.9,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               10.1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -594,33 +634,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ld1",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x3fff8ccccccccccccccd,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x40008ccccccccccccccd,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ld1",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x3fff8ccccccccccccccd,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x40008ccccccccccccccd,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -643,33 +687,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ld2",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4000d333333333333333,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x40018ccccccccccccccd,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ld2",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4000d333333333333333,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x40018ccccccccccccccd,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -692,33 +740,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ld3",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4001b000000000000000,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4001d333333333333333,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ld3",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4001b000000000000000,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4001d333333333333333,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -741,33 +793,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ld4",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4001f666666666666666,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x40028ccccccccccccccd,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ld4",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4001f666666666666666,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x40028ccccccccccccccd,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -790,33 +846,37 @@ int main(void) {
 // DEFAULT-NEXT:                   is_volatile: true,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ld5",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x40029e66666666666666,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4002a19999999999999a,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   imaginary: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ld5",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x40029e66666666666666,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4002a19999999999999a,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           imaginary: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -833,11 +893,15 @@ int main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -854,21 +918,25 @@ int main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "exit",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

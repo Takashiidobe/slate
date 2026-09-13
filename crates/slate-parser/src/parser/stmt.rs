@@ -387,11 +387,8 @@ impl Parser {
             let mut fragment = Fragment::new(&parser, code, tokens, position);
             let stmt = parser.parse_one_stmt(&mut fragment)?;
             position = fragment.pos;
-            if let Stmt::Decl(declaration) = &stmt
-                && declaration.specifiers.storage == StorageClass::Typedef
-                && let Some(name) = declaration.declarator.name()
-            {
-                parser.typedef_names.insert(name.to_string());
+            if let Stmt::Decl(declaration) = &stmt {
+                parser.record_declaration_typedefs(declaration);
             }
             stmts.push(span_tokens(stmt, &tokens[start..position]));
         }
@@ -556,49 +553,6 @@ impl Parser {
         }
     }
 
-    pub(super) fn declaration_prefix_end(&self, tokens: &[Span<Token>]) -> usize {
-        let fallback = tokens
-            .values()
-            .position(|token| matches!(token, Token::Ident(_)))
-            .unwrap_or(0);
-        let (_, position) = match self.parse_attribute_groups(tokens, 0) {
-            Ok(result) => result,
-            Err(_) => return fallback,
-        };
-        let mut parser = DeclaratorParser::with_biggest_alignment(
-            tokens,
-            position,
-            &self.typedef_names,
-            self.biggest_alignment,
-        );
-        loop {
-            if parser.take_qualifier().is_some() {
-                continue;
-            }
-            match parser.peek() {
-                Some(Token::Keyword(
-                    Keyword::Inline
-                    | Keyword::Noreturn
-                    | Keyword::Constexpr
-                    | Keyword::ThreadLocal
-                    | Keyword::Typedef
-                    | Keyword::Extern
-                    | Keyword::Static
-                    | Keyword::Auto
-                    | Keyword::Register,
-                )) => {
-                    parser.pos += 1;
-                }
-                _ => break,
-            }
-        }
-        if parser.parse_base_type().is_err() {
-            return fallback;
-        }
-        while parser.take_qualifier().is_some() {}
-        parser.position()
-    }
-
     pub(super) fn parse_one_stmt(&self, fragment: &mut Fragment) -> Result<Stmt, ParseError> {
         let code = fragment.code;
         let tokens = fragment.tokens;
@@ -704,39 +658,9 @@ impl Parser {
             let end = top_level_semi(&tokens[fragment.pos..])
                 .map(|position| fragment.pos + position)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-            let declaration_tokens = &tokens[fragment.pos..=end];
-            let parts = if declaration_tokens
-                .last()
-                .is_some_and(|token| token.value == Token::Semi)
-            {
-                &declaration_tokens[..declaration_tokens.len() - 1]
-            } else {
-                declaration_tokens
-            };
-            let parts = split_top_level(parts, &Token::Comma);
+            let declaration = self.parse_declaration_tokens(code, &tokens[fragment.pos..=end])?;
             fragment.pos = end + 1;
-            if parts.len() == 1 {
-                return Ok(Stmt::Decl(
-                    self.parse_declaration_tokens(code, declaration_tokens)?,
-                ));
-            }
-            let prefix = parts[0][..self.declaration_prefix_end(&parts[0])].to_vec();
-            let declarations = parts
-                .into_iter()
-                .filter(|part| !part.is_empty())
-                .enumerate()
-                .map(|(index, mut part)| {
-                    if index != 0 {
-                        let mut with_prefix = prefix.clone();
-                        with_prefix.append(&mut part);
-                        part = with_prefix;
-                    }
-                    part.push(synthetic(Token::Semi));
-                    self.parse_declaration_tokens(code, &part)
-                        .map(|declaration| span_tokens(Stmt::Decl(declaration), &part))
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            return Ok(Stmt::Block(declarations));
+            return Ok(Stmt::Decl(declaration));
         }
 
         match tokens.value_at(fragment.pos) {

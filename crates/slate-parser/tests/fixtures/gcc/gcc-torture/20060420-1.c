@@ -75,11 +75,15 @@ int main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -90,20 +94,38 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Typedef {
-// DEFAULT-NEXT:       name: "v4flt",
-// DEFAULT-NEXT:       ty: Vector(
-// DEFAULT-NEXT:           VectorType {
-// DEFAULT-NEXT:               element: Floating(
-// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Vector(
+// DEFAULT-NEXT:                   VectorType {
+// DEFAULT-NEXT:                       element: Floating(
+// DEFAULT-NEXT:                           Float,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Bytes(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               16,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Bytes(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       16,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "v4flt",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       VectorSize(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               16,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -112,13 +134,6 @@ int main(void) {
 // DEFAULT-NEXT:           line: 2,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       attributes: [
-// DEFAULT-NEXT:           VectorSize(
-// DEFAULT-NEXT:               Integer(
-// DEFAULT-NEXT:                   16,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
@@ -182,39 +197,29 @@ int main(void) {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "j",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -226,30 +231,34 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "z",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Div,
-// DEFAULT-NEXT:                                       left: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "v4flt",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "z",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Div,
+// DEFAULT-NEXT:                                               left: SizeOfType {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "v4flt",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: SizeOfType {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Float,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -262,27 +271,31 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "m",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Sub,
-// DEFAULT-NEXT:                                       left: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "v4flt",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "m",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfType {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "v4flt",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {
@@ -358,28 +371,32 @@ int main(void) {
 // DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "src",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "j",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "src",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "j",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -526,52 +543,56 @@ int main(void) {
 // DEFAULT-NEXT:                                       "v4flt",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t0",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Deref(
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "v4flt",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "src",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t0",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Deref(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "v4flt",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "j",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "src",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "j",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "z",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "z",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -581,52 +602,56 @@ int main(void) {
 // DEFAULT-NEXT:                                       "v4flt",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Deref(
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "v4flt",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "src",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Deref(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "v4flt",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "j",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "src",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "j",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "z",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "z",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -636,52 +661,56 @@ int main(void) {
 // DEFAULT-NEXT:                                       "v4flt",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Deref(
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "v4flt",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "src",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Deref(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "v4flt",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "j",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "src",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "j",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       2,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "z",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               2,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "z",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -691,52 +720,56 @@ int main(void) {
 // DEFAULT-NEXT:                                       "v4flt",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Deref(
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "v4flt",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "src",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t3",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Deref(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "v4flt",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "j",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "src",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "j",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       3,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "z",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               3,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "z",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1170,28 +1203,32 @@ int main(void) {
 // DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "src",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "j",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "src",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "j",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -1299,16 +1336,20 @@ int main(void) {
 // DEFAULT-NEXT:                   Float,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "buffer",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       64,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "buffer",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               64,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -1339,20 +1380,24 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Floating(
-// DEFAULT-NEXT:                                       Float,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Name(
@@ -1360,14 +1405,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Floating(
-// DEFAULT-NEXT:                                       Float,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Pointer {
 // DEFAULT-NEXT:                                       qualifiers: Qualifiers,
@@ -1382,8 +1420,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -1394,12 +1432,16 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "cptr",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "cptr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -1746,31 +1788,59 @@ int main(void) {
 // DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Add,
-// DEFAULT-NEXT:                                                   left: Binary {
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "e",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Floating(
-// DEFAULT-NEXT:                                                               Float,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Add,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Cast {
+// DEFAULT-NEXT:                                                                   ty: Floating(
+// DEFAULT-NEXT:                                                                       Float,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       11,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Cast {
+// DEFAULT-NEXT:                                                                       ty: Floating(
+// DEFAULT-NEXT:                                                                           Float,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                           "i",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   Float,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                   "i",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: Binary {
 // DEFAULT-NEXT:                                                           op: Mul,
 // DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               11,
+// DEFAULT-NEXT:                                                               12,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           right: Cast {
 // DEFAULT-NEXT:                                                               ty: Floating(
@@ -1783,35 +1853,11 @@ int main(void) {
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Identifier(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       12,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Identifier(
-// DEFAULT-NEXT:                                                           "i",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {

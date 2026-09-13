@@ -23,9 +23,13 @@ int f(int x) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Register,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "unlabeled_global",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "unlabeled_global",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -47,23 +51,27 @@ int f(int x) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Register,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "bad_global",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Register(
-// DEFAULT-NEXT:                   X86(
-// DEFAULT-NEXT:                       X86Register {
-// DEFAULT-NEXT:                           spelling: "ebx",
-// DEFAULT-NEXT:                           number: 3,
-// DEFAULT-NEXT:                           canonical: "bx",
-// DEFAULT-NEXT:                           width: Some(
-// DEFAULT-NEXT:                               Bits32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "bad_global",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Register(
+// DEFAULT-NEXT:                           X86(
+// DEFAULT-NEXT:                               X86Register {
+// DEFAULT-NEXT:                                   spelling: "ebx",
+// DEFAULT-NEXT:                                   number: 3,
+// DEFAULT-NEXT:                                   canonical: "bx",
+// DEFAULT-NEXT:                                   width: Some(
+// DEFAULT-NEXT:                                       Bits32,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -110,16 +118,20 @@ int f(int x) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "unknown",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               Other(
-// DEFAULT-NEXT:                                   "notareg",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "unknown",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       Other(
+// DEFAULT-NEXT:                                           "notareg",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(

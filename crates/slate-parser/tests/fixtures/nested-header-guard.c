@@ -44,18 +44,22 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "nested",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "nested",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -76,18 +80,22 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "feature",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "feature",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -108,18 +116,22 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "triple",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "triple",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -142,18 +154,22 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   },
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
-// FEATURE-NEXT:           declarator: Name(
-// FEATURE-NEXT:               "nested",
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           initializer: Some(
-// FEATURE-NEXT:               Expr(
-// FEATURE-NEXT:                   Const(
-// FEATURE-NEXT:                       Integer(
-// FEATURE-NEXT:                           1,
+// FEATURE-NEXT:           declarators: [
+// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:                   declarator: Name(
+// FEATURE-NEXT:                       "nested",
+// FEATURE-NEXT:                   ),
+// FEATURE-NEXT:                   initializer: Some(
+// FEATURE-NEXT:                       Expr(
+// FEATURE-NEXT:                           Const(
+// FEATURE-NEXT:                               Integer(
+// FEATURE-NEXT:                                   1,
+// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
-// FEATURE-NEXT:               ),
-// FEATURE-NEXT:           ),
+// FEATURE-NEXT:               },
+// FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:       provenance: Provenance {
 // FEATURE-NEXT:           file: FileId(
@@ -174,18 +190,22 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   },
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
-// FEATURE-NEXT:           declarator: Name(
-// FEATURE-NEXT:               "feature",
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           initializer: Some(
-// FEATURE-NEXT:               Expr(
-// FEATURE-NEXT:                   Const(
-// FEATURE-NEXT:                       Integer(
-// FEATURE-NEXT:                           1,
+// FEATURE-NEXT:           declarators: [
+// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:                   declarator: Name(
+// FEATURE-NEXT:                       "feature",
+// FEATURE-NEXT:                   ),
+// FEATURE-NEXT:                   initializer: Some(
+// FEATURE-NEXT:                       Expr(
+// FEATURE-NEXT:                           Const(
+// FEATURE-NEXT:                               Integer(
+// FEATURE-NEXT:                                   1,
+// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
-// FEATURE-NEXT:               ),
-// FEATURE-NEXT:           ),
+// FEATURE-NEXT:               },
+// FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:       provenance: Provenance {
 // FEATURE-NEXT:           file: FileId(
@@ -206,18 +226,22 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   },
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
-// FEATURE-NEXT:           declarator: Name(
-// FEATURE-NEXT:               "triple",
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           initializer: Some(
-// FEATURE-NEXT:               Expr(
-// FEATURE-NEXT:                   Const(
-// FEATURE-NEXT:                       Integer(
-// FEATURE-NEXT:                           3,
+// FEATURE-NEXT:           declarators: [
+// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:                   declarator: Name(
+// FEATURE-NEXT:                       "triple",
+// FEATURE-NEXT:                   ),
+// FEATURE-NEXT:                   initializer: Some(
+// FEATURE-NEXT:                       Expr(
+// FEATURE-NEXT:                           Const(
+// FEATURE-NEXT:                               Integer(
+// FEATURE-NEXT:                                   3,
+// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
-// FEATURE-NEXT:               ),
-// FEATURE-NEXT:           ),
+// FEATURE-NEXT:               },
+// FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:       provenance: Provenance {
 // FEATURE-NEXT:           file: FileId(

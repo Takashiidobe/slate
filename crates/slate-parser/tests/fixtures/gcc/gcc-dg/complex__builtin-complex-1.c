@@ -189,21 +189,25 @@ int main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "exit",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               parameters: [
-// DEFAULT-NEXT:                   Parameter {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: [
+// DEFAULT-NEXT:                           Parameter {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -220,11 +224,15 @@ int main(void) {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -271,38 +279,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysignf",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysignf",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   Float,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "a",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -312,38 +324,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysignf",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Float,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysignf",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   Float,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "b",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
@@ -523,38 +539,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       Double,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysign",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Double,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysign",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   Double,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "a",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -564,38 +584,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       Double,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysign",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           Double,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysign",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   Double,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "b",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
@@ -775,38 +799,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       LongDouble,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysignl",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysignl",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   LongDouble,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "a",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -816,38 +844,42 @@ int main(void) {
 // DEFAULT-NEXT:                                       LongDouble,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "s2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_copysignl",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Floating(
-// DEFAULT-NEXT:                                                           LongDouble,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "s2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_copysignl",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   1.0,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Floating(
+// DEFAULT-NEXT:                                                                   LongDouble,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           1.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "b",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
@@ -1301,22 +1333,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Single(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -1326,22 +1362,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Single(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -1353,28 +1393,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -1387,36 +1431,40 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Single(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Single(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -1491,22 +1539,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Single(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -1516,88 +1568,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Single(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -1608,11 +1586,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -1693,106 +1757,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
@@ -1800,6 +1772,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanf",
@@ -1810,11 +1804,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -1895,102 +1975,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
@@ -1998,17 +1990,121 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_inff",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -2081,106 +2177,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -2191,6 +2195,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
@@ -2198,11 +2224,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -2283,25 +2395,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Single(
+// DEFAULT-NEXT:                                                                           0.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -2311,25 +2427,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Single(
+// DEFAULT-NEXT:                                                                           0.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -2341,28 +2461,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -2375,42 +2499,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: Single(
-// DEFAULT-NEXT:                                                                           0.0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: Single(
-// DEFAULT-NEXT:                                                                           0.0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -2497,109 +2625,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -2610,6 +2643,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanf",
@@ -2620,11 +2675,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -2711,105 +2855,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -2820,17 +2873,124 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_inff",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -2909,106 +3069,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanf",
@@ -3019,6 +3087,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
@@ -3026,11 +3116,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3111,109 +3287,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanf",
@@ -3224,6 +3305,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -3234,11 +3337,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3325,25 +3517,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3353,25 +3549,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3383,28 +3583,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3417,42 +3621,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3539,25 +3747,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3567,21 +3779,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3593,28 +3809,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3627,38 +3847,42 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanf",
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3737,21 +3961,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3761,84 +3989,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
@@ -3846,11 +4004,93 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Single(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3923,21 +4163,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3947,87 +4191,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Single(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -4038,11 +4209,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -4121,21 +4377,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4145,87 +4405,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanf",
@@ -4236,11 +4423,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -4319,21 +4591,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4343,21 +4619,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Float,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inff",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inff",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4369,28 +4649,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4403,34 +4687,38 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inff",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inff",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -4526,22 +4814,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Double(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4551,22 +4843,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Double(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4578,28 +4874,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4612,36 +4912,40 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Double(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Double(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -4716,22 +5020,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: Double(
+// DEFAULT-NEXT:                                                                       0.0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -4741,88 +5049,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Double(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -4833,11 +5067,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -4918,106 +5238,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Double(
@@ -5025,6 +5253,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nan",
@@ -5035,11 +5285,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -5120,102 +5456,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Double(
@@ -5223,17 +5471,121 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_inf",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -5306,106 +5658,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -5416,6 +5676,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Double(
@@ -5423,11 +5705,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -5508,25 +5876,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           0.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -5536,25 +5908,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: Double(
+// DEFAULT-NEXT:                                                                           0.0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -5566,28 +5942,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -5600,42 +5980,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: Double(
-// DEFAULT-NEXT:                                                                           0.0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: Double(
-// DEFAULT-NEXT:                                                                           0.0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -5722,109 +6106,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -5835,6 +6124,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nan",
@@ -5845,11 +6156,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -5936,105 +6336,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -6045,17 +6354,124 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_inf",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -6134,106 +6550,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nan",
@@ -6244,6 +6568,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Double(
@@ -6251,11 +6597,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -6336,109 +6768,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nan",
@@ -6449,6 +6786,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -6459,11 +6818,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -6550,25 +6998,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nan",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6578,25 +7030,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nan",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6608,28 +7064,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6642,42 +7102,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nan",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nan",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -6764,25 +7228,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nan",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6792,21 +7260,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6818,28 +7290,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6852,38 +7328,42 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nan",
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -6962,21 +7442,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -6986,84 +7470,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Double(
@@ -7071,11 +7485,93 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: Double(
+// DEFAULT-NEXT:                                                                               0.0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -7148,21 +7644,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7172,87 +7672,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   0.0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -7263,11 +7690,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Double(
+// DEFAULT-NEXT:                                                                                   0.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -7346,21 +7858,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7370,87 +7886,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nan",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nan",
@@ -7461,11 +7904,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nan",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -7544,21 +8072,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7568,21 +8100,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_inf",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_inf",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7594,28 +8130,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7628,34 +8168,38 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_inf",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_inf",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -7751,22 +8295,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: LongDouble(
+// DEFAULT-NEXT:                                                                       0x0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7776,22 +8324,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: LongDouble(
+// DEFAULT-NEXT:                                                                       0x0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7803,28 +8355,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7837,36 +8393,40 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                                       0x0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                                       0x0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -7941,22 +8501,26 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Float(
+// DEFAULT-NEXT:                                                               FloatLiteral {
+// DEFAULT-NEXT:                                                                   value: LongDouble(
+// DEFAULT-NEXT:                                                                       0x0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -7966,88 +8530,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: LongDouble(
-// DEFAULT-NEXT:                                                                       0x0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -8058,11 +8548,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -8143,106 +8719,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: LongDouble(
@@ -8250,6 +8734,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanl",
@@ -8260,11 +8766,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -8345,102 +8937,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: LongDouble(
@@ -8448,17 +8952,121 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_infl",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -8531,106 +9139,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -8641,6 +9157,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: LongDouble(
@@ -8648,11 +9186,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -8733,25 +9357,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: LongDouble(
+// DEFAULT-NEXT:                                                                           0x0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -8761,25 +9389,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               value: Float(
+// DEFAULT-NEXT:                                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                                       value: LongDouble(
+// DEFAULT-NEXT:                                                                           0x0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -8791,28 +9423,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -8825,42 +9461,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                                           0x0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Unary {
-// DEFAULT-NEXT:                                                               op: Minus,
-// DEFAULT-NEXT:                                                               value: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: LongDouble(
-// DEFAULT-NEXT:                                                                           0x0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -8947,109 +9587,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -9060,6 +9605,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanl",
@@ -9070,11 +9637,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -9161,105 +9817,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -9270,17 +9835,124 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_infl",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -9359,106 +10031,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanl",
@@ -9469,6 +10049,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: LongDouble(
@@ -9476,11 +10078,97 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -9561,109 +10249,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanl",
@@ -9674,6 +10267,28 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               LongDouble,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -9684,11 +10299,100 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -9775,25 +10479,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -9803,25 +10511,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -9833,28 +10545,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -9867,42 +10583,46 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -9989,25 +10709,29 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_nanl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   StringLit(
+// DEFAULT-NEXT:                                                                       "",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10017,21 +10741,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10043,28 +10771,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10077,38 +10809,42 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_nanl",
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   StringLit(
-// DEFAULT-NEXT:                                                                       "",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -10187,21 +10923,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10211,84 +10951,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: LongDouble(
-// DEFAULT-NEXT:                                                               0x0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: LongDouble(
@@ -10296,11 +10966,93 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Float(
+// DEFAULT-NEXT:                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                           value: LongDouble(
+// DEFAULT-NEXT:                                                                               0x0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -10373,21 +11125,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10397,87 +11153,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Float(
-// DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: LongDouble(
-// DEFAULT-NEXT:                                                                   0x0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               value: Float(
@@ -10488,11 +11171,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: Minus,
+// DEFAULT-NEXT:                                                                       value: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: LongDouble(
+// DEFAULT-NEXT:                                                                                   0x0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -10571,21 +11339,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10595,87 +11367,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_nanl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           StringLit(
-// DEFAULT-NEXT:                                                               "",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Complex(
-// DEFAULT-NEXT:                                               Floating(
-// DEFAULT-NEXT:                                                   LongDouble,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Static,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
 // DEFAULT-NEXT:                                                           Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
 // DEFAULT-NEXT:                                                                   "__builtin_nanl",
@@ -10686,11 +11385,96 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Complex(
+// DEFAULT-NEXT:                                               Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           storage: Static,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_nanl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           StringLit(
+// DEFAULT-NEXT:                                                                               "",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -10769,21 +11553,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10793,21 +11581,25 @@ int main(void) {
 // DEFAULT-NEXT:                                               LongDouble,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_infl",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "b",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_infl",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10819,28 +11611,32 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "b",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "a",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "b",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -10853,34 +11649,38 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           storage: Static,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "cs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__builtin_complex",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__builtin_infl",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "cs",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "__builtin_infl",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(

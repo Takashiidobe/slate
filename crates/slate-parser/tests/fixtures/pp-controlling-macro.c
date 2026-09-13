@@ -12,14 +12,25 @@ trailing_t trailing;
 // SLATE-FILECHECK-DEFINES SKIP PARTIALLY_GUARDED_H
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Typedef {
-// DEFAULT-NEXT:       name: "guarded_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT: decl[0]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "guarded_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               4,
@@ -33,14 +44,25 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Typedef {
-// DEFAULT-NEXT:       name: "trailing_t",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "trailing_t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               5,
@@ -61,9 +83,13 @@ trailing_t trailing;
 // DEFAULT-NEXT:                   "guarded_t",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "value",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "value",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -81,9 +107,13 @@ trailing_t trailing;
 // DEFAULT-NEXT:                   "trailing_t",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "trailing",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "trailing",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -96,14 +126,25 @@ trailing_t trailing;
 // DEFAULT-NEXT:   }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Typedef {
-// A-NEXT:       name: "guarded_t",
-// A-NEXT:       ty: Integer(
-// A-NEXT:           Ranked {
-// A-NEXT:               rank: Int,
-// A-NEXT:               signed: true,
+// A: decl[0]: Declaration {
+// A-NEXT:       declaration: Declaration {
+// A-NEXT:           specifiers: DeclarationSpecifiers {
+// A-NEXT:               ty: Integer(
+// A-NEXT:                   Ranked {
+// A-NEXT:                       rank: Int,
+// A-NEXT:                       signed: true,
+// A-NEXT:                   },
+// A-NEXT:               ),
+// A-NEXT:               storage: Typedef,
 // A-NEXT:           },
-// A-NEXT:       ),
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Name(
+// A-NEXT:                       "guarded_t",
+// A-NEXT:                   ),
+// A-NEXT:               },
+// A-NEXT:           ],
+// A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
 // A-NEXT:               4,
@@ -117,14 +158,25 @@ trailing_t trailing;
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   }
-// A-NEXT: decl[1]: Typedef {
-// A-NEXT:       name: "trailing_t",
-// A-NEXT:       ty: Integer(
-// A-NEXT:           Ranked {
-// A-NEXT:               rank: Int,
-// A-NEXT:               signed: true,
+// A-NEXT: decl[1]: Declaration {
+// A-NEXT:       declaration: Declaration {
+// A-NEXT:           specifiers: DeclarationSpecifiers {
+// A-NEXT:               ty: Integer(
+// A-NEXT:                   Ranked {
+// A-NEXT:                       rank: Int,
+// A-NEXT:                       signed: true,
+// A-NEXT:                   },
+// A-NEXT:               ),
+// A-NEXT:               storage: Typedef,
 // A-NEXT:           },
-// A-NEXT:       ),
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Name(
+// A-NEXT:                       "trailing_t",
+// A-NEXT:                   ),
+// A-NEXT:               },
+// A-NEXT:           ],
+// A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
 // A-NEXT:               5,
@@ -145,9 +197,13 @@ trailing_t trailing;
 // A-NEXT:                   "guarded_t",
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Name(
-// A-NEXT:               "value",
-// A-NEXT:           ),
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Name(
+// A-NEXT:                       "value",
+// A-NEXT:                   ),
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -165,9 +221,13 @@ trailing_t trailing;
 // A-NEXT:                   "trailing_t",
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Name(
-// A-NEXT:               "trailing",
-// A-NEXT:           ),
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Name(
+// A-NEXT:                       "trailing",
+// A-NEXT:                   ),
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -180,14 +240,25 @@ trailing_t trailing;
 // A-NEXT:   }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN SKIP
-// SKIP: decl[0]: Typedef {
-// SKIP-NEXT:       name: "guarded_t",
-// SKIP-NEXT:       ty: Integer(
-// SKIP-NEXT:           Ranked {
-// SKIP-NEXT:               rank: Int,
-// SKIP-NEXT:               signed: true,
+// SKIP: decl[0]: Declaration {
+// SKIP-NEXT:       declaration: Declaration {
+// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
+// SKIP-NEXT:               ty: Integer(
+// SKIP-NEXT:                   Ranked {
+// SKIP-NEXT:                       rank: Int,
+// SKIP-NEXT:                       signed: true,
+// SKIP-NEXT:                   },
+// SKIP-NEXT:               ),
+// SKIP-NEXT:               storage: Typedef,
 // SKIP-NEXT:           },
-// SKIP-NEXT:       ),
+// SKIP-NEXT:           declarators: [
+// SKIP-NEXT:               InitDeclarator {
+// SKIP-NEXT:                   declarator: Name(
+// SKIP-NEXT:                       "guarded_t",
+// SKIP-NEXT:                   ),
+// SKIP-NEXT:               },
+// SKIP-NEXT:           ],
+// SKIP-NEXT:       },
 // SKIP-NEXT:       provenance: Provenance {
 // SKIP-NEXT:           file: FileId(
 // SKIP-NEXT:               4,
@@ -201,14 +272,25 @@ trailing_t trailing;
 // SKIP-NEXT:           ),
 // SKIP-NEXT:       },
 // SKIP-NEXT:   }
-// SKIP-NEXT: decl[1]: Typedef {
-// SKIP-NEXT:       name: "trailing_t",
-// SKIP-NEXT:       ty: Integer(
-// SKIP-NEXT:           Ranked {
-// SKIP-NEXT:               rank: Int,
-// SKIP-NEXT:               signed: true,
+// SKIP-NEXT: decl[1]: Declaration {
+// SKIP-NEXT:       declaration: Declaration {
+// SKIP-NEXT:           specifiers: DeclarationSpecifiers {
+// SKIP-NEXT:               ty: Integer(
+// SKIP-NEXT:                   Ranked {
+// SKIP-NEXT:                       rank: Int,
+// SKIP-NEXT:                       signed: true,
+// SKIP-NEXT:                   },
+// SKIP-NEXT:               ),
+// SKIP-NEXT:               storage: Typedef,
 // SKIP-NEXT:           },
-// SKIP-NEXT:       ),
+// SKIP-NEXT:           declarators: [
+// SKIP-NEXT:               InitDeclarator {
+// SKIP-NEXT:                   declarator: Name(
+// SKIP-NEXT:                       "trailing_t",
+// SKIP-NEXT:                   ),
+// SKIP-NEXT:               },
+// SKIP-NEXT:           ],
+// SKIP-NEXT:       },
 // SKIP-NEXT:       provenance: Provenance {
 // SKIP-NEXT:           file: FileId(
 // SKIP-NEXT:               5,
@@ -229,9 +311,13 @@ trailing_t trailing;
 // SKIP-NEXT:                   "guarded_t",
 // SKIP-NEXT:               ),
 // SKIP-NEXT:           },
-// SKIP-NEXT:           declarator: Name(
-// SKIP-NEXT:               "value",
-// SKIP-NEXT:           ),
+// SKIP-NEXT:           declarators: [
+// SKIP-NEXT:               InitDeclarator {
+// SKIP-NEXT:                   declarator: Name(
+// SKIP-NEXT:                       "value",
+// SKIP-NEXT:                   ),
+// SKIP-NEXT:               },
+// SKIP-NEXT:           ],
 // SKIP-NEXT:       },
 // SKIP-NEXT:       provenance: Provenance {
 // SKIP-NEXT:           file: FileId(
@@ -249,9 +335,13 @@ trailing_t trailing;
 // SKIP-NEXT:                   "trailing_t",
 // SKIP-NEXT:               ),
 // SKIP-NEXT:           },
-// SKIP-NEXT:           declarator: Name(
-// SKIP-NEXT:               "trailing",
-// SKIP-NEXT:           ),
+// SKIP-NEXT:           declarators: [
+// SKIP-NEXT:               InitDeclarator {
+// SKIP-NEXT:                   declarator: Name(
+// SKIP-NEXT:                       "trailing",
+// SKIP-NEXT:                   ),
+// SKIP-NEXT:               },
+// SKIP-NEXT:           ],
 // SKIP-NEXT:       },
 // SKIP-NEXT:       provenance: Provenance {
 // SKIP-NEXT:           file: FileId(

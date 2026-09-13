@@ -29,16 +29,20 @@ int x_missing[4];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "x_undefined",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       2,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "x_undefined",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -59,16 +63,20 @@ int x_missing[4];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "x_missing",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       4,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "x_missing",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -91,16 +99,20 @@ int x_missing[4];
 // A-NEXT:                   },
 // A-NEXT:               ),
 // A-NEXT:           },
-// A-NEXT:           declarator: Array {
-// A-NEXT:               inner: Name(
-// A-NEXT:                   "x_defined",
-// A-NEXT:               ),
-// A-NEXT:               size: Expression(
-// A-NEXT:                   IntLit(
-// A-NEXT:                       1,
-// A-NEXT:                   ),
-// A-NEXT:               ),
-// A-NEXT:           },
+// A-NEXT:           declarators: [
+// A-NEXT:               InitDeclarator {
+// A-NEXT:                   declarator: Array {
+// A-NEXT:                       inner: Name(
+// A-NEXT:                           "x_defined",
+// A-NEXT:                       ),
+// A-NEXT:                       size: Expression(
+// A-NEXT:                           IntLit(
+// A-NEXT:                               1,
+// A-NEXT:                           ),
+// A-NEXT:                       ),
+// A-NEXT:                   },
+// A-NEXT:               },
+// A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:       provenance: Provenance {
 // A-NEXT:           file: FileId(
@@ -123,16 +135,20 @@ int x_missing[4];
 // FLAG-NEXT:                   },
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
-// FLAG-NEXT:           declarator: Array {
-// FLAG-NEXT:               inner: Name(
-// FLAG-NEXT:                   "x_undefined",
-// FLAG-NEXT:               ),
-// FLAG-NEXT:               size: Expression(
-// FLAG-NEXT:                   IntLit(
-// FLAG-NEXT:                       2,
-// FLAG-NEXT:                   ),
-// FLAG-NEXT:               ),
-// FLAG-NEXT:           },
+// FLAG-NEXT:           declarators: [
+// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:                   declarator: Array {
+// FLAG-NEXT:                       inner: Name(
+// FLAG-NEXT:                           "x_undefined",
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                       size: Expression(
+// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                               2,
+// FLAG-NEXT:                           ),
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                   },
+// FLAG-NEXT:               },
+// FLAG-NEXT:           ],
 // FLAG-NEXT:       },
 // FLAG-NEXT:       provenance: Provenance {
 // FLAG-NEXT:           file: FileId(
@@ -153,16 +169,20 @@ int x_missing[4];
 // FLAG-NEXT:                   },
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
-// FLAG-NEXT:           declarator: Array {
-// FLAG-NEXT:               inner: Name(
-// FLAG-NEXT:                   "flag_without_x",
-// FLAG-NEXT:               ),
-// FLAG-NEXT:               size: Expression(
-// FLAG-NEXT:                   IntLit(
-// FLAG-NEXT:                       3,
-// FLAG-NEXT:                   ),
-// FLAG-NEXT:               ),
-// FLAG-NEXT:           },
+// FLAG-NEXT:           declarators: [
+// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:                   declarator: Array {
+// FLAG-NEXT:                       inner: Name(
+// FLAG-NEXT:                           "flag_without_x",
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                       size: Expression(
+// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                               3,
+// FLAG-NEXT:                           ),
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                   },
+// FLAG-NEXT:               },
+// FLAG-NEXT:           ],
 // FLAG-NEXT:       },
 // FLAG-NEXT:       provenance: Provenance {
 // FLAG-NEXT:           file: FileId(
@@ -183,16 +203,20 @@ int x_missing[4];
 // FLAG-NEXT:                   },
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
-// FLAG-NEXT:           declarator: Array {
-// FLAG-NEXT:               inner: Name(
-// FLAG-NEXT:                   "x_missing",
-// FLAG-NEXT:               ),
-// FLAG-NEXT:               size: Expression(
-// FLAG-NEXT:                   IntLit(
-// FLAG-NEXT:                       4,
-// FLAG-NEXT:                   ),
-// FLAG-NEXT:               ),
-// FLAG-NEXT:           },
+// FLAG-NEXT:           declarators: [
+// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:                   declarator: Array {
+// FLAG-NEXT:                       inner: Name(
+// FLAG-NEXT:                           "x_missing",
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                       size: Expression(
+// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                               4,
+// FLAG-NEXT:                           ),
+// FLAG-NEXT:                       ),
+// FLAG-NEXT:                   },
+// FLAG-NEXT:               },
+// FLAG-NEXT:           ],
 // FLAG-NEXT:       },
 // FLAG-NEXT:       provenance: Provenance {
 // FLAG-NEXT:           file: FileId(
@@ -215,16 +239,20 @@ int x_missing[4];
 // X-NEXT:                   },
 // X-NEXT:               ),
 // X-NEXT:           },
-// X-NEXT:           declarator: Array {
-// X-NEXT:               inner: Name(
-// X-NEXT:                   "x_defined",
-// X-NEXT:               ),
-// X-NEXT:               size: Expression(
-// X-NEXT:                   IntLit(
-// X-NEXT:                       1,
-// X-NEXT:                   ),
-// X-NEXT:               ),
-// X-NEXT:           },
+// X-NEXT:           declarators: [
+// X-NEXT:               InitDeclarator {
+// X-NEXT:                   declarator: Array {
+// X-NEXT:                       inner: Name(
+// X-NEXT:                           "x_defined",
+// X-NEXT:                       ),
+// X-NEXT:                       size: Expression(
+// X-NEXT:                           IntLit(
+// X-NEXT:                               1,
+// X-NEXT:                           ),
+// X-NEXT:                       ),
+// X-NEXT:                   },
+// X-NEXT:               },
+// X-NEXT:           ],
 // X-NEXT:       },
 // X-NEXT:       provenance: Provenance {
 // X-NEXT:           file: FileId(

@@ -30,18 +30,22 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "ordinary",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "ordinary",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   7,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -62,14 +66,18 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "recursive",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "SELF",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "recursive",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "SELF",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -93,14 +101,18 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "selected",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "selected",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "2",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -126,18 +138,22 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                   },
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
-// SELECT-NEXT:           declarator: Name(
-// SELECT-NEXT:               "ordinary",
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           initializer: Some(
-// SELECT-NEXT:               Expr(
-// SELECT-NEXT:                   Const(
-// SELECT-NEXT:                       Integer(
-// SELECT-NEXT:                           7,
+// SELECT-NEXT:           declarators: [
+// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:                   declarator: Name(
+// SELECT-NEXT:                       "ordinary",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   initializer: Some(
+// SELECT-NEXT:                       Expr(
+// SELECT-NEXT:                           Const(
+// SELECT-NEXT:                               Integer(
+// SELECT-NEXT:                                   7,
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                           ),
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
-// SELECT-NEXT:               ),
-// SELECT-NEXT:           ),
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
@@ -158,14 +174,18 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                   },
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
-// SELECT-NEXT:           declarator: Name(
-// SELECT-NEXT:               "recursive",
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           attributes: [
-// SELECT-NEXT:               Unknown {
-// SELECT-NEXT:                   name: "slate_literal",
-// SELECT-NEXT:                   arguments: [
-// SELECT-NEXT:                       "SELF",
+// SELECT-NEXT:           declarators: [
+// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:                   declarator: Name(
+// SELECT-NEXT:                       "recursive",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   attributes: [
+// SELECT-NEXT:                       Unknown {
+// SELECT-NEXT:                           name: "slate_literal",
+// SELECT-NEXT:                           arguments: [
+// SELECT-NEXT:                               "SELF",
+// SELECT-NEXT:                           ],
+// SELECT-NEXT:                       },
 // SELECT-NEXT:                   ],
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
@@ -189,14 +209,18 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                   },
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
-// SELECT-NEXT:           declarator: Name(
-// SELECT-NEXT:               "selected",
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           attributes: [
-// SELECT-NEXT:               Unknown {
-// SELECT-NEXT:                   name: "slate_literal",
-// SELECT-NEXT:                   arguments: [
-// SELECT-NEXT:                       "1",
+// SELECT-NEXT:           declarators: [
+// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:                   declarator: Name(
+// SELECT-NEXT:                       "selected",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   attributes: [
+// SELECT-NEXT:                       Unknown {
+// SELECT-NEXT:                           name: "slate_literal",
+// SELECT-NEXT:                           arguments: [
+// SELECT-NEXT:                               "1",
+// SELECT-NEXT:                           ],
+// SELECT-NEXT:                       },
 // SELECT-NEXT:                   ],
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],

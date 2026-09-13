@@ -33,9 +33,14 @@ impl TranslationUnit {
             .decls
             .iter()
             .filter_map(|decl| match &decl.value {
-                Decl::Typedef { name, .. } => Some(name.clone()),
+                Decl::Declaration { declaration, .. }
+                    if declaration.specifiers.storage == StorageClass::Typedef =>
+                {
+                    Some(declaration.names().map(str::to_string))
+                }
                 _ => None,
             })
+            .flatten()
             .collect::<HashSet<_>>();
         let mut tags = HashSet::new();
         for decl in &self.decls {
@@ -46,7 +51,7 @@ impl TranslationUnit {
                     }
                     for field_item in &record.fields {
                         if let FieldItem::Field(field) = &field_item.value {
-                            collect_tag_names(&field.declaration.specifiers.ty, &mut tags);
+                            collect_tag_names(&field.specifiers.ty, &mut tags);
                         }
                     }
                 }
@@ -64,7 +69,6 @@ impl TranslationUnit {
                 Decl::Declaration { declaration, .. } => {
                     collect_tag_names(&declaration.specifiers.ty, &mut tags);
                 }
-                Decl::Typedef { ty, .. } => collect_tag_names(ty, &mut tags),
                 Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             }
         }
@@ -96,27 +100,9 @@ impl TranslationUnit {
                     declaration,
                     provenance,
                 } => {
-                    if matches!(declaration.specifiers.ty, CType::Void)
-                        && declaration.specifiers.storage != StorageClass::Extern
-                        && declaration.declarator.name().is_some()
-                        && !declarator_indirects_void(&declaration.declarator)
-                    {
-                        errors.push(error(
-                            *provenance,
-                            decl.expansion,
-                            "object cannot have type void",
-                        ));
-                    }
+                    let specifiers = &declaration.specifiers;
                     check_type(
-                        &declaration.specifiers.ty,
-                        &typedefs,
-                        &tags,
-                        *provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    check_declarator(
-                        &declaration.declarator,
+                        &specifiers.ty,
                         &typedefs,
                         &tags,
                         *provenance,
@@ -124,36 +110,52 @@ impl TranslationUnit {
                         &mut errors,
                     );
                     check_attributes(
-                        &declaration.attributes,
+                        &specifiers.attributes,
                         *provenance,
                         decl.expansion,
                         &mut errors,
                     );
-                    if flavor == CompilerFlavor::Clang {
-                        check_register_variable(
-                            declaration,
-                            true,
+                    for init_declarator in &declaration.declarators {
+                        let declarator = &init_declarator.declarator;
+                        if matches!(specifiers.ty, CType::Void)
+                            && !matches!(
+                                specifiers.storage,
+                                StorageClass::Extern | StorageClass::Typedef
+                            )
+                            && declarator.name().is_some()
+                            && !declarator_indirects_void(declarator)
+                        {
+                            errors.push(error(
+                                *provenance,
+                                decl.expansion,
+                                "object cannot have type void",
+                            ));
+                        }
+                        check_declarator(
+                            declarator,
+                            &typedefs,
+                            &tags,
                             *provenance,
                             decl.expansion,
                             &mut errors,
                         );
+                        check_attributes(
+                            &init_declarator.attributes,
+                            *provenance,
+                            decl.expansion,
+                            &mut errors,
+                        );
+                        if flavor == CompilerFlavor::Clang {
+                            check_register_variable(
+                                specifiers,
+                                init_declarator,
+                                true,
+                                *provenance,
+                                decl.expansion,
+                                &mut errors,
+                            );
+                        }
                     }
-                }
-                Decl::Typedef {
-                    ty,
-                    provenance,
-                    attributes,
-                    ..
-                } => {
-                    check_type(
-                        ty,
-                        &typedefs,
-                        &tags,
-                        *provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    check_attributes(attributes, *provenance, decl.expansion, &mut errors);
                 }
                 Decl::Record(record) => {
                     check_attributes(
@@ -167,15 +169,21 @@ impl TranslationUnit {
                             continue;
                         };
                         check_type(
-                            &field.declaration.specifiers.ty,
+                            &field.specifiers.ty,
                             &typedefs,
                             &tags,
                             field.provenance,
                             field_item.expansion,
                             &mut errors,
                         );
+                        let attributes = field.specifiers.attributes.iter().chain(
+                            field
+                                .declarators
+                                .iter()
+                                .flat_map(|declarator| &declarator.attributes),
+                        );
                         check_attributes(
-                            &field.declaration.attributes,
+                            &attributes.cloned().collect::<Vec<_>>(),
                             field.provenance,
                             field_item.expansion,
                             &mut errors,
@@ -358,7 +366,7 @@ fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
             match body {
                 Some(TagBody::Fields(fields)) => {
                     for field in fields {
-                        collect_tag_names(&field.declaration.specifiers.ty, tags);
+                        collect_tag_names(&field.specifiers.ty, tags);
                     }
                 }
                 Some(TagBody::Enumerators(_)) | None => {}
@@ -488,7 +496,11 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             walk_expr(end, visit);
         }
         Stmt::Decl(declaration) => {
-            if let Some(initializer) = &declaration.initializer {
+            for initializer in declaration
+                .declarators
+                .iter()
+                .filter_map(|declarator| declarator.initializer.as_ref())
+            {
                 walk_initializer(initializer, visit);
             }
         }
@@ -696,13 +708,18 @@ fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
                 stmt.expansion,
                 errors,
             ),
-            Stmt::Decl(declaration) => check_register_variable(
-                declaration,
-                false,
-                function.provenance,
-                stmt.expansion,
-                errors,
-            ),
+            Stmt::Decl(declaration) => {
+                for declarator in &declaration.declarators {
+                    check_register_variable(
+                        &declaration.specifiers,
+                        declarator,
+                        false,
+                        function.provenance,
+                        stmt.expansion,
+                        errors,
+                    );
+                }
+            }
             _ => {}
         },
         BodyNode::EnterJumpScope => {
@@ -842,16 +859,17 @@ fn const_output_lvalue(expr: &ConstExpr) -> OutputLvalue {
 }
 
 fn check_register_variable(
-    declaration: &Declaration,
+    specifiers: &DeclarationSpecifiers,
+    declarator: &InitDeclarator,
     file_scope: bool,
     provenance: Provenance,
     loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
-    if !matches!(declaration.specifiers.storage, StorageClass::Register) {
+    if !matches!(specifiers.storage, StorageClass::Register) {
         return;
     }
-    let Some(label) = &declaration.asm_label else {
+    let Some(label) = &declarator.asm_label else {
         if file_scope {
             errors.push(error(
                 provenance,
@@ -891,7 +909,7 @@ fn check_register_variable(
         }
         Register::X86(_) => {}
     }
-    if file_scope && !is_register_variable_type(declaration) {
+    if file_scope && !is_register_variable_type(specifiers, &declarator.declarator) {
         errors.push(error(
             provenance,
             loc,
@@ -900,17 +918,15 @@ fn check_register_variable(
     }
 }
 
-fn is_register_variable_type(declaration: &Declaration) -> bool {
-    let mut declarator = &declaration.declarator;
+fn is_register_variable_type(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> bool {
+    let mut declarator = declarator;
     while let Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } = declarator {
         declarator = inner;
     }
     match declarator {
         Declarator::Pointer { .. } => true,
         Declarator::Array { .. } | Declarator::Function { .. } => false,
-        Declarator::Name(_) | Declarator::Abstract => {
-            is_register_scalar_type(&declaration.specifiers.ty)
-        }
+        Declarator::Name(_) | Declarator::Abstract => is_register_scalar_type(&specifiers.ty),
         Declarator::Grouped(_) | Declarator::Attributed { .. } => unreachable!(),
     }
 }

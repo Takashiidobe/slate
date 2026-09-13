@@ -315,21 +315,25 @@ int main() {
 // DEFAULT-NEXT:                               is_const: true,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "cp",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "cp",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -342,18 +346,22 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "size",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "size",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -365,18 +373,22 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "sign",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "sign",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Switch {
@@ -657,19 +669,21 @@ int main() {
 // DEFAULT-NEXT:                                                   Fields(
 // DEFAULT-NEXT:                                                       [
 // DEFAULT-NEXT:                                                           FieldDecl {
-// DEFAULT-NEXT:                                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                           Ranked {
-// DEFAULT-NEXT:                                                                               rank: Long,
-// DEFAULT-NEXT:                                                                               signed: true,
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "l",
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   FieldDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "l",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                                   file: FileId(
 // DEFAULT-NEXT:                                                                       0,
@@ -680,16 +694,18 @@ int main() {
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           FieldDecl {
-// DEFAULT-NEXT:                                                               declaration: Declaration {
-// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                       ty: Floating(
-// DEFAULT-NEXT:                                                                           Double,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Name(
-// DEFAULT-NEXT:                                                                       "d",
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Floating(
+// DEFAULT-NEXT:                                                                       Double,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   FieldDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "d",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                               provenance: Provenance {
 // DEFAULT-NEXT:                                                                   file: FileId(
 // DEFAULT-NEXT:                                                                       0,
@@ -704,9 +720,13 @@ int main() {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "u",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "u",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -719,9 +739,13 @@ int main() {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "dsgn",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Name(
+// DEFAULT-NEXT:                                                   "dsgn",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(

@@ -3,7 +3,7 @@ use serde::Deserialize;
 use slate_parser::ast::*;
 use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
-use slate_parser::parser::Parser;
+use slate_parser::parser::{Parser, apply_abstract_declarator};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -434,22 +434,14 @@ fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> Clan
 fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
     tu.decls
         .iter()
-        .filter(|decl| match &decl.value {
-            Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => false,
-            Decl::Declaration { declaration, .. } => declaration.attributes.is_empty(),
-            Decl::Typedef { attributes, .. } => attributes.is_empty(),
-            _ => true,
-        })
-        .map(|decl| summarize_evaluated_decl(&decl.value))
+        .flat_map(|decl| summarize_evaluated_decl(&decl.value))
         .collect()
 }
 
-fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
+fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
     match decl {
-        Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {
-            unreachable!("non-summary declarations are filtered before summarizing")
-        }
-        Decl::Function(function) => DeclSummary::Function {
+        Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => Vec::new(),
+        Decl::Function(function) => vec![DeclSummary::Function {
             name: function.name.clone(),
             returns: function
                 .body
@@ -499,39 +491,59 @@ fn summarize_evaluated_decl(decl: &Decl) -> DeclSummary {
                 })
                 .collect(),
             signature: None,
-        },
-        Decl::Typedef { name, ty, .. } => DeclSummary::Typedef {
-            name: name.clone(),
-            type_name: normalize_type(&type_spelling(ty)),
-        },
-        Decl::Declaration { declaration, .. } => {
-            let name = declarator_identifier(&declaration.declarator);
-            if matches!(declaration.declarator, Declarator::Function { .. }) {
-                DeclSummary::Function {
-                    name,
-                    returns: vec![],
-                    signature: Some(function_facts(
-                        &declaration.specifiers.ty,
-                        &declaration.declarator,
-                    )),
-                }
-            } else {
-                DeclSummary::Object {
-                    name,
-                    type_facts: object_facts(&declaration.specifiers, &declaration.declarator),
-                }
-            }
+        }],
+        Decl::Declaration { declaration, .. } if !declaration.specifiers.attributes.is_empty() => {
+            Vec::new()
         }
-        Decl::Record(record) => DeclSummary::Record {
+        Decl::Declaration { declaration, .. } => declaration
+            .declarators
+            .iter()
+            .filter(|declarator| declarator.attributes.is_empty())
+            .map(|declarator| summarize_declarator(&declaration.specifiers, &declarator.declarator))
+            .collect(),
+        Decl::Record(record) => vec![DeclSummary::Record {
             kind: tag_name(record.kind).into(),
             name: record.name.clone().unwrap_or_else(|| "<anonymous>".into()),
-        },
-        Decl::Enum(enumeration) => DeclSummary::Enum {
+        }],
+        Decl::Enum(enumeration) => vec![DeclSummary::Enum {
             name: enumeration
                 .name
                 .clone()
                 .unwrap_or_else(|| "<anonymous>".into()),
-        },
+        }],
+    }
+}
+
+fn summarize_declarator(
+    specifiers: &DeclarationSpecifiers,
+    declarator: &Declarator,
+) -> DeclSummary {
+    let name = declarator_identifier(declarator);
+    if specifiers.storage == StorageClass::Typedef {
+        let base = if specifiers.qualifiers == Qualifiers::default() {
+            specifiers.ty.clone()
+        } else {
+            CType::Qualified {
+                qualifiers: specifiers.qualifiers,
+                ty: Box::new(specifiers.ty.clone()),
+            }
+        };
+        let ty = apply_abstract_declarator(base, declarator.clone());
+        DeclSummary::Typedef {
+            name,
+            type_name: normalize_type(&type_spelling(&ty)),
+        }
+    } else if matches!(declarator, Declarator::Function { .. }) {
+        DeclSummary::Function {
+            name,
+            returns: vec![],
+            signature: Some(function_facts(&specifiers.ty, declarator)),
+        }
+    } else {
+        DeclSummary::Object {
+            name,
+            type_facts: object_facts(specifiers, declarator),
+        }
     }
 }
 

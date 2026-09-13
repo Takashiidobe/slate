@@ -735,18 +735,34 @@ pub struct DeclarationSpecifiers {
     pub is_noreturn: bool,
     #[debug(skip_if = is_false)]
     pub is_constexpr: bool,
+    #[debug(skip_if = Vec::is_empty)]
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,
+    #[debug(skip_if = Vec::is_empty)]
+    pub declarators: Vec<InitDeclarator>,
+}
+
+impl Declaration {
+    pub fn names(&self) -> impl Iterator<Item = &str> {
+        self.declarators
+            .iter()
+            .filter_map(|declarator| declarator.declarator.name())
+    }
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct InitDeclarator {
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
     pub asm_label: Option<Span<AsmLabel>>,
-    #[debug(skip_if = Option::is_none)]
-    pub initializer: Option<Initializer>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
+    #[debug(skip_if = Option::is_none)]
+    pub initializer: Option<Initializer>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -794,10 +810,19 @@ pub enum CommentKind {
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct FieldDecl {
-    pub declaration: Declaration,
+    pub specifiers: DeclarationSpecifiers,
+    #[debug(skip_if = Vec::is_empty)]
+    pub declarators: Vec<FieldDeclarator>,
+    pub provenance: Provenance,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct FieldDeclarator {
+    pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
     pub bit_width: Option<SpannedExpr>,
-    pub provenance: Provenance,
+    #[debug(skip_if = Vec::is_empty)]
+    pub attributes: Vec<Attribute>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -830,29 +855,18 @@ pub enum Decl {
         asm: GnuAsm,
         provenance: Provenance,
     },
-    Typedef {
-        name: String,
-        ty: CType,
-        #[debug(skip_if = Option::is_none)]
-        asm_label: Option<Span<AsmLabel>>,
-        provenance: Provenance,
-        #[debug(skip_if = Vec::is_empty)]
-        attributes: Vec<Attribute>,
-    },
     Record(RecordDecl),
     Enum(EnumDecl),
 }
 
 impl Decl {
-    pub fn name(&self) -> Option<&str> {
+    pub fn names(&self) -> Vec<&str> {
         match self {
-            Self::Comment(_) => None,
-            Self::Function(function) => Some(&function.name),
-            Self::Declaration { declaration, .. } => declaration.declarator.name(),
-            Self::StaticAssert { .. } | Self::Asm { .. } => None,
-            Self::Typedef { name, .. } => Some(name),
-            Self::Record(record) => record.name.as_deref(),
-            Self::Enum(enumeration) => enumeration.name.as_deref(),
+            Self::Comment(_) | Self::StaticAssert { .. } | Self::Asm { .. } => Vec::new(),
+            Self::Function(function) => vec![&function.name],
+            Self::Declaration { declaration, .. } => declaration.names().collect(),
+            Self::Record(record) => record.name.as_deref().into_iter().collect(),
+            Self::Enum(enumeration) => enumeration.name.as_deref().into_iter().collect(),
         }
     }
 
@@ -862,8 +876,7 @@ impl Decl {
             Self::Function(function) => function.provenance.file,
             Self::Declaration { provenance, .. }
             | Self::StaticAssert { provenance, .. }
-            | Self::Asm { provenance, .. }
-            | Self::Typedef { provenance, .. } => provenance.file,
+            | Self::Asm { provenance, .. } => provenance.file,
             Self::Record(record) => record.provenance.file,
             Self::Enum(enumeration) => enumeration.provenance.file,
         }

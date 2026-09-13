@@ -45,19 +45,21 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:           fields: [
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -70,19 +72,21 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       declaration: Declaration {
-// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Name(
-// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -113,71 +117,75 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "x",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: SizeOf(
-// DEFAULT-NEXT:                                   CompoundLiteral {
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "s",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "x",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Ternary {
+// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                                       op: Equal,
+// DEFAULT-NEXT:                                       left: SizeOf(
+// DEFAULT-NEXT:                                           CompoundLiteral {
+// DEFAULT-NEXT:                                               ty: Tagged {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: Some(
+// DEFAULT-NEXT:                                                       "s",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               initializer: [
+// DEFAULT-NEXT:                                                   InitializerItem {
+// DEFAULT-NEXT:                                                       designators: [],
+// DEFAULT-NEXT:                                                       value: Expr(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   InitializerItem {
+// DEFAULT-NEXT:                                                       designators: [],
+// DEFAULT-NEXT:                                                       value: Expr(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: SizeOfType {
+// DEFAULT-NEXT:                                           ty: Tagged {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: Some(
+// DEFAULT-NEXT:                                                   "s",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       initializer: [
-// DEFAULT-NEXT:                                           InitializerItem {
-// DEFAULT-NEXT:                                               designators: [],
-// DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           InitializerItem {
-// DEFAULT-NEXT:                                               designators: [],
-// DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           2,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "s",
+// DEFAULT-NEXT:                                   then_value: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   else_value: Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Integer(
-// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Unary {
-// DEFAULT-NEXT:                               op: Minus,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

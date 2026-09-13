@@ -29,9 +29,13 @@ int fallback;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "not_third",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "not_third",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -54,9 +58,13 @@ int fallback;
 // FIRST-NEXT:                   },
 // FIRST-NEXT:               ),
 // FIRST-NEXT:           },
-// FIRST-NEXT:           declarator: Name(
-// FIRST-NEXT:               "first",
-// FIRST-NEXT:           ),
+// FIRST-NEXT:           declarators: [
+// FIRST-NEXT:               InitDeclarator {
+// FIRST-NEXT:                   declarator: Name(
+// FIRST-NEXT:                       "first",
+// FIRST-NEXT:                   ),
+// FIRST-NEXT:               },
+// FIRST-NEXT:           ],
 // FIRST-NEXT:       },
 // FIRST-NEXT:       provenance: Provenance {
 // FIRST-NEXT:           file: FileId(
@@ -79,9 +87,13 @@ int fallback;
 // SECOND-NEXT:                   },
 // SECOND-NEXT:               ),
 // SECOND-NEXT:           },
-// SECOND-NEXT:           declarator: Name(
-// SECOND-NEXT:               "second",
-// SECOND-NEXT:           ),
+// SECOND-NEXT:           declarators: [
+// SECOND-NEXT:               InitDeclarator {
+// SECOND-NEXT:                   declarator: Name(
+// SECOND-NEXT:                       "second",
+// SECOND-NEXT:                   ),
+// SECOND-NEXT:               },
+// SECOND-NEXT:           ],
 // SECOND-NEXT:       },
 // SECOND-NEXT:       provenance: Provenance {
 // SECOND-NEXT:           file: FileId(
@@ -104,9 +116,13 @@ int fallback;
 // THIRD-NEXT:                   },
 // THIRD-NEXT:               ),
 // THIRD-NEXT:           },
-// THIRD-NEXT:           declarator: Name(
-// THIRD-NEXT:               "fallback",
-// THIRD-NEXT:           ),
+// THIRD-NEXT:           declarators: [
+// THIRD-NEXT:               InitDeclarator {
+// THIRD-NEXT:                   declarator: Name(
+// THIRD-NEXT:                       "fallback",
+// THIRD-NEXT:                   ),
+// THIRD-NEXT:               },
+// THIRD-NEXT:           ],
 // THIRD-NEXT:       },
 // THIRD-NEXT:       provenance: Provenance {
 // THIRD-NEXT:           file: FileId(

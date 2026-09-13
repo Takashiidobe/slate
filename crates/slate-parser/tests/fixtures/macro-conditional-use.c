@@ -37,18 +37,22 @@ int picked(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "selected",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "selected",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -68,9 +72,13 @@ int picked(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "typed",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "typed",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -121,18 +129,22 @@ int picked(void) {
 // SELECT-NEXT:                   },
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
-// SELECT-NEXT:           declarator: Name(
-// SELECT-NEXT:               "selected",
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           initializer: Some(
-// SELECT-NEXT:               Expr(
-// SELECT-NEXT:                   Const(
-// SELECT-NEXT:                       Integer(
-// SELECT-NEXT:                           1,
+// SELECT-NEXT:           declarators: [
+// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:                   declarator: Name(
+// SELECT-NEXT:                       "selected",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:                   initializer: Some(
+// SELECT-NEXT:                       Expr(
+// SELECT-NEXT:                           Const(
+// SELECT-NEXT:                               Integer(
+// SELECT-NEXT:                                   1,
+// SELECT-NEXT:                               ),
+// SELECT-NEXT:                           ),
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
-// SELECT-NEXT:               ),
-// SELECT-NEXT:           ),
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(
@@ -153,9 +165,13 @@ int picked(void) {
 // SELECT-NEXT:                   },
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
-// SELECT-NEXT:           declarator: Name(
-// SELECT-NEXT:               "typed",
-// SELECT-NEXT:           ),
+// SELECT-NEXT:           declarators: [
+// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:                   declarator: Name(
+// SELECT-NEXT:                       "typed",
+// SELECT-NEXT:                   ),
+// SELECT-NEXT:               },
+// SELECT-NEXT:           ],
 // SELECT-NEXT:       },
 // SELECT-NEXT:       provenance: Provenance {
 // SELECT-NEXT:           file: FileId(

@@ -55,28 +55,30 @@ void f(int a, struct {int b[a];} c) {}
 // DEFAULT-NEXT:                           Fields(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   FieldDecl {
-// DEFAULT-NEXT:                                       declaration: Declaration {
-// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           declarator: Array {
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "b",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               size: Expression(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "a",
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           FieldDeclarator {
+// DEFAULT-NEXT:                                               declarator: Array {
+// DEFAULT-NEXT:                                                   inner: Name(
+// DEFAULT-NEXT:                                                       "b",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   size: Expression(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "a",
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       provenance: Provenance {
 // DEFAULT-NEXT:                                           file: FileId(
 // DEFAULT-NEXT:                                               0,

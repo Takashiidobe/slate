@@ -36,9 +36,13 @@ int narrow;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "version_ok",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "version_ok",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -59,9 +63,13 @@ int narrow;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "max_ok",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "max_ok",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -82,9 +90,13 @@ int narrow;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "defined_ok",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "defined_ok",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -105,9 +117,13 @@ int narrow;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "narrow",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "narrow",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -130,9 +146,13 @@ int narrow;
 // WIDE-NEXT:                   },
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
-// WIDE-NEXT:           declarator: Name(
-// WIDE-NEXT:               "version_ok",
-// WIDE-NEXT:           ),
+// WIDE-NEXT:           declarators: [
+// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:                   declarator: Name(
+// WIDE-NEXT:                       "version_ok",
+// WIDE-NEXT:                   ),
+// WIDE-NEXT:               },
+// WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:       provenance: Provenance {
 // WIDE-NEXT:           file: FileId(
@@ -153,9 +173,13 @@ int narrow;
 // WIDE-NEXT:                   },
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
-// WIDE-NEXT:           declarator: Name(
-// WIDE-NEXT:               "max_ok",
-// WIDE-NEXT:           ),
+// WIDE-NEXT:           declarators: [
+// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:                   declarator: Name(
+// WIDE-NEXT:                       "max_ok",
+// WIDE-NEXT:                   ),
+// WIDE-NEXT:               },
+// WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:       provenance: Provenance {
 // WIDE-NEXT:           file: FileId(
@@ -176,9 +200,13 @@ int narrow;
 // WIDE-NEXT:                   },
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
-// WIDE-NEXT:           declarator: Name(
-// WIDE-NEXT:               "defined_ok",
-// WIDE-NEXT:           ),
+// WIDE-NEXT:           declarators: [
+// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:                   declarator: Name(
+// WIDE-NEXT:                       "defined_ok",
+// WIDE-NEXT:                   ),
+// WIDE-NEXT:               },
+// WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:       provenance: Provenance {
 // WIDE-NEXT:           file: FileId(
@@ -199,9 +227,13 @@ int narrow;
 // WIDE-NEXT:                   },
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
-// WIDE-NEXT:           declarator: Name(
-// WIDE-NEXT:               "wide",
-// WIDE-NEXT:           ),
+// WIDE-NEXT:           declarators: [
+// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:                   declarator: Name(
+// WIDE-NEXT:                       "wide",
+// WIDE-NEXT:                   ),
+// WIDE-NEXT:               },
+// WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:       provenance: Provenance {
 // WIDE-NEXT:           file: FileId(

@@ -226,39 +226,29 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -267,23 +257,27 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                               Float,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Array {
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "c",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               size: Expression(
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       2048,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Array {
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "c",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       size: Expression(
+// DEFAULT-NEXT:                                           IntLit(
+// DEFAULT-NEXT:                                               2048,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Switch {
@@ -445,21 +439,25 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "d",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "z",
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "d",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "z",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -472,9 +470,13 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -528,16 +530,18 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                           Fields(
 // DEFAULT-NEXT:                                                               [
 // DEFAULT-NEXT:                                                                   FieldDecl {
-// DEFAULT-NEXT:                                                                       declaration: Declaration {
-// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Floating(
-// DEFAULT-NEXT:                                                                                   Float,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "r",
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Floating(
+// DEFAULT-NEXT:                                                                               Float,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           FieldDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "r",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                                           file: FileId(
 // DEFAULT-NEXT:                                                                               0,
@@ -548,19 +552,21 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   FieldDecl {
-// DEFAULT-NEXT:                                                                       declaration: Declaration {
-// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           FieldDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "i",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                                           file: FileId(
 // DEFAULT-NEXT:                                                                               0,
@@ -575,9 +581,13 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "e",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "e",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
@@ -796,21 +806,25 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "d",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "z",
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "d",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "z",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -823,9 +837,13 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -879,16 +897,18 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                           Fields(
 // DEFAULT-NEXT:                                                               [
 // DEFAULT-NEXT:                                                                   FieldDecl {
-// DEFAULT-NEXT:                                                                       declaration: Declaration {
-// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Floating(
-// DEFAULT-NEXT:                                                                                   Float,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "r",
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Floating(
+// DEFAULT-NEXT:                                                                               Float,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           FieldDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "r",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                                           file: FileId(
 // DEFAULT-NEXT:                                                                               0,
@@ -899,19 +919,21 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   FieldDecl {
-// DEFAULT-NEXT:                                                                       declaration: Declaration {
-// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Name(
-// DEFAULT-NEXT:                                                                               "i",
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarators: [
+// DEFAULT-NEXT:                                                                           FieldDeclarator {
+// DEFAULT-NEXT:                                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                                   "i",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                       provenance: Provenance {
 // DEFAULT-NEXT:                                                                           file: FileId(
 // DEFAULT-NEXT:                                                                               0,
@@ -926,9 +948,13 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "e",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "e",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(

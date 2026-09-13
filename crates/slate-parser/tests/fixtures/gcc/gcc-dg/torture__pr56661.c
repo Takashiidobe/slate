@@ -249,40 +249,44 @@ main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "b",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_malloc",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           3,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "b",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_malloc",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: SizeOfType {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: Mul,
+// DEFAULT-NEXT:                                                               left: Integer(
+// DEFAULT-NEXT:                                                                   3,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: SizeOfType {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       While {
@@ -318,39 +322,29 @@ main() {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               then_branch: [
-// DEFAULT-NEXT:                                   Block(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           Decl(
-// DEFAULT-NEXT:                                               Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                   Decl(
+// DEFAULT-NEXT:                                       Declaration {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclarator {
 // DEFAULT-NEXT:                                                   declarator: Name(
 // DEFAULT-NEXT:                                                       "i",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Decl(
-// DEFAULT-NEXT:                                               Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               InitDeclarator {
 // DEFAULT-NEXT:                                                   declarator: Name(
 // DEFAULT-NEXT:                                                       "j",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   Decl(
 // DEFAULT-NEXT:                                       Declaration {
@@ -362,40 +356,44 @@ main() {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "b",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           initializer: Some(
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "__builtin_malloc",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               Binary {
-// DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                       3,
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclarator {
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Name(
+// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   initializer: Some(
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                               Call {
+// DEFAULT-NEXT:                                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                                       "__builtin_malloc",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                           Ranked {
-// DEFAULT-NEXT:                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                               signed: true,
+// DEFAULT-NEXT:                                                                   arguments: [
+// DEFAULT-NEXT:                                                                       Binary {
+// DEFAULT-NEXT:                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                               3,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: SizeOfType {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   For {
@@ -569,18 +567,22 @@ main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(

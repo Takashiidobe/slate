@@ -26,16 +26,20 @@ int prescanned() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "added",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_macro",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "1",
-// DEFAULT-NEXT:                       "+",
-// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "added",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_macro",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "1",
+// DEFAULT-NEXT:                               "+",
+// DEFAULT-NEXT:                               "2",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -59,14 +63,18 @@ int prescanned() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "stringified",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_macro",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "\"hello world\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "stringified",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_macro",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "\"hello world\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -90,14 +98,18 @@ int prescanned() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "joined",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_macro",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "foobar",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "joined",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_macro",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "foobar",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -121,16 +133,20 @@ int prescanned() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "variadic",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_macro",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "1",
-// DEFAULT-NEXT:                       ",",
-// DEFAULT-NEXT:                       "2",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "variadic",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_macro",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "1",
+// DEFAULT-NEXT:                               ",",
+// DEFAULT-NEXT:                               "2",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

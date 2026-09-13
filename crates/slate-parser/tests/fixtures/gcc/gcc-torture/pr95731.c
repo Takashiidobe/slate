@@ -613,9 +613,13 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {
@@ -667,142 +671,146 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "foo",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               2,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               4,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               8,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               16,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               32,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "a",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "foo",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       2,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       4,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       16,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       32,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -815,142 +823,146 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "bar",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               2,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               4,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               8,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               16,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               32,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "b",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "bar",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       2,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       4,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       16,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       32,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Decl(
@@ -963,142 +975,146 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "c",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "baz",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               2,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               4,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               8,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               16,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               32,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               123,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           456,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "c",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "baz",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       2,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       4,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       16,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "i",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       32,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Unary {
+// DEFAULT-NEXT:                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       123,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   456,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {

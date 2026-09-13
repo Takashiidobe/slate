@@ -13,6 +13,7 @@ use crate::lexer::{Lexer, Token};
 use crate::pp::{DirectiveDiagnostic, MacroEntry, PPNode, PPNodeKind, Preprocessor};
 pub(crate) use attributes::apply_vector_attributes;
 pub(crate) use decl::matching_brace;
+pub use declarator::apply_abstract_declarator;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
 use std::collections::{HashMap, HashSet};
 use std::path::Path;

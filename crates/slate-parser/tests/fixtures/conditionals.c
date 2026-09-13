@@ -46,14 +46,25 @@ typedef int Socket;
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Typedef {
-// DEFAULT-NEXT:       name: "HANDLE",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "HANDLE",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -63,14 +74,25 @@ typedef int Socket;
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Typedef {
-// DEFAULT-NEXT:       name: "Socket",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "Socket",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -110,14 +132,25 @@ typedef int Socket;
 // WIN32-NEXT:           },
 // WIN32-NEXT:       },
 // WIN32-NEXT:   )
-// WIN32-NEXT: decl[1]: Typedef {
-// WIN32-NEXT:       name: "HANDLE",
-// WIN32-NEXT:       ty: Integer(
-// WIN32-NEXT:           Ranked {
-// WIN32-NEXT:               rank: Int,
-// WIN32-NEXT:               signed: true,
+// WIN32-NEXT: decl[1]: Declaration {
+// WIN32-NEXT:       declaration: Declaration {
+// WIN32-NEXT:           specifiers: DeclarationSpecifiers {
+// WIN32-NEXT:               ty: Integer(
+// WIN32-NEXT:                   Ranked {
+// WIN32-NEXT:                       rank: Int,
+// WIN32-NEXT:                       signed: true,
+// WIN32-NEXT:                   },
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               storage: Typedef,
 // WIN32-NEXT:           },
-// WIN32-NEXT:       ),
+// WIN32-NEXT:           declarators: [
+// WIN32-NEXT:               InitDeclarator {
+// WIN32-NEXT:                   declarator: Name(
+// WIN32-NEXT:                       "HANDLE",
+// WIN32-NEXT:                   ),
+// WIN32-NEXT:               },
+// WIN32-NEXT:           ],
+// WIN32-NEXT:       },
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
 // WIN32-NEXT:               3,
@@ -127,11 +160,22 @@ typedef int Socket;
 // WIN32-NEXT:           header: None,
 // WIN32-NEXT:       },
 // WIN32-NEXT:   }
-// WIN32-NEXT: decl[2]: Typedef {
-// WIN32-NEXT:       name: "Socket",
-// WIN32-NEXT:       ty: Named(
-// WIN32-NEXT:           "HANDLE",
-// WIN32-NEXT:       ),
+// WIN32-NEXT: decl[2]: Declaration {
+// WIN32-NEXT:       declaration: Declaration {
+// WIN32-NEXT:           specifiers: DeclarationSpecifiers {
+// WIN32-NEXT:               ty: Named(
+// WIN32-NEXT:                   "HANDLE",
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               storage: Typedef,
+// WIN32-NEXT:           },
+// WIN32-NEXT:           declarators: [
+// WIN32-NEXT:               InitDeclarator {
+// WIN32-NEXT:                   declarator: Name(
+// WIN32-NEXT:                       "Socket",
+// WIN32-NEXT:                   ),
+// WIN32-NEXT:               },
+// WIN32-NEXT:           ],
+// WIN32-NEXT:       },
 // WIN32-NEXT:       provenance: Provenance {
 // WIN32-NEXT:           file: FileId(
 // WIN32-NEXT:               3,

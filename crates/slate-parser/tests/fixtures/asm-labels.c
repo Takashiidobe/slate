@@ -32,14 +32,18 @@ void locals(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "renamed",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "real_name",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "renamed",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "real_name",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -61,14 +65,18 @@ void locals(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "concatenated",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "concat",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "concatenated",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "concat",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -89,16 +97,20 @@ void locals(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "function_label",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "function_symbol",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "function_label",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "function_symbol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -120,14 +132,33 @@ void locals(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "first",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "first_symbol",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "first",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "first_symbol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "second",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "third",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "third_symbol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -149,16 +180,28 @@ void locals(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "second",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "with_attribute",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "attributed",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Weak,
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 4,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -171,23 +214,36 @@ void locals(void) {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "third",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "third_symbol",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "initialized",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "initialized_symbol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 5,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -200,18 +256,19 @@ void locals(void) {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:               storage: Typedef,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "with_attribute",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "attributed",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Weak,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "labeled_type",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "typedef_symbol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -219,7 +276,7 @@ void locals(void) {
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           line: 6,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -232,82 +289,26 @@ void locals(void) {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "initialized",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "initialized_symbol",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Grouped(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "function_pointer",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Symbol(
+// DEFAULT-NEXT:                           "pointer_symbol",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: Typedef {
-// DEFAULT-NEXT:       name: "labeled_type",
-// DEFAULT-NEXT:       ty: Integer(
-// DEFAULT-NEXT:           Ranked {
-// DEFAULT-NEXT:               rank: Int,
-// DEFAULT-NEXT:               signed: true,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       asm_label: Some(
-// DEFAULT-NEXT:           Symbol(
-// DEFAULT-NEXT:               "typedef_symbol",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 6,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[9]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Grouped(
-// DEFAULT-NEXT:                   Pointer {
-// DEFAULT-NEXT:                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "function_pointer",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Symbol(
-// DEFAULT-NEXT:                   "pointer_symbol",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -318,7 +319,7 @@ void locals(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[10]: Declaration {
+// DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -329,23 +330,27 @@ void locals(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Register,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "stack_pointer",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           asm_label: Some(
-// DEFAULT-NEXT:               Register(
-// DEFAULT-NEXT:                   X86(
-// DEFAULT-NEXT:                       X86Register {
-// DEFAULT-NEXT:                           spelling: "rsp",
-// DEFAULT-NEXT:                           number: 7,
-// DEFAULT-NEXT:                           canonical: "sp",
-// DEFAULT-NEXT:                           width: Some(
-// DEFAULT-NEXT:                               Bits64,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "stack_pointer",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:                   asm_label: Some(
+// DEFAULT-NEXT:                       Register(
+// DEFAULT-NEXT:                           X86(
+// DEFAULT-NEXT:                               X86Register {
+// DEFAULT-NEXT:                                   spelling: "rsp",
+// DEFAULT-NEXT:                                   number: 7,
+// DEFAULT-NEXT:                                   canonical: "sp",
+// DEFAULT-NEXT:                                   width: Some(
+// DEFAULT-NEXT:                                       Bits64,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -356,7 +361,7 @@ void locals(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[11]: Function(
+// DEFAULT-NEXT: decl[9]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "locals",
@@ -372,38 +377,42 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "eax_register",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               X86(
-// DEFAULT-NEXT:                                   X86Register {
-// DEFAULT-NEXT:                                       spelling: "eax",
-// DEFAULT-NEXT:                                       number: 0,
-// DEFAULT-NEXT:                                       canonical: "ax",
-// DEFAULT-NEXT:                                       width: Some(
-// DEFAULT-NEXT:                                           Bits32,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "eax_register",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       X86(
+// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                               spelling: "eax",
+// DEFAULT-NEXT:                                               number: 0,
+// DEFAULT-NEXT:                                               canonical: "ax",
+// DEFAULT-NEXT:                                               width: Some(
+// DEFAULT-NEXT:                                                   Bits32,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Long,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   storage: Register,
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Long,
+// DEFAULT-NEXT:                                   signed: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           storage: Register,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "percent_register",
 // DEFAULT-NEXT:                               ),
@@ -422,18 +431,7 @@ void locals(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Long,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   storage: Register,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           InitDeclarator {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "hash_register",
 // DEFAULT-NEXT:                               ),
@@ -461,8 +459,8 @@ void locals(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -475,23 +473,27 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "high_byte",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               X86(
-// DEFAULT-NEXT:                                   X86Register {
-// DEFAULT-NEXT:                                       spelling: "ah",
-// DEFAULT-NEXT:                                       number: 0,
-// DEFAULT-NEXT:                                       canonical: "ax",
-// DEFAULT-NEXT:                                       width: Some(
-// DEFAULT-NEXT:                                           High8,
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "high_byte",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       X86(
+// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                               spelling: "ah",
+// DEFAULT-NEXT:                                               number: 0,
+// DEFAULT-NEXT:                                               canonical: "ax",
+// DEFAULT-NEXT:                                               width: Some(
+// DEFAULT-NEXT:                                                   High8,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -505,21 +507,25 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "numbered",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               X86(
-// DEFAULT-NEXT:                                   X86Register {
-// DEFAULT-NEXT:                                       spelling: "0x7",
-// DEFAULT-NEXT:                                       number: 7,
-// DEFAULT-NEXT:                                       canonical: "sp",
-// DEFAULT-NEXT:                                       width: None,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "numbered",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       X86(
+// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                               spelling: "0x7",
+// DEFAULT-NEXT:                                               number: 7,
+// DEFAULT-NEXT:                                               canonical: "sp",
+// DEFAULT-NEXT:                                               width: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -533,21 +539,25 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Register,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "xmm_register",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Register(
-// DEFAULT-NEXT:                               X86(
-// DEFAULT-NEXT:                                   X86Register {
-// DEFAULT-NEXT:                                       spelling: "xmm16",
-// DEFAULT-NEXT:                                       number: 70,
-// DEFAULT-NEXT:                                       canonical: "xmm16",
-// DEFAULT-NEXT:                                       width: None,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "xmm_register",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       X86(
+// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                               spelling: "xmm16",
+// DEFAULT-NEXT:                                               number: 70,
+// DEFAULT-NEXT:                                               canonical: "xmm16",
+// DEFAULT-NEXT:                                               width: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -561,14 +571,18 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Static,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "static_local",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Symbol(
-// DEFAULT-NEXT:                               "static_local_symbol",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "static_local",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Symbol(
+// DEFAULT-NEXT:                                       "static_local_symbol",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
@@ -582,14 +596,18 @@ void locals(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           storage: Extern,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Name(
-// DEFAULT-NEXT:                           "extern_local",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       asm_label: Some(
-// DEFAULT-NEXT:                           Symbol(
-// DEFAULT-NEXT:                               "extern_local_symbol",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "extern_local",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               asm_label: Some(
+// DEFAULT-NEXT:                                   Symbol(
+// DEFAULT-NEXT:                                       "extern_local_symbol",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

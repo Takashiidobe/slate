@@ -119,11 +119,15 @@ int main() {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Extern,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Function {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "abort",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Function {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -145,16 +149,94 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "a",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Expression(
-// DEFAULT-NEXT:                   IntLit(
-// DEFAULT-NEXT:                       1,
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Expression(
+// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "b",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "c",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "e",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "i",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "j",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "k",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "m",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Array {
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "q",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       size: Unspecified,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       List(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               InitializerItem {
+// DEFAULT-NEXT:                                   designators: [],
+// DEFAULT-NEXT:                                   value: Expr(
+// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "t",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -174,18 +256,24 @@ int main() {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                   is_volatile: true,
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "b",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "d",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 4,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -198,18 +286,27 @@ int main() {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "c",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                       inner: Pointer {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                           inner: Name(
+// DEFAULT-NEXT:                               "r",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 5,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -224,16 +321,42 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "e",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                           is_volatile: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       inner: Pointer {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                           inner: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "s",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               AddrOf(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "r",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 6,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -246,18 +369,36 @@ int main() {
 // DEFAULT-NEXT:                       signed: true,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "i",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "f",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "g",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "o",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "x",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 7,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
@@ -272,405 +413,48 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "j",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                           is_volatile: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "h",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   initializer: Some(
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               AddrOf(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "f",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Pointer {
+// DEFAULT-NEXT:                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                       inner: Name(
+// DEFAULT-NEXT:                           "p",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           line: 8,
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "k",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[9]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "m",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[10]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Array {
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "q",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               size: Unspecified,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               List(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       InitializerItem {
-// DEFAULT-NEXT:                           designators: [],
-// DEFAULT-NEXT:                           value: Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[11]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "t",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[12]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                   is_volatile: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "d",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 4,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[13]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Pointer {
-// DEFAULT-NEXT:               qualifiers: Qualifiers,
-// DEFAULT-NEXT:               inner: Pointer {
-// DEFAULT-NEXT:                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                   inner: Name(
-// DEFAULT-NEXT:                       "r",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[14]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Pointer {
-// DEFAULT-NEXT:               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                   is_volatile: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               inner: Pointer {
-// DEFAULT-NEXT:                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                   inner: Pointer {
-// DEFAULT-NEXT:                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                       inner: Name(
-// DEFAULT-NEXT:                           "s",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       AddrOf(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "r",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 6,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[15]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "f",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[16]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "g",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[17]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "o",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[18]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "x",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[19]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Pointer {
-// DEFAULT-NEXT:               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                   is_volatile: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "h",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           initializer: Some(
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       AddrOf(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "f",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 8,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[20]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
-// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Integer(
-// DEFAULT-NEXT:                   Ranked {
-// DEFAULT-NEXT:                       rank: Int,
-// DEFAULT-NEXT:                       signed: true,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               storage: Static,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Pointer {
-// DEFAULT-NEXT:               qualifiers: Qualifiers,
-// DEFAULT-NEXT:               inner: Name(
-// DEFAULT-NEXT:                   "p",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 8,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[21]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -679,9 +463,13 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "n",
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "n",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -692,7 +480,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[22]: Function(
+// DEFAULT-NEXT: decl[9]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "fn1",
@@ -944,7 +732,7 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[23]: Function(
+// DEFAULT-NEXT: decl[10]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -1016,1878 +804,16 @@ int main() {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Name(
-// DEFAULT-NEXT:                                               "u",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Array {
-// DEFAULT-NEXT:                                           inner: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Pointer {
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                   inner: Name(
-// DEFAULT-NEXT:                                                       "v",
+// DEFAULT-NEXT:                                                       "u",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           size: Unspecified,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           List(
-// DEFAULT-NEXT:                                               [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "u",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -2900,44 +826,1918 @@ int main() {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Array {
-// DEFAULT-NEXT:                                           inner: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Array {
 // DEFAULT-NEXT:                                                   inner: Pointer {
 // DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Name(
-// DEFAULT-NEXT:                                                           "w",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       inner: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Name(
+// DEFAULT-NEXT:                                                               "v",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   size: Unspecified,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           size: Unspecified,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           List(
-// DEFAULT-NEXT:                                               [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   List(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
 // DEFAULT-NEXT:                                                                           0,
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "u",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Decl(
+// DEFAULT-NEXT:                                   Declaration {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Array {
+// DEFAULT-NEXT:                                                   inner: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Name(
+// DEFAULT-NEXT:                                                                   "w",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   size: Unspecified,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   List(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Const(
+// DEFAULT-NEXT:                                                                       AddrOf(
+// DEFAULT-NEXT:                                                                           Index {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "v",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               index: Integer(
+// DEFAULT-NEXT:                                                                                   0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               If {
@@ -2998,7 +2798,7 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[24]: Function(
+// DEFAULT-NEXT: decl[11]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "fn3",
@@ -3013,101 +2813,105 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarator: Array {
-// DEFAULT-NEXT:                           inner: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                               declarator: Array {
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               initializer: Some(
+// DEFAULT-NEXT:                                   List(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           InitializerItem {
+// DEFAULT-NEXT:                                               designators: [],
+// DEFAULT-NEXT:                                               value: Expr(
+// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           size: Unspecified,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       initializer: Some(
-// DEFAULT-NEXT:                           List(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   InitializerItem {
-// DEFAULT-NEXT:                                       designators: [],
-// DEFAULT-NEXT:                                       value: Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {
@@ -3164,24 +2968,28 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "z",
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "z",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                                   6,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           List(
+// DEFAULT-NEXT:                                               [],
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           6,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   List(
-// DEFAULT-NEXT:                                       [],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3236,16 +3044,20 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "t1",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
-// DEFAULT-NEXT:                                           7,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "t1",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           size: Expression(
+// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                                   7,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       For {
@@ -3316,31 +3128,35 @@ int main() {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "t2",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Index {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "y",
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Name(
+// DEFAULT-NEXT:                                                           "t2",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           AddrOf(
+// DEFAULT-NEXT:                                                               Index {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "y",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   index: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Integer(
-// DEFAULT-NEXT:                                                               0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Decl(
@@ -3353,29 +3169,33 @@ int main() {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Pointer {
+// DEFAULT-NEXT:                                       declarators: [
+// DEFAULT-NEXT:                                           InitDeclarator {
+// DEFAULT-NEXT:                                               declarator: Pointer {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Name(
-// DEFAULT-NEXT:                                                       "t3",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   inner: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Name(
+// DEFAULT-NEXT:                                                               "t3",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "t2",
+// DEFAULT-NEXT:                                               initializer: Some(
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                           AddrOf(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "t2",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
@@ -3461,18 +3281,22 @@ int main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "t4",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               initializer: Some(
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                               declarators: [
+// DEFAULT-NEXT:                                   InitDeclarator {
+// DEFAULT-NEXT:                                       declarator: Name(
+// DEFAULT-NEXT:                                           "t4",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       initializer: Some(
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Const(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
@@ -3522,7 +3346,7 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[25]: Function(
+// DEFAULT-NEXT: decl[12]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

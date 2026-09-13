@@ -50,14 +50,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "decimal_separator",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "1'000u",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "decimal_separator",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "1'000u",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -81,14 +85,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "binary_bitint",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "0b1010wb",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "binary_bitint",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "0b1010wb",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -112,14 +120,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "hexadecimal",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "0x2aUL",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "hexadecimal",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "0x2aUL",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -143,14 +155,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "decimal_float",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "1.25e+2f",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "decimal_float",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "1.25e+2f",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -174,14 +190,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "hex_float",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "0x1.fp+2",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "hex_float",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "0x1.fp+2",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -205,14 +225,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "character",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "'a'",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "character",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "'a'",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -236,14 +260,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "escaped_string",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "\"\\N{SNOWMAN}\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "escaped_string",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "\"\\N{SNOWMAN}\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -267,14 +295,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "utf8_string",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "u8\"text\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "utf8_string",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "u8\"text\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -298,14 +330,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "utf16_string",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "u\"text\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "utf16_string",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "u\"text\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -329,14 +365,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "utf32_string",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "U\"text\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "utf32_string",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "U\"text\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -360,14 +400,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "wide_string",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "L\"text\"",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "wide_string",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "L\"text\"",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -391,14 +435,18 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           declarator: Name(
-// DEFAULT-NEXT:               "unicode_name",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Unknown {
-// DEFAULT-NEXT:                   name: "slate_literal",
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       "\\u03B1name",
+// DEFAULT-NEXT:           declarators: [
+// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:                   declarator: Name(
+// DEFAULT-NEXT:                       "unicode_name",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   attributes: [
+// DEFAULT-NEXT:                       Unknown {
+// DEFAULT-NEXT:                           name: "slate_literal",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               "\\u03B1name",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
