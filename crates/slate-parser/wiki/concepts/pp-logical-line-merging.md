@@ -34,9 +34,9 @@ things it deliberately does NOT do, both load-bearing:
   plain tokens, the conditional would corrupt the token stream. A line
   whose depth is still open when a directive is hit is left exactly as
   before (its own, individually-unbalanced `Item::Text`) -- this already
-  worked pre-merge, because `parser.rs` reconstructs statements across
+  worked pre-merge, because `src/parser/` reconstructs statements across
   multiple `PPNode`s regardless of how the preprocessor split them (see
-  `matching_brace`/`matching_paren` callers in `parser.rs`), so nothing
+  `matching_brace`/`matching_paren` callers in `src/parser/`, defined in `decl.rs`), so nothing
   needed to change there.
 - **Only merge when a line's own depth is `> 0`.** A line that *starts*
   with unmatched closing brackets (net `<= 0`) is closing a span opened on
@@ -51,7 +51,7 @@ pre-existing single-line rule: `GroupParser::group` always emits a line's
 comments before its `Item::Text`, regardless of whether the comment
 trailed the code on that physical line). But comments on *continuation*
 lines are **deferred to their own entry emitted right after** the merged
-line, not bundled into the head. This matters because `parser.rs`
+line, not bundled into the head. This matters because `src/parser/`
 reconstructs a statement that spans multiple `PPNode`s by skipping over an
 interleaved `Comment` node and re-emitting it once the statement
 construction completes -- e.g. a trailing comment on the closing line of a
@@ -67,9 +67,9 @@ pin down precisely (including, for at least one fixture, whether a
 trailing comment lands before or after a `return` and gets marked
 `Unreachable`).
 
-**Corollary for `parser.rs`'s own multi-node span helpers.** Because a
+**Corollary for `src/parser/`'s own multi-node span helpers.** Because a
 `Comment` PPNode can land *between* two `Code` PPNodes that belong to the
-same declaration (see above), any helper in `parser.rs` that walks
+same declaration (see above), any helper in `src/parser/decl.rs` that walks
 `nodes[..]` looking for a span-terminating token must skip `Comment` nodes
 rather than treat them as a stopping point. `signature_node_span` used to
 `return index.max(1)` the moment it hit a non-`Code` node, which

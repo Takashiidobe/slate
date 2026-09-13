@@ -29,7 +29,7 @@ the wrapper's `.value`.
 
 ## Adding a `Stmt` variant
 
-- `src/parser.rs` — every `FunctionDecl` body (top-level and nested) is
+- `src/parser/stmt.rs` — every `FunctionDecl` body (top-level and nested) is
   passed through `reachability::mark_unreachable` when it is built. A new
   variant that wraps a nested body needs the same call.
 - `tests/filecheck.rs` — `summarize_evaluated_decl`'s inner match over
@@ -58,19 +58,19 @@ the wrapper's `.value`.
 Note: most *general* expressions never construct `ast::Expr` directly —
 they go through `const_expr::Parser` and get wrapped once as
 `Expr::Const(Box<ConstExpr>)` by `Parser::parse_expression` in
-`src/parser.rs`. Only bare string literals are built as an `Expr` variant
+`src/parser/stmt.rs`. Only bare string literals are built as an `Expr` variant
 directly, bypassing `const_expr`. When in doubt, a new expression-level
 construct belongs in `ConstExpr`, not `Expr`.
 
 GNU statement expressions `({ ... })` are split across both: when the
 *entire* statement is `({ ... });` (or the whole initializer is
-`= ({ ... })`), `parser.rs`'s statement/initializer parsing special-cases
+`= ({ ... })`), `src/parser/`'s statement/initializer parsing special-cases
 it directly into `ast::Expr::StatementExpression(Vec<SpannedStmt>)` with
 real parsed statements (see `parse_one_stmt` and the initializer path in
 `parse_declaration_tokens`). But when `({ ... })` appears nested inside a
 larger expression (a call argument, a binary operand — see
 slate-parser-wf8.3.8), it has to go through `const_expr::Parser`, which
-has no way to call back into `parser.rs`'s statement grammar (that needs
+has no way to call back into `src/parser/stmt.rs`'s statement grammar (that needs
 `&Parser` for diagnostics, typedef names, and recursion). So
 `const_expr::Parser::parse_primary` instead captures the raw token span
 as `ConstExpr::StatementExpression(Vec<Span<Token>>)` — unparsed — when it
@@ -81,7 +81,7 @@ which parser produced the node.
 
 `_Generic` used to be one of those bypassing special forms (its own
 `Expr::Generic` variant, parsed by a hand-rolled paren/comma scanner in
-`parser.rs::parse_expression`), removed in slate-parser-wf8.2.4: that
+`parser.rs::parse_expression`, now `src/parser/stmt.rs`), removed in slate-parser-wf8.2.4: that
 scanner only matched when the *entire* expression span was exactly
 `_Generic(...)`, so `_Generic(x, int: 1) != 1` (a `_Generic` embedded as
 a primary expression inside a larger expression) hit "expected `)` after
@@ -123,7 +123,7 @@ is now `Err(DeclaratorError::ExpectedToken(..))`.
   `ConstExprError::UnsupportedTypeSize`.
 - `tests/filecheck.rs` — `array_size`: exhaustive, used only for the
   clang-oracle comparison path; needs a string rendering.
-- `src/parser.rs` — wherever `ArraySize` is *constructed*
+- `src/parser/declarator.rs` — wherever `ArraySize` is *constructed*
   (`DeclaratorParser::parse_declarator`'s `[` handling) — not a match
   site, but the natural place to add parsing for a new array-size form.
 
