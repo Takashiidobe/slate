@@ -745,6 +745,7 @@ impl Parser {
             skip += 1;
         }
         let tokens = &tokens[skip..];
+        let node0_offset = (is_typedef as usize) + skip;
         let kind = match tokens.value_at(0) {
             Some(Token::Keyword(Keyword::Struct)) => TagKind::Struct,
             Some(Token::Keyword(Keyword::Union)) => TagKind::Union,
@@ -766,8 +767,10 @@ impl Parser {
             && let Some(same_line_close) = matching_brace(tokens, open_brace_idx)
         {
             let body_tokens = &tokens[open_brace_idx + 1..same_line_close];
-            let trailing_tokens = &tokens[same_line_close + 1..];
-            let (trailing_attributes, alias_position) = parse_attribute_groups(trailing_tokens, 0)
+            let (trailing_tokens, consumed) =
+                tag_trailing_tokens(nodes, 0, node0_offset + same_line_close + 1)
+                    .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
+            let (trailing_attributes, alias_position) = parse_attribute_groups(&trailing_tokens, 0)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(trailing_attributes);
             let trailing_alias = if matches!(
@@ -775,7 +778,7 @@ impl Parser {
                 Some(Token::Ident(_) | Token::Star)
             ) {
                 let mut declarator_parser =
-                    DeclaratorParser::new(trailing_tokens, alias_position, &self.typedef_names);
+                    DeclaratorParser::new(&trailing_tokens, alias_position, &self.typedef_names);
                 match declarator_parser.parse_declarator(false) {
                     Ok(declarator) => declarator
                         .name()
@@ -872,7 +875,7 @@ impl Parser {
                     is_typedef, kind, name, alias, declarator, provenance,
                 ));
             }
-            return Ok((decls, 1));
+            return Ok((decls, consumed));
         }
 
         let mut depth = 1i32;
@@ -899,30 +902,32 @@ impl Parser {
             }
         }
         let close = close.ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
-        let mut trailing_alias = None;
-        if let PPNodeKind::Code { text, .. } = &nodes[close].value {
-            let closing_tokens = self.node_tokens(&nodes[close]);
-            if closing_tokens.value_at(0) == Some(&Token::RBrace) {
-                let (trailing, position) = parse_attribute_groups(&closing_tokens, 1)
-                    .map_err(|error| self.error_at(Loc::whole(text), error))?;
-                attributes.extend(trailing);
-                if matches!(
-                    closing_tokens.value_at(position),
-                    Some(Token::Ident(_) | Token::Star)
-                ) {
-                    let mut declarator_parser =
-                        DeclaratorParser::new(&closing_tokens, position, &self.typedef_names);
-                    trailing_alias = match declarator_parser.parse_declarator(false) {
-                        Ok(declarator) => declarator
-                            .name()
-                            .map(|name| name.to_string())
-                            .map(|name| (name, declarator)),
-                        Err(_) => None,
-                    };
-                }
-            }
-        }
-        let consumed = close + 1;
+        let closing_tokens = self.node_tokens(&nodes[close]);
+        let close_token = closing_tokens
+            .values()
+            .position(|token| *token == Token::RBrace)
+            .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
+        let (trailing_tokens, consumed) = tag_trailing_tokens(nodes, close, close_token + 1)
+            .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
+        let (trailing, position) = parse_attribute_groups(&trailing_tokens, 0)
+            .map_err(|error| self.error_at(Loc::whole(code), error))?;
+        attributes.extend(trailing);
+        let trailing_alias = if matches!(
+            trailing_tokens.value_at(position),
+            Some(Token::Ident(_) | Token::Star)
+        ) {
+            let mut declarator_parser =
+                DeclaratorParser::new(&trailing_tokens, position, &self.typedef_names);
+            declarator_parser
+                .parse_declarator(false)
+                .ok()
+                .and_then(|declarator| {
+                    let name = declarator.name()?.to_string();
+                    Some((name, declarator))
+                })
+        } else {
+            None
+        };
         let provenance = self.node_provenance(&nodes[0]);
         let tag_decl = if kind == TagKind::Enum {
             let mut enumerators = Vec::new();
@@ -1638,6 +1643,39 @@ fn declaration_node_span(nodes: &[PPNode]) -> usize {
         }
     }
     nodes.len().max(1)
+}
+
+fn tag_trailing_tokens(
+    nodes: &[PPNode],
+    start_node: usize,
+    start_token: usize,
+) -> Option<(Vec<Span<Token>>, usize)> {
+    let mut tokens = Vec::new();
+    let mut depth = 0i32;
+    for (node_index, node) in nodes.iter().enumerate().skip(start_node) {
+        let node_tokens = match &node.value {
+            PPNodeKind::Code { tokens, .. } => tokens,
+            PPNodeKind::Comment { .. } => continue,
+        };
+        let token_start = if node_index == start_node {
+            start_token
+        } else {
+            0
+        };
+        for token in &node_tokens[token_start..] {
+            match token.value {
+                Token::LParen | Token::LBrace | Token::LBracket => depth += 1,
+                Token::RParen | Token::RBrace | Token::RBracket => depth -= 1,
+                Token::Semi if depth == 0 => {
+                    tokens.push(token.clone());
+                    return Some((tokens, node_index + 1));
+                }
+                _ => {}
+            }
+            tokens.push(token.clone());
+        }
+    }
+    None
 }
 
 fn join_node_text(nodes: &[PPNode]) -> String {
