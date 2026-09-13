@@ -802,6 +802,9 @@ impl<'a> DeclaratorParser<'a> {
                 self.pos += 1;
                 Declarator::Name(name)
             }
+            Some(Token::LParen) if allow_abstract && self.opens_parameter_list(self.pos + 1) => {
+                Declarator::Abstract
+            }
             Some(Token::LParen) => {
                 self.pos += 1;
                 let declarator = self.parse_declarator(allow_abstract)?;
@@ -892,6 +895,16 @@ impl<'a> DeclaratorParser<'a> {
         Ok(declarator)
     }
 
+    fn opens_parameter_list(&self, pos: usize) -> bool {
+        let pos = parse_attribute_groups(self.tokens, pos, self.biggest_alignment)
+            .map_or(pos, |(_, after_attributes)| after_attributes);
+        match self.tokens.value_at(pos) {
+            Some(Token::RParen | Token::Ellipsis | Token::Keyword(Keyword::Register)) => true,
+            Some(token) => const_expr::starts_type_name(token, self.typedef_names),
+            None => false,
+        }
+    }
+
     pub(crate) fn take_qualifiers(&mut self) -> Qualifiers {
         let mut qualifiers = Qualifiers::default();
         while let Some(qualifier) = self.take_qualifier() {
@@ -951,6 +964,7 @@ impl<'a> DeclaratorParser<'a> {
                 variadic = true;
                 break;
             }
+            let mut attributes = self.parse_attributes()?;
             self.matches(Token::Keyword(Keyword::Register));
             let leading_qualifiers = self.take_qualifiers();
             self.matches(Token::Keyword(Keyword::Register));
@@ -974,9 +988,7 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::Comma) | Some(Token::RParen) => None,
                 _ => Some(self.parse_declarator(true)?),
             };
-            let (attributes, position) =
-                parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment)?;
-            self.pos = position;
+            attributes.extend(self.parse_attributes()?);
             parameters.push(Parameter {
                 ty: apply_vector_attributes(ty, &attributes),
                 declarator,
