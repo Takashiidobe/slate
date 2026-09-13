@@ -18,7 +18,6 @@ def _no_color_env() -> dict:
 
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\s+(.*))?$")
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
-CHECK_RE = re.compile(r"^// ([A-Za-z0-9_-]+)(?:-NEXT)?:")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
 
@@ -71,7 +70,8 @@ def fixture_source(source: str) -> str:
 
 def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]) -> str:
     with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent
+        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent,
+        errors="surrogateescape",
     ) as parsed_fixture:
         parsed_fixture.write(fixture_source(source))
         parsed_fixture.flush()
@@ -136,7 +136,10 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     return "\n".join(blocks)
 
 
-def replace_blocks(source: str, generated: str) -> str:
+def replace_blocks(source: str, generated: str, prefixes: list[str]) -> str:
+    check_re = re.compile(
+        r"^// (" + "|".join(re.escape(prefix) for prefix in prefixes) + r")(?:-NEXT)?:"
+    ) if prefixes else None
     lines = source.splitlines()
     kept = []
     index = 0
@@ -151,7 +154,7 @@ def replace_blocks(source: str, generated: str) -> str:
                 raise ValueError(f"unterminated FileCheck block for {prefix}")
             index += 1
             continue
-        if CHECK_RE.match(lines[index]):
+        if check_re and check_re.match(lines[index]):
             index += 1
             continue
         kept.append(lines[index])
@@ -162,8 +165,9 @@ def replace_blocks(source: str, generated: str) -> str:
 
 
 def update(repo: Path, fixture: Path) -> tuple[str, str]:
-    source = fixture.read_text()
-    updated = replace_blocks(source, generated_blocks(repo, fixture, source))
+    source = fixture.read_text(errors="surrogateescape")
+    prefixes = error_configurations(source) or [prefix for prefix, _ in configurations(source)]
+    updated = replace_blocks(source, generated_blocks(repo, fixture, source), prefixes)
     return source, updated
 
 
@@ -182,7 +186,7 @@ def main() -> int:
             continue
         changed = True
         if args.in_place:
-            fixture.write_text(updated)
+            fixture.write_text(updated, errors="surrogateescape")
         else:
             print("".join(difflib.unified_diff(
                 source.splitlines(keepends=True),

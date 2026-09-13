@@ -1,0 +1,450 @@
+/* Test whether store motion recognizes pure functions as potentially reading
+   any memory.  */
+
+typedef __SIZE_TYPE__ size_t;
+extern void           abort(void);
+extern void          *memcpy(void *dest, const void *src, size_t n);
+extern size_t         strlen(const char *s);
+extern int strcmp(const char *s1, const char *s2) __attribute__((pure));
+
+char buf[50];
+
+static void foo(void) {
+  if (memcpy(buf, "abc", 4) != buf)
+    abort();
+  if (strcmp(buf, "abc"))
+    abort();
+  memcpy(buf, "abcdefgh", strlen("abcdefgh") + 1);
+}
+
+int main(void) {
+  foo();
+  return 0;
+}
+
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Comment {
+// DEFAULT-NEXT:       text: "/* Test whether store motion recognizes pure functions as potentially reading\n   any memory.  */",
+// DEFAULT-NEXT:       loc: Loc {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           offset: 0,
+// DEFAULT-NEXT:           length: 96,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "size_t",
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Long,
+// DEFAULT-NEXT:               signed: false,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "abort",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Pointer {
+// DEFAULT-NEXT:                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                   inner: Name(
+// DEFAULT-NEXT:                       "memcpy",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Void,
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "dest",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Qualified {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                               is_const: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ty: Void,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "src",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Named(
+// DEFAULT-NEXT:                           "size_t",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Name(
+// DEFAULT-NEXT:                               "n",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 5,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "size_t",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "strlen",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Qualified {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                               is_const: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "s",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Extern,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "strcmp",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: [
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Qualified {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                               is_const: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "s1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   Parameter {
+// DEFAULT-NEXT:                       ty: Qualified {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                               is_const: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Char {
+// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Some(
+// DEFAULT-NEXT:                           Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           attributes: [
+// DEFAULT-NEXT:               Pure,
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 7,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Char {
+// DEFAULT-NEXT:                       signed: None,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Array {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "buf",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               size: Expression(
+// DEFAULT-NEXT:                   IntLit(
+// DEFAULT-NEXT:                       50,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 9,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Void,
+// DEFAULT-NEXT:           name: "foo",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "memcpy",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "buf",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "abc",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       4,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "buf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "abort",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "strcmp",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "buf",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "abc",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "abort",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "memcpy",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "buf",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               StringLit(
+// DEFAULT-NEXT:                                   "abcdefgh",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "strlen",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "abcdefgh",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 11,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           storage: Static,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "foo",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 19,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// SLATE-FILECHECK-END DEFAULT

@@ -1,0 +1,685 @@
+/* cse.c failure on x86 target.
+   Contributed by Stuart Hastings 10 Oct 2002 <stuart@apple.com> */
+#include <stdlib.h>
+
+typedef signed short SInt16;
+
+typedef struct {
+  SInt16 minx;
+  SInt16 maxx;
+  SInt16 miny;
+  SInt16 maxy;
+} IOGBounds;
+
+int expectedwidth = 50;
+
+unsigned int *global_vramPtr = (unsigned int *)0xa000;
+
+IOGBounds global_bounds   = {100, 150, 100, 150};
+IOGBounds global_saveRect = {75, 175, 75, 175};
+
+int main(void) {
+  unsigned int *vramPtr;
+  int           width;
+  IOGBounds     saveRect = global_saveRect;
+  IOGBounds     bounds   = global_bounds;
+
+  if (saveRect.minx < bounds.minx)
+    saveRect.minx = bounds.minx;
+  if (saveRect.maxx > bounds.maxx)
+    saveRect.maxx = bounds.maxx;
+
+  vramPtr = global_vramPtr + (saveRect.miny - bounds.miny);
+  width   = saveRect.maxx - saveRect.minx;
+
+  if (width != expectedwidth)
+    abort();
+  exit(0);
+}
+
+
+// SLATE-FILECHECK-ISYSTEM ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: decl[0]: Comment {
+// DEFAULT-NEXT:       text: "/* cse.c failure on x86 target.\n   Contributed by Stuart Hastings 10 Oct 2002 <stuart@apple.com> */",
+// DEFAULT-NEXT:       loc: Loc {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           offset: 0,
+// DEFAULT-NEXT:           length: 99,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 0,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[1]: Typedef {
+// DEFAULT-NEXT:       name: "SInt16",
+// DEFAULT-NEXT:       ty: Integer(
+// DEFAULT-NEXT:           Ranked {
+// DEFAULT-NEXT:               rank: Short,
+// DEFAULT-NEXT:               signed: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[2]: Record(
+// DEFAULT-NEXT:       RecordDecl {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:           fields: [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "SInt16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "minx",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 7,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "SInt16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "maxx",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "SInt16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "miny",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 9,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       declaration: Declaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "SInt16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "maxy",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 10,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 6,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Typedef {
+// DEFAULT-NEXT:       name: "IOGBounds",
+// DEFAULT-NEXT:       ty: Tagged {
+// DEFAULT-NEXT:           kind: Struct,
+// DEFAULT-NEXT:           name: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 6,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "expectedwidth",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           50,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 13,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[5]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: false,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Pointer {
+// DEFAULT-NEXT:               qualifiers: Qualifiers,
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "global_vramPtr",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Cast {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Integer(
+// DEFAULT-NEXT:                               40960,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 15,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[6]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "IOGBounds",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "global_bounds",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               List(
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       150,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       150,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 17,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[7]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "IOGBounds",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Name(
+// DEFAULT-NEXT:               "global_saveRect",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           initializer: Some(
+// DEFAULT-NEXT:               List(
+// DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       75,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       175,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       75,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       InitializerItem {
+// DEFAULT-NEXT:                           designators: [],
+// DEFAULT-NEXT:                           value: Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       175,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 18,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT:       FunctionDecl {
+// DEFAULT-NEXT:           ret_type: Integer(
+// DEFAULT-NEXT:               Ranked {
+// DEFAULT-NEXT:                   rank: Int,
+// DEFAULT-NEXT:                   signed: true,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Pointer {
+// DEFAULT-NEXT:                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                           inner: Name(
+// DEFAULT-NEXT:                               "vramPtr",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "width",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "IOGBounds",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "saveRect",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "global_saveRect",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Decl(
+// DEFAULT-NEXT:                   Declaration {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "IOGBounds",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Name(
+// DEFAULT-NEXT:                           "bounds",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       initializer: Some(
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Const(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "global_bounds",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "saveRect",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "minx",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "bounds",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "minx",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "saveRect",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "minx",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "bounds",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "minx",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Greater,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "saveRect",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "maxx",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "bounds",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "maxx",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "saveRect",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "maxx",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "bounds",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "maxx",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "vramPtr",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                               op: Add,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "global_vramPtr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Sub,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "saveRect",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "miny",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "bounds",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "miny",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "width",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "saveRect",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "maxx",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "saveRect",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "minx",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Const(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "width",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "expectedwidth",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "abort",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 20,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// SLATE-FILECHECK-END DEFAULT
