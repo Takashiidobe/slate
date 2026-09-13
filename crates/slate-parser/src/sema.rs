@@ -4,7 +4,7 @@ use crate::const_expr::ConstExpr;
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::lexer::Token;
 use miette::{Diagnostic, NamedSource, SourceSpan};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
 #[derive(Debug, Error, Diagnostic, Clone)]
@@ -467,6 +467,8 @@ fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaEr
 enum BodyNode<'a> {
     Stmt(&'a SpannedStmt),
     Tokens(&'a [Span<Token>]),
+    EnterJumpScope,
+    ExitJumpScope,
 }
 
 fn walk_stmts<'a>(stmts: &'a [SpannedStmt], visit: &mut impl FnMut(BodyNode<'a>)) {
@@ -559,7 +561,11 @@ fn walk_expr<'a>(expr: &'a SpannedExpr, visit: &mut impl FnMut(BodyNode<'a>)) {
             walk_expr(left, visit);
             walk_expr(right, visit);
         }
-        Expr::StatementExpression(body) => walk_stmts(body, visit),
+        Expr::StatementExpression(body) => {
+            visit(BodyNode::EnterJumpScope);
+            walk_stmts(body, visit);
+            visit(BodyNode::ExitJumpScope);
+        }
         Expr::IntLit(_)
         | Expr::StringLit(_)
         | Expr::Utf8StringLit(_)
@@ -572,7 +578,11 @@ fn walk_expr<'a>(expr: &'a SpannedExpr, visit: &mut impl FnMut(BodyNode<'a>)) {
 
 fn walk_const_expr<'a>(expr: &'a ConstExpr, visit: &mut impl FnMut(BodyNode<'a>)) {
     match expr {
-        ConstExpr::StatementExpression(tokens) => visit(BodyNode::Tokens(tokens)),
+        ConstExpr::StatementExpression(tokens) => {
+            visit(BodyNode::EnterJumpScope);
+            visit(BodyNode::Tokens(tokens));
+            visit(BodyNode::ExitJumpScope);
+        }
         ConstExpr::Generic {
             controlling,
             associations,
@@ -651,27 +661,42 @@ fn walk_const_expr<'a>(expr: &'a ConstExpr, visit: &mut impl FnMut(BodyNode<'a>)
 }
 
 fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
-    let mut labels = HashSet::new();
+    let mut labels = HashMap::new();
+    let mut scope = Vec::new();
+    let mut next_scope = 0;
     walk_stmts(&function.body, &mut |node| match node {
         BodyNode::Stmt(stmt) => {
             if let Stmt::Labeled(name) = &stmt.value {
-                labels.insert(name.as_str());
+                labels.insert(name.as_str(), scope.clone());
             }
         }
         BodyNode::Tokens(tokens) => {
             for pair in tokens.windows(2) {
                 if let (Token::Ident(name), Token::Colon) = (&pair[0].value, &pair[1].value) {
-                    labels.insert(name.as_str());
+                    labels.insert(name.as_str(), scope.clone());
                 }
             }
         }
+        BodyNode::EnterJumpScope => {
+            scope.push(next_scope);
+            next_scope += 1;
+        }
+        BodyNode::ExitJumpScope => {
+            scope.pop();
+        }
     });
-    walk_stmts(&function.body, &mut |node| {
-        let BodyNode::Stmt(stmt) = node else {
-            return;
-        };
-        match &stmt.value {
-            Stmt::Asm(asm) => check_asm_operands(asm, &labels, function.provenance, errors),
+    scope.clear();
+    next_scope = 0;
+    walk_stmts(&function.body, &mut |node| match node {
+        BodyNode::Stmt(stmt) => match &stmt.value {
+            Stmt::Asm(asm) => check_asm_operands(
+                asm,
+                &labels,
+                &scope,
+                function.provenance,
+                stmt.expansion,
+                errors,
+            ),
             Stmt::Decl(declaration) => check_register_variable(
                 declaration,
                 false,
@@ -680,14 +705,24 @@ fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
                 errors,
             ),
             _ => {}
+        },
+        BodyNode::EnterJumpScope => {
+            scope.push(next_scope);
+            next_scope += 1;
         }
+        BodyNode::ExitJumpScope => {
+            scope.pop();
+        }
+        BodyNode::Tokens(_) => {}
     });
 }
 
 fn check_asm_operands(
     asm: &GnuAsm,
-    labels: &HashSet<&str>,
+    labels: &HashMap<&str, Vec<usize>>,
+    scope: &[usize],
     provenance: Provenance,
+    asm_loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
     let Some(operands) = &asm.operands else {
@@ -696,14 +731,24 @@ fn check_asm_operands(
     if let Some((loc, message)) = asm_operand_error(operands) {
         errors.push(error(provenance, loc, message));
     }
+    let mut invalid_jump_scope = false;
     for label in &operands.labels {
-        if !labels.contains(label.value.as_str()) {
-            errors.push(error(
+        match labels.get(label.value.as_str()) {
+            None => errors.push(error(
                 provenance,
                 label.expansion,
                 format!("use of undeclared label '{}'", label.value),
-            ));
+            )),
+            Some(label_scope) if !scope.starts_with(label_scope) => invalid_jump_scope = true,
+            Some(_) => {}
         }
+    }
+    if invalid_jump_scope {
+        errors.push(error(
+            provenance,
+            asm_loc,
+            "cannot jump from this asm goto statement to one of its possible targets",
+        ));
     }
 }
 

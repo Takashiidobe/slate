@@ -26,6 +26,11 @@ done:
   return 0;
 }
 
+void jump_scopes(void) {
+outer:
+  ({ asm goto("" : : : : outer, inner); inner: ; });
+}
+
 // SLATE-FILECHECK-ERROR SEMANTIC
 
 // SLATE-FILECHECK-BEGIN SEMANTIC
@@ -141,5 +146,13 @@ done:
 // SEMANTIC: 21 │   asm goto("" : : : : done, missing);
 // SEMANTIC: ·                             ───────
 // SEMANTIC: 22 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
+// SEMANTIC: ╰────
+// SEMANTIC: Error:
+// SEMANTIC: × cannot jump from this asm goto statement to one of its possible targets
+// SEMANTIC: ╭─[tests/fixtures/asm-sema.c:22:3]
+// SEMANTIC: 21 │   asm goto("" : : : : done, missing);
+// SEMANTIC: 22 │   asm goto("" : : : : in_stmt_expr, in_raw_stmt_expr);
+// SEMANTIC: ·   ────────────────────────────────────────────────────
+// SEMANTIC: 23 │   ({ in_stmt_expr: ; });
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC
