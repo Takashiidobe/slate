@@ -1628,27 +1628,51 @@ main() {
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "53323980256963787505256507743137477556434962931963225515943461794698643113423wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 53323980256963787505256507743137477556434962931963225515943461794698643113423,
+// DEFAULT-NEXT:                                           width: 256,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "10076482373458251489901780456236592759327822657780415144730546867053397315531wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 10076482373458251489901780456236592759327822657780415144730546867053397315531,
+// DEFAULT-NEXT:                                           width: 254,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "9430367348600775477158545473775377451258484445522540280907903691748059121081wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 9430367348600775477158545473775377451258484445522540280907903691748059121081,
+// DEFAULT-NEXT:                                       width: 254,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "15046745594550617619205422464231805109110883864578289024439083517871820578179553927615539526791313634437787081814763432804808038115388367331529035246240655uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 15046745594550617619205422464231805109110883864578289024439083517871820578179553927615539526791313634437787081814763432804808038115388367331529035246240655,
+// DEFAULT-NEXT:                                       width: 513,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "20633637828717837096174917874088391607464281656818868213468970773994599068609617673436080725569780340050358299419252926775025136778754971701553110169281uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 20633637828717837096174917874088391607464281656818868213468970773994599068609617673436080725569780340050358299419252926775025136778754971701553110169281,
+// DEFAULT-NEXT:                                       width: 503,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "5136122090451895036220764749952166060863831396714271041799786889820341177646647112770727950839029515643589984981094121423221389337601736282556974uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 5136122090451895036220764749952166060863831396714271041799786889820341177646647112770727950839029515643589984981094121423221389337601736282556974,
+// DEFAULT-NEXT:                                       width: 481,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

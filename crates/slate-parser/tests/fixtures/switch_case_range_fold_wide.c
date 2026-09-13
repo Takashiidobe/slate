@@ -202,8 +202,12 @@ int main(void) {
 // DEFAULT-NEXT:                                               "big",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               "170141183460469231731687303715884105720wb",
+// DEFAULT-NEXT:                                           value: WideInteger(
+// DEFAULT-NEXT:                                               WideInt {
+// DEFAULT-NEXT:                                                   value: 170141183460469231731687303715884105720,
+// DEFAULT-NEXT:                                                   width: 128,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Cast {
@@ -230,22 +234,34 @@ int main(void) {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105720wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105720,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105721wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105721,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105722wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105722,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -258,8 +274,12 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105727wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105727,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

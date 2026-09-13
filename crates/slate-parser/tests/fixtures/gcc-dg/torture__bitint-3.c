@@ -600,8 +600,12 @@ main() {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Unary {
 // DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           "80694244678005661015504159217709wb",
+// DEFAULT-NEXT:                                       value: WideInteger(
+// DEFAULT-NEXT:                                           WideInt {
+// DEFAULT-NEXT:                                               value: 80694244678005661015504159217709,
+// DEFAULT-NEXT:                                               width: 107,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Identifier(
@@ -633,8 +637,12 @@ main() {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Unary {
 // DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           "80694244678005661015504159217709wb",
+// DEFAULT-NEXT:                                       value: WideInteger(
+// DEFAULT-NEXT:                                           WideInt {
+// DEFAULT-NEXT:                                               value: 80694244678005661015504159217709,
+// DEFAULT-NEXT:                                               width: 107,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Identifier(
@@ -1244,8 +1252,12 @@ main() {
 // DEFAULT-NEXT:                                   40,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "80694244678005661015504159217732wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 80694244678005661015504159217732,
+// DEFAULT-NEXT:                                   width: 107,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -1259,8 +1271,12 @@ main() {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "313298472398574896574578475487548wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 313298472398574896574578475487548,
+// DEFAULT-NEXT:                                       width: 109,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1295,8 +1311,12 @@ main() {
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "18198347584784758927893783748374wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 18198347584784758927893783748374,
+// DEFAULT-NEXT:                                           width: 105,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -1330,8 +1350,12 @@ main() {
 // DEFAULT-NEXT:                       Break,
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "261243875485748189278344574857484wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 261243875485748189278344574857484,
+// DEFAULT-NEXT:                                       width: 109,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1366,8 +1390,12 @@ main() {
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "80694244678005661015504159217733wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 80694244678005661015504159217733,
+// DEFAULT-NEXT:                                           width: 107,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -1403,8 +1431,12 @@ main() {
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "193984372895748547584754854wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 193984372895748547584754854,
+// DEFAULT-NEXT:                                           width: 89,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -1546,8 +1578,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504159217733wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504159217733,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1557,8 +1593,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "42535215170872629927260810424811808699wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 42535215170872629927260810424811808699,
+// DEFAULT-NEXT:                                                       width: 126,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1567,8 +1607,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "211591633426360068027wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 211591633426360068027,
+// DEFAULT-NEXT:                                                       width: 69,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1592,8 +1636,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504143312912wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504143312912,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1605,8 +1653,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504158749662wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504158749662,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1618,8 +1670,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504159685804wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504159685804,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1631,8 +1687,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "37770635800678787757188047309203503043wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 37770635800678787757188047309203503043,
+// DEFAULT-NEXT:                                                           width: 126,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1644,8 +1704,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "172397445426026523786998466wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 172397445426026523786998466,
+// DEFAULT-NEXT:                                                           width: 89,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1680,8 +1744,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "4809751789450982869595538wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 4809751789450982869595538,
+// DEFAULT-NEXT:                                                           width: 83,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1691,8 +1759,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "821095840985901334959wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 821095840985901334959,
+// DEFAULT-NEXT:                                                       width: 71,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1711,8 +1783,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "1465897921835729857453wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 1465897921835729857453,
+// DEFAULT-NEXT:                                                       width: 72,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1721,8 +1797,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "154987847598437549873142wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 154987847598437549873142,
+// DEFAULT-NEXT:                                                       width: 79,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1833,8 +1913,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504159021057wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504159021057,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1846,8 +1930,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504159292452wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504159292452,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1857,8 +1945,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "80694244678005661015504159217732wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 80694244678005661015504159217732,
+// DEFAULT-NEXT:                                                       width: 107,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1867,8 +1959,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "80694244678240648474427914115297wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 80694244678240648474427914115297,
+// DEFAULT-NEXT:                                                       width: 107,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1879,8 +1975,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "5822736520666880936123wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 5822736520666880936123,
+// DEFAULT-NEXT:                                                           width: 74,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1900,8 +2000,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "54398547589478975845wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 54398547589478975845,
+// DEFAULT-NEXT:                                                       width: 67,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1910,8 +2014,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "39390147499089156967386811811758080wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 39390147499089156967386811811758080,
+// DEFAULT-NEXT:                                                       width: 116,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1930,8 +2038,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "5910462358441918751905wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 5910462358441918751905,
+// DEFAULT-NEXT:                                                       width: 74,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1940,8 +2052,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "1342984375894755194479wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 1342984375894755194479,
+// DEFAULT-NEXT:                                                       width: 72,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1952,8 +2068,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244535621434450947930710749wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244535621434450947930710749,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1975,8 +2095,12 @@ main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "80694244678005661015504159217733wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 80694244678005661015504159217733,
+// DEFAULT-NEXT:                                                           width: 107,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -1986,8 +2110,12 @@ main() {
 // DEFAULT-NEXT:                                       designators: [],
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   "80694244678005661015504159217732wb",
+// DEFAULT-NEXT:                                               WideInteger(
+// DEFAULT-NEXT:                                                   WideInt {
+// DEFAULT-NEXT:                                                       value: 80694244678005661015504159217732,
+// DEFAULT-NEXT:                                                       width: 107,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -2027,8 +2155,12 @@ main() {
 // DEFAULT-NEXT:                                   12,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "821095840985901334958wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 821095840985901334958,
+// DEFAULT-NEXT:                                   width: 71,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2063,8 +2195,12 @@ main() {
 // DEFAULT-NEXT:                                   14,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "1465897921835729857454wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 1465897921835729857454,
+// DEFAULT-NEXT:                                   width: 72,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2081,8 +2217,12 @@ main() {
 // DEFAULT-NEXT:                                   15,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "154987847598437549873143wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 154987847598437549873143,
+// DEFAULT-NEXT:                                   width: 79,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2099,8 +2239,12 @@ main() {
 // DEFAULT-NEXT:                                   29,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "234987458923754897564wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 234987458923754897564,
+// DEFAULT-NEXT:                                   width: 69,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2156,8 +2300,12 @@ main() {
 // DEFAULT-NEXT:                                   32,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "54398547589478975845wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 54398547589478975845,
+// DEFAULT-NEXT:                                   width: 67,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2174,8 +2322,12 @@ main() {
 // DEFAULT-NEXT:                                   33,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "34985478957495847545wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 34985478957495847545,
+// DEFAULT-NEXT:                                   width: 66,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2192,8 +2344,12 @@ main() {
 // DEFAULT-NEXT:                                   34,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "34324329847328473343wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 34324329847328473343,
+// DEFAULT-NEXT:                                   width: 66,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2210,8 +2366,12 @@ main() {
 // DEFAULT-NEXT:                                   35,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "5984758947589437584545wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 5984758947589437584545,
+// DEFAULT-NEXT:                                   width: 74,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2228,8 +2388,12 @@ main() {
 // DEFAULT-NEXT:                                   36,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "1342984375894754857545wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 1342984375894754857545,
+// DEFAULT-NEXT:                                   width: 72,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2246,8 +2410,12 @@ main() {
 // DEFAULT-NEXT:                                   37,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "159847589475894768597656wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 159847589475894768597656,
+// DEFAULT-NEXT:                                   width: 79,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -2279,8 +2447,12 @@ main() {
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                       "80694244678005661015504159217733wb",
+// DEFAULT-NEXT:                                   value: WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 80694244678005661015504159217733,
+// DEFAULT-NEXT:                                           width: 107,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Integer(

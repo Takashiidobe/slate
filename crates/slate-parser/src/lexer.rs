@@ -782,7 +782,7 @@ impl Lexer {
         }
     }
 
-    fn integer_digits(spelling: &str) -> String {
+    pub(crate) fn integer_digits(spelling: &str) -> String {
         let mut end = spelling.len();
         let bytes = spelling.as_bytes();
         loop {

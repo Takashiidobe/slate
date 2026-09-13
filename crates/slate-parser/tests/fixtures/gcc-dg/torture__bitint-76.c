@@ -169,8 +169,12 @@ int main() {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: IntegerLiteral(
-// DEFAULT-NEXT:                               "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffuwb",
+// DEFAULT-NEXT:                           right: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 57896044618658097711785492504343953926634992332820282019728792003956564819967,
+// DEFAULT-NEXT:                                   width: 255,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

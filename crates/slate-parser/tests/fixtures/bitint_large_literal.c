@@ -30,8 +30,12 @@ unsigned _BitInt(8) unsigned_mixed_wbu = 7wBu;
 // DEFAULT-NEXT:           initializer: Some(
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           "340282366920938463463374607431768211456wb",
+// DEFAULT-NEXT:                       WideInteger(
+// DEFAULT-NEXT:                           WideInt {
+// DEFAULT-NEXT:                               value: 340282366920938463463374607431768211456,
+// DEFAULT-NEXT:                               width: 130,
+// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

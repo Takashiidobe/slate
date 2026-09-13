@@ -106,8 +106,12 @@ int main(void) {
 // DEFAULT-NEXT:                                               "u128",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               "340282366920938463463374607431768211440uwb",
+// DEFAULT-NEXT:                                           value: WideInteger(
+// DEFAULT-NEXT:                                               WideInt {
+// DEFAULT-NEXT:                                                   value: 340282366920938463463374607431768211440,
+// DEFAULT-NEXT:                                                   width: 128,
+// DEFAULT-NEXT:                                                   signed: false,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Cast {
@@ -134,15 +138,23 @@ int main(void) {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211441uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211441,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211443uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211443,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -156,13 +168,21 @@ int main(void) {
 // DEFAULT-NEXT:                       Unreachable(
 // DEFAULT-NEXT:                           CaseRange {
 // DEFAULT-NEXT:                               start: Const(
-// DEFAULT-NEXT:                                   IntegerLiteral(
-// DEFAULT-NEXT:                                       "340282366920938463463374607431768211450uwb",
+// DEFAULT-NEXT:                                   WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 340282366920938463463374607431768211450,
+// DEFAULT-NEXT:                                           width: 128,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               end: Const(
-// DEFAULT-NEXT:                                   IntegerLiteral(
-// DEFAULT-NEXT:                                       "340282366920938463463374607431768211453uwb",
+// DEFAULT-NEXT:                                   WideInteger(
+// DEFAULT-NEXT:                                       WideInt {
+// DEFAULT-NEXT:                                           value: 340282366920938463463374607431768211453,
+// DEFAULT-NEXT:                                           width: 128,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -242,8 +262,12 @@ int main(void) {
 // DEFAULT-NEXT:                                               "u128",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               "340282366920938463463374607431768211440uwb",
+// DEFAULT-NEXT:                                           value: WideInteger(
+// DEFAULT-NEXT:                                               WideInt {
+// DEFAULT-NEXT:                                                   value: 340282366920938463463374607431768211440,
+// DEFAULT-NEXT:                                                   width: 128,
+// DEFAULT-NEXT:                                                   signed: false,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Cast {
@@ -270,22 +294,34 @@ int main(void) {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211441uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211441,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211442uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211442,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211443uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211443,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -298,8 +334,12 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "340282366920938463463374607431768211450uwb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 340282366920938463463374607431768211450,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

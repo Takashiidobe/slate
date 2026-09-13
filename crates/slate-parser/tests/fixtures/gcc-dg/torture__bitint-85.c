@@ -126,8 +126,12 @@ int main() {
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Unary {
 // DEFAULT-NEXT:                           op: Minus,
-// DEFAULT-NEXT:                           value: IntegerLiteral(
-// DEFAULT-NEXT:                               "541140097068598424394740839221562143161511518875518765552323978870598341733206554363735813878577506997168480201818027232521wb",
+// DEFAULT-NEXT:                           value: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 541140097068598424394740839221562143161511518875518765552323978870598341733206554363735813878577506997168480201818027232521,
+// DEFAULT-NEXT:                                   width: 409,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

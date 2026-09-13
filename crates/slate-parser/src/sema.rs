@@ -261,6 +261,7 @@ fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
     match expression {
         ConstExpr::Integer(_)
         | ConstExpr::IntegerLiteral(_)
+        | ConstExpr::WideInteger(_)
         | ConstExpr::SizeOf(_)
         | ConstExpr::SizeOfType { .. }
         | ConstExpr::AlignOf { .. } => true,

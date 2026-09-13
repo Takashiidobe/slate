@@ -2,17 +2,140 @@ use crate::ast::{
     ArraySize, CType, Declarator, Designator, Expr, FloatingType, Initializer, InitializerItem,
     IntegerRank, IntegerType, IntegerValue, Span,
 };
-use crate::lexer::{Keyword, Token, TokenSpanExt};
+use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
+use num_bigint::BigInt;
 use rustc_apfloat::ieee;
 use std::collections::HashSet;
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct WideInt {
+    pub value: BigInt,
+    pub width: u32,
+    pub signed: bool,
+}
+
+impl WideInt {
+    pub fn wrap(value: BigInt, width: u32, signed: bool) -> Self {
+        let modulus = BigInt::from(1) << width;
+        let mut value = ((value % &modulus) + &modulus) % &modulus;
+        if signed && value.bit(u64::from(width) - 1) {
+            value -= modulus;
+        }
+        Self {
+            value,
+            width,
+            signed,
+        }
+    }
+
+    pub fn from_i64(value: i64) -> Self {
+        Self {
+            value: BigInt::from(value),
+            width: 64,
+            signed: true,
+        }
+    }
+
+    fn combined_width_signed(&self, rhs: &Self) -> (u32, bool) {
+        (self.width.max(rhs.width), self.signed && rhs.signed)
+    }
+
+    fn binary(&self, rhs: &Self, op: impl FnOnce(&BigInt, &BigInt) -> BigInt) -> Self {
+        let (width, signed) = self.combined_width_signed(rhs);
+        Self::wrap(op(&self.value, &rhs.value), width, signed)
+    }
+
+    pub fn wrapping_add(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left + right)
+    }
+
+    pub fn wrapping_sub(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left - right)
+    }
+
+    pub fn wrapping_mul(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left * right)
+    }
+
+    pub fn bitand(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left & right)
+    }
+
+    pub fn bitor(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left | right)
+    }
+
+    pub fn bitxor(&self, rhs: &Self) -> Self {
+        self.binary(rhs, |left, right| left ^ right)
+    }
+
+    pub fn checked_div(&self, rhs: &Self) -> Option<Self> {
+        if rhs.value == BigInt::from(0) {
+            return None;
+        }
+        Some(self.binary(rhs, |left, right| left / right))
+    }
+
+    pub fn checked_rem(&self, rhs: &Self) -> Option<Self> {
+        if rhs.value == BigInt::from(0) {
+            return None;
+        }
+        Some(self.binary(rhs, |left, right| left % right))
+    }
+
+    pub fn shift_left(&self, shift: u32) -> Self {
+        Self::wrap(&self.value << shift, self.width, self.signed)
+    }
+
+    pub fn shift_right(&self, shift: u32) -> Self {
+        Self::wrap(&self.value >> shift, self.width, self.signed)
+    }
+
+    pub fn compare(&self, rhs: &Self, op: BinaryOp) -> Option<i64> {
+        let result = match op {
+            BinaryOp::Less => self.value < rhs.value,
+            BinaryOp::LessEqual => self.value <= rhs.value,
+            BinaryOp::Greater => self.value > rhs.value,
+            BinaryOp::GreaterEqual => self.value >= rhs.value,
+            BinaryOp::Equal => self.value == rhs.value,
+            BinaryOp::NotEqual => self.value != rhs.value,
+            _ => return None,
+        };
+        Some(result as i64)
+    }
+
+    pub fn is_zero(&self) -> bool {
+        self.value == BigInt::from(0)
+    }
+
+    pub fn truncate_to_i64(&self) -> i64 {
+        let mut bytes = self.value.to_signed_bytes_le();
+        bytes.resize(
+            8,
+            if self.value.sign() == num_bigint::Sign::Minus {
+                0xFF
+            } else {
+                0
+            },
+        );
+        i64::from_le_bytes(bytes[..8].try_into().unwrap())
+    }
+}
+
+impl std::fmt::Display for WideInt {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{}", self.value)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum ConstExpr {
     Integer(i64),
     IntegerLiteral(String),
+    WideInteger(WideInt),
     Float(FloatLiteral),
     Identifier(String),
     StringLit(String),
@@ -115,6 +238,7 @@ impl std::fmt::Display for ConstExpr {
         match self {
             Self::Integer(value) => write!(formatter, "{value}"),
             Self::IntegerLiteral(value) => formatter.write_str(value),
+            Self::WideInteger(value) => write!(formatter, "{value}"),
             Self::Float(value) => write!(formatter, "{value}"),
             Self::Identifier(value) => formatter.write_str(value),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
@@ -368,6 +492,43 @@ fn strip_imaginary(digits: &str) -> (&str, bool) {
     }
 }
 
+fn parse_wide_bit_int_literal(spelling: &str) -> Option<WideInt> {
+    let digits = Lexer::integer_digits(spelling);
+    let suffix = spelling[digits.len()..].to_ascii_lowercase();
+    if !suffix.contains("wb") {
+        return None;
+    }
+    let signed = !suffix.contains('u');
+    let cleaned = digits.replace('\'', "");
+    let (radix, digits) = if cleaned.starts_with("0x") || cleaned.starts_with("0X") {
+        (16, &cleaned[2..])
+    } else if cleaned.starts_with("0b") || cleaned.starts_with("0B") {
+        (2, &cleaned[2..])
+    } else if cleaned.len() > 1 && cleaned.starts_with('0') {
+        (8, &cleaned[1..])
+    } else {
+        (10, cleaned.as_str())
+    };
+    let magnitude = BigInt::parse_bytes(digits.as_bytes(), radix)?;
+    let width = magnitude.bits() as u32 + u32::from(signed);
+    Some(WideInt::wrap(magnitude, width.max(2), signed))
+}
+
+fn contains_wide(expression: &ConstExpr) -> bool {
+    match expression {
+        ConstExpr::WideInteger(_) => true,
+        ConstExpr::Unary { value, .. } | ConstExpr::Cast { value, .. } => contains_wide(value),
+        ConstExpr::Binary { left, right, .. } => contains_wide(left) || contains_wide(right),
+        ConstExpr::Ternary {
+            then_value,
+            else_value,
+            ..
+        } => contains_wide(then_value) || contains_wide(else_value),
+        ConstExpr::Comma(_, right) => contains_wide(right),
+        _ => false,
+    }
+}
+
 fn integer_value(token: &Token) -> IntegerValue {
     token.integer_value_i128().map_or_else(
         || IntegerValue::Arbitrary(String::from(token)),
@@ -476,6 +637,7 @@ impl Parser {
             ConstExpr::IntegerLiteral(_) => {
                 Err(ConstExprError::NotConstant("wide integer literal"))
             }
+            ConstExpr::WideInteger(value) => Ok(value.truncate_to_i64()),
             ConstExpr::StringLit(_)
             | ConstExpr::Utf8StringLit(_)
             | ConstExpr::Utf16StringLit(_)
@@ -518,6 +680,10 @@ impl Parser {
             ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
             ConstExpr::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
             ConstExpr::Unary { op, value } => {
+                if contains_wide(value) {
+                    return Self::evaluate_wide(expression, is_defined)
+                        .map(|wide| wide.truncate_to_i64());
+                }
                 let value = Self::evaluate_expr(value, is_defined)?;
                 match op {
                     UnaryOp::Plus => Ok(value),
@@ -527,6 +693,10 @@ impl Parser {
                 }
             }
             ConstExpr::Binary { op, left, right } => {
+                if contains_wide(left) || contains_wide(right) {
+                    return Self::evaluate_wide(expression, is_defined)
+                        .map(|wide| wide.truncate_to_i64());
+                }
                 let left = Self::evaluate_expr(left, is_defined)?;
                 if *op == BinaryOp::And && left == 0 || *op == BinaryOp::Or && left != 0 {
                     return Ok((*op == BinaryOp::Or) as i64);
@@ -590,6 +760,87 @@ impl Parser {
                 Err(ConstExprError::NotConstant("compound literal"))
             }
             ConstExpr::LabelAddr(_) => Err(ConstExprError::NotConstant("label address")),
+        }
+    }
+
+    fn evaluate_wide(
+        expression: &ConstExpr,
+        is_defined: Option<&dyn Fn(&str) -> bool>,
+    ) -> Result<WideInt, ConstExprError> {
+        match expression {
+            ConstExpr::WideInteger(value) => Ok(value.clone()),
+            ConstExpr::Unary { op, value } => {
+                let value = Self::evaluate_wide(value, is_defined)?;
+                match op {
+                    UnaryOp::Plus => Ok(value),
+                    UnaryOp::Minus => Ok(WideInt::wrap(
+                        -value.value.clone(),
+                        value.width,
+                        value.signed,
+                    )),
+                    UnaryOp::BitNot => Ok(WideInt::wrap(
+                        !value.value.clone(),
+                        value.width,
+                        value.signed,
+                    )),
+                    UnaryOp::Not => Ok(WideInt::from_i64(value.is_zero() as i64)),
+                }
+            }
+            ConstExpr::Binary { op, left, right } => {
+                let left = Self::evaluate_wide(left, is_defined)?;
+                if *op == BinaryOp::And && left.is_zero() || *op == BinaryOp::Or && !left.is_zero()
+                {
+                    return Ok(WideInt::from_i64((*op == BinaryOp::Or) as i64));
+                }
+                let right = Self::evaluate_wide(right, is_defined)?;
+                match op {
+                    BinaryOp::Add => Ok(left.wrapping_add(&right)),
+                    BinaryOp::Sub => Ok(left.wrapping_sub(&right)),
+                    BinaryOp::Mul => Ok(left.wrapping_mul(&right)),
+                    BinaryOp::Div => left
+                        .checked_div(&right)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                    BinaryOp::Rem => left
+                        .checked_rem(&right)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                    BinaryOp::BitAnd => Ok(left.bitand(&right)),
+                    BinaryOp::BitXor => Ok(left.bitxor(&right)),
+                    BinaryOp::BitOr => Ok(left.bitor(&right)),
+                    BinaryOp::ShiftLeft => Ok(left.shift_left(right.truncate_to_i64() as u32)),
+                    BinaryOp::ShiftRight => Ok(left.shift_right(right.truncate_to_i64() as u32)),
+                    BinaryOp::And => Ok(WideInt::from_i64(
+                        (!left.is_zero() && !right.is_zero()) as i64,
+                    )),
+                    BinaryOp::Or => Ok(WideInt::from_i64(
+                        (!left.is_zero() || !right.is_zero()) as i64,
+                    )),
+                    BinaryOp::Less
+                    | BinaryOp::LessEqual
+                    | BinaryOp::Greater
+                    | BinaryOp::GreaterEqual
+                    | BinaryOp::Equal
+                    | BinaryOp::NotEqual => Ok(WideInt::from_i64(
+                        left.compare(&right, *op).expect("comparison op"),
+                    )),
+                }
+            }
+            ConstExpr::Cast { value, .. } => Self::evaluate_wide(value, is_defined),
+            ConstExpr::Ternary {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                if !Self::evaluate_wide(condition, is_defined)?.is_zero() {
+                    Self::evaluate_wide(then_value, is_defined)
+                } else {
+                    Self::evaluate_wide(else_value, is_defined)
+                }
+            }
+            ConstExpr::Comma(left, right) => {
+                Self::evaluate_wide(left, is_defined)?;
+                Self::evaluate_wide(right, is_defined)
+            }
+            other => Self::evaluate_expr(other, is_defined).map(WideInt::from_i64),
         }
     }
 
@@ -1045,7 +1296,10 @@ impl Parser {
         match self.tokens.value_at(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => match Token::IntLit(value.clone()).integer_value() {
                 Some(value) => Ok(ConstExpr::Integer(value)),
-                None => Ok(ConstExpr::IntegerLiteral(value.clone())),
+                None => match parse_wide_bit_int_literal(value) {
+                    Some(wide) => Ok(ConstExpr::WideInteger(wide)),
+                    None => Ok(ConstExpr::IntegerLiteral(value.clone())),
+                },
             },
             Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
             Some(Token::StringLit(value)) => Ok(ConstExpr::StringLit(value.clone())),

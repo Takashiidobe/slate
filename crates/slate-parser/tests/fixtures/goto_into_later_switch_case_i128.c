@@ -94,8 +94,12 @@ int main() {
 // DEFAULT-NEXT:                       Break,
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "99999999999999999999999999999wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 99999999999999999999999999999,
+// DEFAULT-NEXT:                                       width: 98,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -247,8 +251,12 @@ int main() {
 // DEFAULT-NEXT:                                       "classify",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       IntegerLiteral(
-// DEFAULT-NEXT:                                           "99999999999999999999999999999wb",
+// DEFAULT-NEXT:                                       WideInteger(
+// DEFAULT-NEXT:                                           WideInt {
+// DEFAULT-NEXT:                                               value: 99999999999999999999999999999,
+// DEFAULT-NEXT:                                               width: 98,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },

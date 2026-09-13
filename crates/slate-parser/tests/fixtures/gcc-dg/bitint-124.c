@@ -243,8 +243,12 @@ int main() {
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       "13055525270329736316393717310914023773847wb",
+// DEFAULT-NEXT:                                                   value: WideInteger(
+// DEFAULT-NEXT:                                                       WideInt {
+// DEFAULT-NEXT:                                                           value: 13055525270329736316393717310914023773847,
+// DEFAULT-NEXT:                                                           width: 135,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -402,8 +406,12 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Unary {
 // DEFAULT-NEXT:                               op: Minus,
-// DEFAULT-NEXT:                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                   "13055525270329736316393717310914023773847wb",
+// DEFAULT-NEXT:                               value: WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 13055525270329736316393717310914023773847,
+// DEFAULT-NEXT:                                       width: 135,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },

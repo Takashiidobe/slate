@@ -385,11 +385,19 @@ int main() {
 // DEFAULT-NEXT:                               "foo",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "0x10000000000000000wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 18446744073709551616,
+// DEFAULT-NEXT:                                       width: 66,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "0x10000000000000001wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 18446744073709551617,
+// DEFAULT-NEXT:                                       width: 66,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               AddrOf(
 // DEFAULT-NEXT:                                   Identifier(
@@ -407,8 +415,12 @@ int main() {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "x",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: IntegerLiteral(
-// DEFAULT-NEXT:                               "0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffawb",
+// DEFAULT-NEXT:                           right: WideInteger(
+// DEFAULT-NEXT:                               WideInt {
+// DEFAULT-NEXT:                                   value: 231584178474632390847141970017375815706539969331281128078915168015826259279866,
+// DEFAULT-NEXT:                                   width: 258,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

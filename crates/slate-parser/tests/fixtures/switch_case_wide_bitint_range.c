@@ -98,8 +98,12 @@ int main(void) {
 // DEFAULT-NEXT:                               Const(
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: IntegerLiteral(
-// DEFAULT-NEXT:                                           "170141183460469231731687303715884105727wb",
+// DEFAULT-NEXT:                                       left: WideInteger(
+// DEFAULT-NEXT:                                           WideInt {
+// DEFAULT-NEXT:                                               value: 170141183460469231731687303715884105727,
+// DEFAULT-NEXT:                                               width: 128,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Cast {
 // DEFAULT-NEXT:                                           ty: Named(
@@ -125,13 +129,21 @@ int main(void) {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       CaseRange {
 // DEFAULT-NEXT:                           start: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105727wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105727,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           end: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105730wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105730,
+// DEFAULT-NEXT:                                       width: 129,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -144,20 +156,32 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105740wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105740,
+// DEFAULT-NEXT:                                       width: 129,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       CaseRange {
 // DEFAULT-NEXT:                           start: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105745wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105745,
+// DEFAULT-NEXT:                                       width: 129,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           end: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105747wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105747,
+// DEFAULT-NEXT:                                       width: 129,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -229,8 +253,12 @@ int main(void) {
 // DEFAULT-NEXT:                               Const(
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: IntegerLiteral(
-// DEFAULT-NEXT:                                           "170141183460469231731687303715884105727wb",
+// DEFAULT-NEXT:                                       left: WideInteger(
+// DEFAULT-NEXT:                                           WideInt {
+// DEFAULT-NEXT:                                               value: 170141183460469231731687303715884105727,
+// DEFAULT-NEXT:                                               width: 128,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Cast {
 // DEFAULT-NEXT:                                           ty: Named(
@@ -280,13 +308,21 @@ int main(void) {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       CaseRange {
 // DEFAULT-NEXT:                           start: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105727wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105727,
+// DEFAULT-NEXT:                                       width: 128,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           end: Const(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   "170141183460469231731687303715884105730wb",
+// DEFAULT-NEXT:                               WideInteger(
+// DEFAULT-NEXT:                                   WideInt {
+// DEFAULT-NEXT:                                       value: 170141183460469231731687303715884105730,
+// DEFAULT-NEXT:                                       width: 129,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
