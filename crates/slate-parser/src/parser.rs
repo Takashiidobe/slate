@@ -1002,11 +1002,14 @@ impl Parser {
                     } else {
                         self.nodes_tokens(&nodes[start..index])
                     };
-                    let declaration_tokens = all_tokens
+                    let declaration_tokens = if all_tokens
                         .last()
                         .is_some_and(|token| token.value == Token::Semi)
-                        .then(|| &all_tokens[..all_tokens.len() - 1])
-                        .unwrap_or(&all_tokens);
+                    {
+                        &all_tokens[..all_tokens.len() - 1]
+                    } else {
+                        &all_tokens
+                    };
                     let parts = split_top_level(declaration_tokens, &Token::Comma);
                     let prefix = declaration_tokens
                         [..self.declaration_prefix_end(declaration_tokens)]
