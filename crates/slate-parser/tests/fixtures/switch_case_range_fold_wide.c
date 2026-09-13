@@ -97,21 +97,21 @@ int main(void) {
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   9223372036854775807,
+// DEFAULT-NEXT:                                   -6,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   9223372036854775807,
+// DEFAULT-NEXT:                                   -5,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   9223372036854775807,
+// DEFAULT-NEXT:                                   -4,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -125,7 +125,7 @@ int main(void) {
 // DEFAULT-NEXT:                       Case(
 // DEFAULT-NEXT:                           Const(
 // DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   9223372036854775807,
+// DEFAULT-NEXT:                                   -1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -317,7 +317,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           9223372036854775807,
+// DEFAULT-NEXT:                                           -5,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -327,7 +327,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           9223372036854775807,
+// DEFAULT-NEXT:                                           -1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },

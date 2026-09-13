@@ -1,7 +1,7 @@
 use crate::ast::*;
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
-use crate::files::{Files, SearchPaths, display_path};
+use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::pp::{DirectiveDiagnostic, PPNode, PPNodeKind, Preprocessor};
 use crate::reachability::{filter_translation_unit, mark_unreachable};
@@ -168,7 +168,8 @@ impl Parser {
 
     pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
         self.source_name = display_path(path);
-        self.source = std::fs::read_to_string(path)
+        self.source = std::fs::read(path)
+            .map(|bytes| decode_source_bytes(&bytes))
             .map_err(|error| {
                 ParseError::new(
                     self.source_name.clone(),
@@ -1078,7 +1079,7 @@ impl Parser {
             );
         }
         for path in self.files.paths() {
-            let Ok(contents) = std::fs::read_to_string(path) else {
+            let Ok(contents) = std::fs::read(path).map(|bytes| decode_source_bytes(&bytes)) else {
                 continue;
             };
             if let Some(base) = contents.find(code) {
@@ -1116,7 +1117,7 @@ impl Parser {
             let Some(path) = self.files.get_path(loc.file) else {
                 continue;
             };
-            let Ok(source) = std::fs::read_to_string(path) else {
+            let Ok(source) = std::fs::read(path).map(|bytes| decode_source_bytes(&bytes)) else {
                 continue;
             };
             if loc.offset >= source.len() {

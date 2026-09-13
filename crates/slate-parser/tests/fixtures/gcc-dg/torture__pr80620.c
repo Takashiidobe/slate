@@ -256,7 +256,7 @@ main() {
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           9223372036854775807,
+// DEFAULT-NEXT:                           -4925291826203235130,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

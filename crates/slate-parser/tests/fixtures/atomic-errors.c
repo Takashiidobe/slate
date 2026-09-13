@@ -9,6 +9,6 @@ _Atomic(
 // DEFAULT: 1 │ _Atomic(
 // DEFAULT: · ─────────
 // DEFAULT: 2 │
-// DEFAULT: 3 │ // SLATE-FILECHECK-ERROR DEFAULT
+// DEFAULT: 3 │
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

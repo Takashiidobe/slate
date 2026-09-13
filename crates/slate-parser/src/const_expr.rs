@@ -532,27 +532,34 @@ impl Parser {
                     return Ok((*op == BinaryOp::Or) as i64);
                 }
                 let right = Self::evaluate_expr(right, is_defined)?;
-                let value = match op {
-                    BinaryOp::Add => left.checked_add(right),
-                    BinaryOp::Sub => left.checked_sub(right),
-                    BinaryOp::Mul => left.checked_mul(right),
-                    BinaryOp::Div => left.checked_div(right),
-                    BinaryOp::Rem => left.checked_rem(right),
-                    BinaryOp::Less => Some((left < right) as i64),
-                    BinaryOp::LessEqual => Some((left <= right) as i64),
-                    BinaryOp::Greater => Some((left > right) as i64),
-                    BinaryOp::GreaterEqual => Some((left >= right) as i64),
-                    BinaryOp::Equal => Some((left == right) as i64),
-                    BinaryOp::NotEqual => Some((left != right) as i64),
-                    BinaryOp::BitAnd => Some(left & right),
-                    BinaryOp::BitXor => Some(left ^ right),
-                    BinaryOp::BitOr => Some(left | right),
-                    BinaryOp::And => Some(((left != 0) && (right != 0)) as i64),
-                    BinaryOp::Or => Some(((left != 0) || (right != 0)) as i64),
-                    BinaryOp::ShiftLeft => left.checked_shl(right as u32),
-                    BinaryOp::ShiftRight => left.checked_shr(right as u32),
-                };
-                value.ok_or(ConstExprError::InvalidIntegerConstant)
+                match op {
+                    BinaryOp::Add => Ok((left as i128 + right as i128) as i64),
+                    BinaryOp::Sub => Ok((left as i128 - right as i128) as i64),
+                    BinaryOp::Mul => Ok((left as i128 * right as i128) as i64),
+                    BinaryOp::Div => left
+                        .checked_div(right)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                    BinaryOp::Rem => left
+                        .checked_rem(right)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                    BinaryOp::Less => Ok((left < right) as i64),
+                    BinaryOp::LessEqual => Ok((left <= right) as i64),
+                    BinaryOp::Greater => Ok((left > right) as i64),
+                    BinaryOp::GreaterEqual => Ok((left >= right) as i64),
+                    BinaryOp::Equal => Ok((left == right) as i64),
+                    BinaryOp::NotEqual => Ok((left != right) as i64),
+                    BinaryOp::BitAnd => Ok(left & right),
+                    BinaryOp::BitXor => Ok(left ^ right),
+                    BinaryOp::BitOr => Ok(left | right),
+                    BinaryOp::And => Ok(((left != 0) && (right != 0)) as i64),
+                    BinaryOp::Or => Ok(((left != 0) || (right != 0)) as i64),
+                    BinaryOp::ShiftLeft => left
+                        .checked_shl(right as u32)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                    BinaryOp::ShiftRight => left
+                        .checked_shr(right as u32)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
+                }
             }
             ConstExpr::Ternary {
                 condition,

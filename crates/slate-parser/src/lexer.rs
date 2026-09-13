@@ -1,4 +1,5 @@
 use crate::ast::{FileId, Loc, Span};
+use crate::files::raw_byte_for_char;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Keyword {
@@ -242,7 +243,7 @@ impl Token {
         };
         u64::from_str_radix(digits, radix)
             .ok()
-            .map(|value| value.min(i64::MAX as u64) as i64)
+            .map(|value| value as i64)
     }
 }
 
@@ -822,7 +823,10 @@ impl Lexer {
 
     fn decode_char_escape(&self, i: usize, end: usize) -> (u32, usize) {
         if self.chars[i] != '\\' {
-            return (self.chars[i] as u32, i + 1);
+            let value = raw_byte_for_char(self.chars[i])
+                .map(u32::from)
+                .unwrap_or(self.chars[i] as u32);
+            return (value, i + 1);
         }
         let j = i + 1;
         match self.char_in(j, end) {

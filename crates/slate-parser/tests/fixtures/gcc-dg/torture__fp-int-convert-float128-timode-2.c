@@ -280,7 +280,7 @@ main(void) {
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Const(
 // DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       9223372036854775807,
+// DEFAULT-NEXT:                                       -1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),

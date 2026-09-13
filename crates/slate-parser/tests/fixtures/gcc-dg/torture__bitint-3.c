@@ -1702,7 +1702,7 @@ main() {
 // DEFAULT-NEXT:                                       value: Expr(
 // DEFAULT-NEXT:                                           Const(
 // DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   9223372036854775807,
+// DEFAULT-NEXT:                                                   -4550945898812396718,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -2046,7 +2046,7 @@ main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               9223372036854775807,
+// DEFAULT-NEXT:                               -4550945898812396719,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

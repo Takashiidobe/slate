@@ -194,7 +194,7 @@ int main(void) {
 // DEFAULT-NEXT:                               field: "uvalue",
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               9223372036854775807,
+// DEFAULT-NEXT:                               -6101065172474983726,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

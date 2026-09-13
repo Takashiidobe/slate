@@ -167,7 +167,7 @@ main() {
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Mul,
 // DEFAULT-NEXT:                                       left: Integer(
-// DEFAULT-NEXT:                                           9223372036854775807,
+// DEFAULT-NEXT:                                           -1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Binary {
 // DEFAULT-NEXT:                                           op: Mul,
@@ -192,7 +192,7 @@ main() {
 // DEFAULT-NEXT:                               "t",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               9223372036854775807,
+// DEFAULT-NEXT:                               -4294967295,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

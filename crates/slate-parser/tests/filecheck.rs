@@ -1,7 +1,7 @@
 use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
-use slate_parser::files::SearchPaths;
+use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -229,7 +229,7 @@ fn run_fixture(fixture: &Path, prefix: &str, defines: &[String], isystem: &[Stri
 }
 
 fn fixture_source(fixture: &Path) -> String {
-    let source = std::fs::read_to_string(fixture).expect("read fixture");
+    let source = decode_source_bytes(&std::fs::read(fixture).expect("read fixture"));
     let mut result = String::new();
     let mut in_checks = false;
     for line in source.lines() {
@@ -813,7 +813,7 @@ fn fixtures_are_filechecked() {
 
     let mut jobs = Vec::new();
     for fixture in fixtures {
-        let source = std::fs::read_to_string(&fixture).expect("read fixture");
+        let source = decode_source_bytes(&std::fs::read(&fixture).expect("read fixture"));
         let configs = configurations(&source);
         let errors = error_configurations(&source);
         if !errors.is_empty() {

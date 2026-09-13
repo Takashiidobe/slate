@@ -84,15 +84,25 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
     return result.stdout.rstrip("\n")
 
 
-def render_error(repo: Path, fixture: Path, defines: list[str], isystem: list[str]) -> list[str]:
-    command = ["cargo", "run", "--quiet", "--", "parse", str(fixture)]
-    command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
-    command.extend(f"-isystem{path}" for path in isystem)
-    result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
+def render_error(
+    repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]
+) -> list[str]:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".c", prefix=f".{fixture.stem}.filecheck.", dir=fixture.parent,
+        errors="surrogateescape",
+    ) as parsed_fixture:
+        parsed_fixture.write(fixture_source(source))
+        parsed_fixture.flush()
+        command = ["cargo", "run", "--quiet", "--", "parse", parsed_fixture.name]
+        command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
+        command.extend(f"-isystem{path}" for path in isystem)
+        result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
+        temp_display = os.path.relpath(parsed_fixture.name, repo)
     if result.returncode == 0:
         raise RuntimeError(f"expected {fixture} to fail parsing")
+    fixture_display = os.path.relpath(fixture, repo)
     return [
-        line.strip()
+        line.strip().replace(temp_display, fixture_display)
         for line in result.stderr.splitlines()
         if line.startswith("Error:")
         or re.match(r"^\s*(?:\d+ │|×|⚠|╭─|·|╰─)", line)
@@ -117,7 +127,9 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     isystem = isystem_paths(source)
     blocks = []
     for prefix in error_configurations(source):
-        output = render_error(repo, fixture, configuration_defines(source, prefix), isystem)
+        output = render_error(
+            repo, fixture, source, configuration_defines(source, prefix), isystem
+        )
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")

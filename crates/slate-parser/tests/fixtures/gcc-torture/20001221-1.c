@@ -97,7 +97,7 @@ int main() {
 // DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   9223372036854775807,
+// DEFAULT-NEXT:                                   -81985529216486896,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },

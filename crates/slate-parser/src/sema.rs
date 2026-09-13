@@ -1,6 +1,6 @@
 use crate::ast::*;
 use crate::const_expr::ConstExpr;
-use crate::files::{Files, display_path};
+use crate::files::{Files, decode_source_bytes, display_path};
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::HashSet;
 use thiserror::Error;
@@ -173,7 +173,9 @@ impl SemaError {
             return self;
         };
         let path = files.path(loc.file);
-        let source = std::fs::read_to_string(path).unwrap_or_default();
+        let source = std::fs::read(path)
+            .map(|bytes| decode_source_bytes(&bytes))
+            .unwrap_or_default();
         self.source_code = NamedSource::new(display_path(path), source).with_language("C");
         self.span = SourceSpan::new(loc.offset.into(), loc.length.max(1));
         self

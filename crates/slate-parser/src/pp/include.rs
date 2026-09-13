@@ -2,7 +2,7 @@ use super::error::{PPErrorKind, PPFailure};
 use super::syntax::{Directive, DirectiveName};
 use super::{PPNode, Preprocessor};
 use crate::ast::{FileId, HeaderKind, Loc, Span};
-use crate::files::display_path;
+use crate::files::{decode_source_bytes, display_path};
 use crate::lexer::Token;
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -57,10 +57,12 @@ pub(super) fn include_target(
 }
 
 pub(super) fn read_source(path: &Path) -> Result<String, PPErrorKind> {
-    std::fs::read_to_string(path).map_err(|error| PPErrorKind::ReadFailed {
-        path: display_path(path),
-        message: error.to_string(),
-    })
+    std::fs::read(path)
+        .map(|bytes| decode_source_bytes(&bytes))
+        .map_err(|error| PPErrorKind::ReadFailed {
+            path: display_path(path),
+            message: error.to_string(),
+        })
 }
 
 impl Preprocessor<'_> {
