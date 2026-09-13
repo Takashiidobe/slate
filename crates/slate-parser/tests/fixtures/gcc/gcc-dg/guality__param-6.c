@@ -137,7 +137,31 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : : \"ebx\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Register(
+// DEFAULT-NEXT:                                       X86(
+// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                               spelling: "ebx",
+// DEFAULT-NEXT:                                               number: 3,
+// DEFAULT-NEXT:                                               canonical: "bx",
+// DEFAULT-NEXT:                                               width: Some(
+// DEFAULT-NEXT:                                                   Bits32,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment {
 // DEFAULT-NEXT:                   text: "/* { dg-final { gdb-test . \"i\" \"5\" } } */",

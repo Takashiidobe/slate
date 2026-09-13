@@ -430,7 +430,40 @@ main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"g\" ( & v ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "g",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "v",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
@@ -491,7 +524,40 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"g\" ( & v ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "g",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "v",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

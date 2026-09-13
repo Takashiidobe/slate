@@ -153,10 +153,96 @@ main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"nop\" : : \"D\" ( ( int ) * p ) ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "nop",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "nop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "D",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Deref(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"nop\" : : \"D\" ( ( int ) * p ) ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "nop",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "nop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "D",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Deref(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment {
 // DEFAULT-NEXT:                   text: "/* { dg-final { gdb-test . \"a\" \"-32648\" } } */",
@@ -261,10 +347,96 @@ main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"nop\" : : \"D\" ( ( unsigned int ) * p ) ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "nop",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "nop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "D",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Deref(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"nop\" : : \"D\" ( ( unsigned int ) * p ) ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "nop",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "nop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "D",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Deref(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment {
 // DEFAULT-NEXT:                   text: "/* { dg-final { gdb-test . \"a\" \"0x8078\" } } */",

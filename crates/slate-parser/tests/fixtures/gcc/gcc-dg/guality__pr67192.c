@@ -210,7 +210,40 @@ main() {
 // DEFAULT-NEXT:           name: "do_it",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"r\" ( & cnt ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "cnt",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -726,16 +759,148 @@ main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"r\" ( & fnp1 ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "fnp1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"r\" ( & fnp2 ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "fnp2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"r\" ( & fnp3 ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "fnp3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : \"r\" ( & fnp4 ) : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           AddrOf(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "fnp4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(

@@ -103,7 +103,20 @@ main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile ( \"\" : : : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {

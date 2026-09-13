@@ -673,35 +673,8 @@ impl Parser {
             }
         }
 
-        if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
-            && matches!(name.as_str(), "asm" | "__asm__" | "__asm")
-        {
-            let mut cursor = fragment.pos + 1;
-            while matches!(
-                tokens.value_at(cursor),
-                Some(Token::Keyword(
-                    Keyword::Volatile | Keyword::Inline | Keyword::Goto
-                ))
-            ) {
-                cursor += 1;
-            }
-            if tokens.value_at(cursor) == Some(&Token::LParen) {
-                let close = matching_paren(tokens, cursor).ok_or_else(|| {
-                    self.error_at(Loc::whole(code), "expected `)` in asm statement")
-                })?;
-                let end = if tokens.value_at(close + 1) == Some(&Token::Semi) {
-                    close + 1
-                } else {
-                    close
-                };
-                let text = tokens[fragment.pos..=end]
-                    .values()
-                    .map(String::from)
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                fragment.pos = end + 1;
-                return Ok(Stmt::Asm(text));
-            }
+        if let Some(asm) = self.parse_asm_stmt(fragment)? {
+            return Ok(Stmt::Asm(asm));
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {

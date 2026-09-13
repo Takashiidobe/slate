@@ -4456,7 +4456,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -5415,7 +5417,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -6640,7 +6644,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -7599,7 +7605,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -8824,7 +8832,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -9783,7 +9793,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -11008,7 +11020,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -11967,7 +11981,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -13180,7 +13196,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -14139,7 +14157,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -15352,7 +15372,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -16311,7 +16333,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -17524,7 +17548,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -18483,7 +18509,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(
@@ -19696,7 +19724,9 @@ main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
 // DEFAULT-NEXT:                           condition: Const(
@@ -20655,7 +20685,9 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Asm(
-// DEFAULT-NEXT:                           "asm ( \"\" ) ;",
+// DEFAULT-NEXT:                           GnuAsm {
+// DEFAULT-NEXT:                               template: "",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Const(

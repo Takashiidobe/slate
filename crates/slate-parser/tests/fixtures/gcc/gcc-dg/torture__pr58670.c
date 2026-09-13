@@ -135,7 +135,55 @@ main() {
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile goto ( \"btsl $1, %0; jc %l[lab]\" : : \"m\" ( b ) : \"memory\" : lab ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                           Goto,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "btsl $1, %0; jc %l[lab]",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "btsl $1, ",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Operand {
+// DEFAULT-NEXT:                                       index: 0,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "; jc ",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Label(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "m",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "b",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               labels: [
+// DEFAULT-NEXT:                                   "lab",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(
@@ -228,7 +276,55 @@ main() {
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm volatile goto ( \"btsl $1, %0; jc %l[lab]\" : : \"m\" ( b ) : \"memory\" : lab ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       qualifiers: [
+// DEFAULT-NEXT:                           Volatile,
+// DEFAULT-NEXT:                           Goto,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       template: "btsl $1, %0; jc %l[lab]",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "btsl $1, ",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Operand {
+// DEFAULT-NEXT:                                       index: 0,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "; jc ",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Label(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               inputs: [
+// DEFAULT-NEXT:                                   AsmOperand {
+// DEFAULT-NEXT:                                       constraint: AsmConstraint {
+// DEFAULT-NEXT:                                           alternatives: [
+// DEFAULT-NEXT:                                               AsmConstraintAlternative {
+// DEFAULT-NEXT:                                                   location: Letters(
+// DEFAULT-NEXT:                                                       "m",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       expr: Const(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "b",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               labels: [
+// DEFAULT-NEXT:                                   "lab",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Const(

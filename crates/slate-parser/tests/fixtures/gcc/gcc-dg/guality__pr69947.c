@@ -224,7 +224,21 @@ main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Asm(
-// DEFAULT-NEXT:                   "asm ( \"nop\" : : : \"memory\" ) ;",
+// DEFAULT-NEXT:                   GnuAsm {
+// DEFAULT-NEXT:                       template: "nop",
+// DEFAULT-NEXT:                       operands: Some(
+// DEFAULT-NEXT:                           AsmOperands {
+// DEFAULT-NEXT:                               pieces: [
+// DEFAULT-NEXT:                                   Text(
+// DEFAULT-NEXT:                                       "nop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                               clobbers: [
+// DEFAULT-NEXT:                                   Memory,
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

@@ -133,7 +133,7 @@ pub enum Stmt {
     Default,
     Labeled(String),
     LocalLabelDecl(Vec<String>),
-    Asm(String),
+    Asm(GnuAsm),
     Goto(String),
     ComputedGoto(SpannedExpr),
     NestedFunction(Box<FunctionDecl>),
@@ -265,6 +265,95 @@ pub enum AsmLabel {
 pub enum Register {
     X86(X86Register),
     Other(String),
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct GnuAsm {
+    #[debug(skip_if = Vec::is_empty)]
+    pub qualifiers: Vec<Span<AsmQualifier>>,
+    pub template: Span<String>,
+    #[debug(skip_if = Option::is_none)]
+    pub operands: Option<AsmOperands>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmQualifier {
+    Volatile,
+    Inline,
+    Goto,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct AsmOperands {
+    pub pieces: Vec<AsmTemplatePiece>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub outputs: Vec<AsmOperand>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub inputs: Vec<AsmOperand>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub clobbers: Vec<Span<AsmClobber>>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub labels: Vec<Span<String>>,
+}
+
+#[derive(CustomDebug, Clone, PartialEq, Eq)]
+pub enum AsmTemplatePiece {
+    Text(String),
+    Operand {
+        index: usize,
+        #[debug(skip_if = Option::is_none)]
+        modifier: Option<char>,
+    },
+    Label(usize),
+    Percent,
+    UniqueId,
+    LBrace,
+    Pipe,
+    RBrace,
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub struct AsmOperand {
+    #[debug(skip_if = Option::is_none)]
+    pub name: Option<Span<String>>,
+    pub constraint: Span<AsmConstraint>,
+    pub expr: SpannedExpr,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AsmConstraint {
+    pub alternatives: Vec<AsmConstraintAlternative>,
+}
+
+#[derive(CustomDebug, Clone, PartialEq, Eq)]
+pub struct AsmConstraintAlternative {
+    #[debug(skip_if = Vec::is_empty)]
+    pub modifiers: Vec<AsmConstraintModifier>,
+    pub location: AsmConstraintLocation,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmConstraintModifier {
+    Overwrite,
+    ReadWrite,
+    EarlyClobber,
+    Commutative,
+    Pic,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AsmConstraintLocation {
+    HardRegister(Register),
+    Matching(usize),
+    Letters(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AsmClobber {
+    Memory,
+    Cc,
+    Unwind,
+    Register(Register),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
