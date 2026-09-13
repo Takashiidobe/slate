@@ -1,0 +1,5 @@
+CompileFlags:
+  Add:
+    - "-nostdlibinc"
+    - "-isystem"
+    - "~/Projects/slate/libc-shim/include"
