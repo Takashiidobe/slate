@@ -1026,32 +1026,30 @@ impl Parser {
                     } else {
                         self.nodes_tokens(&nodes[start..index])
                     };
-                    let declaration_tokens = if all_tokens
-                        .last()
-                        .is_some_and(|token| token.value == Token::Semi)
-                    {
-                        &all_tokens[..all_tokens.len() - 1]
-                    } else {
-                        &all_tokens
-                    };
-                    let parts = split_top_level(declaration_tokens, &Token::Comma);
-                    let prefix = declaration_tokens
-                        [..self.declaration_prefix_end(declaration_tokens)]
-                        .to_vec();
-                    for (part_index, mut part) in parts.into_iter().enumerate() {
-                        if part_index > 0 {
-                            let mut with_prefix = prefix.clone();
-                            with_prefix.append(&mut part);
-                            part = with_prefix;
+                    for declaration_tokens in split_top_level(&all_tokens, &Token::Semi) {
+                        if declaration_tokens.is_empty() {
+                            continue;
                         }
-                        part.push(synthetic(Token::Semi));
-                        fields.push(span_pp_nodes(
-                            FieldItem::Field(FieldDecl {
-                                declaration: self.parse_field_declaration_tokens(&joined, &part)?,
-                                provenance: self.node_provenance(&nodes[start]),
-                            }),
-                            &nodes[start..index],
-                        ));
+                        let parts = split_top_level(&declaration_tokens, &Token::Comma);
+                        let prefix = declaration_tokens
+                            [..self.declaration_prefix_end(&declaration_tokens)]
+                            .to_vec();
+                        for (part_index, mut part) in parts.into_iter().enumerate() {
+                            if part_index > 0 {
+                                let mut with_prefix = prefix.clone();
+                                with_prefix.append(&mut part);
+                                part = with_prefix;
+                            }
+                            part.push(synthetic(Token::Semi));
+                            fields.push(span_pp_nodes(
+                                FieldItem::Field(FieldDecl {
+                                    declaration: self
+                                        .parse_field_declaration_tokens(&joined, &part)?,
+                                    provenance: self.node_provenance(&nodes[start]),
+                                }),
+                                &nodes[start..index],
+                            ));
+                        }
                     }
                 }
             }
