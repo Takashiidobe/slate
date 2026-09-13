@@ -638,9 +638,9 @@ impl Parser {
                     }
                     index
                 };
-                let tag_body_follows = nodes.get(1).is_some_and(|node| {
-                    self.node_tokens(node).value_at(0) == Some(&Token::LBrace)
-                });
+                let tag_body_follows = nodes
+                    .get(1)
+                    .is_some_and(|node| self.node_tokens(node).value_at(0) == Some(&Token::LBrace));
                 if matches!(
                     tokens.value_at(tag_keyword_index),
                     Some(Token::Keyword(
@@ -669,7 +669,7 @@ impl Parser {
                     || !tokens.contains_value(&Token::Semi)
                         && !tokens.contains_value(&Token::LBrace)
                 {
-                    signature_node_span(nodes)
+                    signature_node_span(nodes, &self.typedef_names)
                 } else {
                     1
                 };
@@ -996,15 +996,13 @@ impl Parser {
                 };
                 let explicit_value = match segment.value_at(1) {
                     None => None,
-                    Some(Token::Equal) => {
-                        Some(evaluate_enum_expression(&segment[2..], &values).map_err(
-                            |error| self.error_at_tokens(&segment[2..], 0, error.to_string()),
-                        )?)
-                    }
+                    Some(Token::Equal) => Some(
+                        evaluate_enum_expression(&segment[2..], &values).map_err(|error| {
+                            self.error_at_tokens(&segment[2..], 0, error.to_string())
+                        })?,
+                    ),
                     _ => {
-                        return Err(
-                            self.error_at(Loc::whole(code), "expected enumerator value")
-                        );
+                        return Err(self.error_at(Loc::whole(code), "expected enumerator value"));
                     }
                 };
                 record_enum_value(
@@ -1679,22 +1677,68 @@ fn paren_depth(tokens: &[Span<Token>]) -> i32 {
     })
 }
 
-fn signature_node_span(nodes: &[PPNode]) -> usize {
+fn signature_node_span(nodes: &[PPNode], typedef_names: &HashSet<String>) -> usize {
     let mut depth = 0i32;
+    let mut paren_group = Vec::new();
+    let mut kr_style = false;
     for (index, node) in nodes.iter().enumerate() {
         let PPNodeKind::Code { text, .. } = &node.value else {
             continue;
         };
         for token in lex(text) {
             match token.value {
-                Token::LParen => depth += 1,
-                Token::RParen => depth -= 1,
-                Token::LBrace | Token::Semi if depth <= 0 => return index + 1,
-                _ => {}
+                Token::LParen => {
+                    if depth == 0 {
+                        paren_group.clear();
+                    } else {
+                        paren_group.push(Token::LParen);
+                    }
+                    depth += 1;
+                }
+                Token::RParen => {
+                    depth -= 1;
+                    if depth == 0 {
+                        kr_style =
+                            bare_identifier_names(paren_group.iter(), typedef_names).is_some();
+                    } else {
+                        paren_group.push(Token::RParen);
+                    }
+                }
+                Token::LBrace if depth <= 0 => return index + 1,
+                Token::Semi if depth <= 0 => {
+                    if !kr_style {
+                        return index + 1;
+                    }
+                }
+                ref other => {
+                    if depth >= 1 {
+                        paren_group.push(other.clone());
+                    }
+                }
             }
         }
     }
     nodes.len().max(1)
+}
+
+fn bare_identifier_names<'a>(
+    tokens: impl IntoIterator<Item = &'a Token>,
+    typedef_names: &HashSet<String>,
+) -> Option<Vec<String>> {
+    let mut names = Vec::new();
+    let mut expect_ident = true;
+    for token in tokens {
+        if expect_ident {
+            match token {
+                Token::Ident(name) if !typedef_names.contains(name) => names.push(name.clone()),
+                _ => return None,
+            }
+        } else if *token != Token::Comma {
+            return None;
+        }
+        expect_ident = !expect_ident;
+    }
+    (!names.is_empty() && !expect_ident).then_some(names)
 }
 
 fn declaration_node_span(nodes: &[PPNode]) -> usize {
@@ -3089,7 +3133,7 @@ pub(crate) fn is_target_builtin_name(name: &str) -> bool {
 impl Parser {
     fn parse_function(&self, nodes: &[PPNode]) -> Result<(FunctionDecl, usize), ParseError> {
         let provenance = self.node_provenance(&nodes[0]);
-        let sig_node_count = signature_node_span(nodes);
+        let sig_node_count = signature_node_span(nodes, &self.typedef_names);
         let joined_code;
         let code: &str = if sig_node_count == 1 {
             self.node_text(&nodes[0])
@@ -3167,25 +3211,38 @@ impl Parser {
                 "expected `(`",
             ));
         }
-        if matching_paren(&sig_tokens, name_index + 1).is_none() {
+        let Some(close_paren) = matching_paren(&sig_tokens, name_index + 1) else {
             return Err(self.error_at(
                 Loc::at(code, code.find('{').unwrap_or(0), 1),
                 "expected `)`",
             ));
-        }
-        let mut declarator_parser = DeclaratorParser {
-            tokens: &sig_tokens,
-            pos: name_index + 1,
-            typedef_names: &self.typedef_names,
-            biggest_alignment: self.biggest_alignment,
         };
-        let (parameters, variadic) = declarator_parser
-            .parse_parameters()
-            .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
-        let (signature_attributes, body_index) = self
-            .parse_attribute_groups(&sig_tokens, declarator_parser.pos)
-            .map_err(|error| self.error_at(Loc::whole(code), error))?;
-        attributes.extend(signature_attributes);
+        let kr_names = bare_identifier_names(
+            sig_tokens[name_index + 2..close_paren]
+                .iter()
+                .map(|t| &t.value),
+            &self.typedef_names,
+        );
+        let (parameters, variadic, body_index) = if let Some(names) = kr_names {
+            let (parameters, body_index) =
+                self.parse_kr_parameter_declarations(code, &sig_tokens, close_paren + 1, &names)?;
+            (parameters, false, body_index)
+        } else {
+            let mut declarator_parser = DeclaratorParser {
+                tokens: &sig_tokens,
+                pos: name_index + 1,
+                typedef_names: &self.typedef_names,
+                biggest_alignment: self.biggest_alignment,
+            };
+            let (parameters, variadic) = declarator_parser
+                .parse_parameters()
+                .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
+            let (signature_attributes, body_index) = self
+                .parse_attribute_groups(&sig_tokens, declarator_parser.pos)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?;
+            attributes.extend(signature_attributes);
+            (parameters, variadic, body_index)
+        };
         if sig_tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
                 Loc::at(code, code.len().saturating_sub(1), 1),
@@ -3267,6 +3324,78 @@ impl Parser {
             },
             close_idx + 1,
         ))
+    }
+
+    fn parse_kr_parameter_declarations(
+        &self,
+        code: &str,
+        tokens: &[Span<Token>],
+        mut pos: usize,
+        names: &[String],
+    ) -> Result<(Vec<Parameter>, usize), ParseError> {
+        let mut declared: HashMap<String, (CType, Declarator)> = HashMap::new();
+        while tokens.value_at(pos) != Some(&Token::LBrace) {
+            let mut parser = DeclaratorParser {
+                tokens,
+                pos,
+                typedef_names: &self.typedef_names,
+                biggest_alignment: self.biggest_alignment,
+            };
+            parser.matches(Token::Keyword(Keyword::Register));
+            let base_ty = parser
+                .parse_base_type()
+                .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
+            loop {
+                let declarator = parser
+                    .parse_declarator(false)
+                    .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
+                let Some(name) = declarator.name() else {
+                    return Err(self.error_at(
+                        Loc::whole(code),
+                        "expected parameter name in K&R parameter declaration",
+                    ));
+                };
+                if !names.iter().any(|param_name| param_name == name) {
+                    return Err(self.error_at(
+                        Loc::whole(code),
+                        format!("`{name}` is not a parameter of this function"),
+                    ));
+                }
+                declared.insert(name.to_string(), (base_ty.clone(), declarator));
+                if !parser.matches(Token::Comma) {
+                    break;
+                }
+            }
+            if !parser.matches(Token::Semi) {
+                return Err(self.error_at(
+                    Loc::whole(code),
+                    "expected `;` in K&R parameter declaration",
+                ));
+            }
+            pos = parser.pos;
+        }
+        let parameters = names
+            .iter()
+            .map(|name| {
+                if let Some((ty, declarator)) = declared.remove(name) {
+                    Parameter {
+                        ty,
+                        declarator: Some(declarator),
+                        attributes: Vec::new(),
+                    }
+                } else {
+                    Parameter {
+                        ty: CType::Integer(IntegerType::Ranked {
+                            rank: IntegerRank::Int,
+                            signed: true,
+                        }),
+                        declarator: Some(Declarator::Name(name.clone())),
+                        attributes: Vec::new(),
+                    }
+                }
+            })
+            .collect();
+        Ok((parameters, pos))
     }
 
     fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<SpannedStmt>, ParseError> {
