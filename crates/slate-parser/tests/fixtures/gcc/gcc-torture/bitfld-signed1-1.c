@@ -15,43 +15,43 @@ int  main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* PR tree-optimization/114666 */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 33,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* PR tree-optimization/114666 */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 33,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* We used to miscompile this to be always aborting\n   due to the use of the signed 1bit into the COND_EXPR. */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 34,
+// DEFAULT-NEXT:                       length: 111,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* We used to miscompile this to be always aborting\n   due to the use of the signed 1bit into the COND_EXPR. */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 34,
-// DEFAULT-NEXT:           length: 111,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Record(
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: None,
@@ -99,7 +99,7 @@ int  main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tagged {
@@ -120,7 +120,7 @@ int  main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -142,7 +142,7 @@ int  main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

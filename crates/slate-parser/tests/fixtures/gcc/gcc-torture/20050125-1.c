@@ -39,43 +39,43 @@ int main(int    argc __attribute__((unused)),
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Verify that the CALL sideeffect isn't optimized away.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 60,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Verify that the CALL sideeffect isn't optimized away.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 60,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Contributed by Greg Parker  25 Jan 2005  <gparker@apple.com> */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 61,
+// DEFAULT-NEXT:                       length: 66,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* Contributed by Greg Parker  25 Jan 2005  <gparker@apple.com> */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 61,
-// DEFAULT-NEXT:           length: 66,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -100,7 +100,7 @@ int main(int    argc __attribute__((unused)),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Record(
+// DEFAULT-NEXT: decl[2]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -197,7 +197,7 @@ int main(int    argc __attribute__((unused)),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -272,7 +272,7 @@ int main(int    argc __attribute__((unused)),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[4]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "bracket_empty",
@@ -362,7 +362,7 @@ int main(int    argc __attribute__((unused)),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Function(
+// DEFAULT-NEXT: decl[5]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

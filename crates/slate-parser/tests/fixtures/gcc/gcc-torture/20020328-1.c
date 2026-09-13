@@ -235,24 +235,31 @@ int main()
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* simplify_and_const_int would incorrectly omit the mask in\n     the line below.  */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 171,
-// DEFAULT-NEXT:                       length: 85,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* simplify_and_const_int would incorrectly omit the mask in\n     the line below.  */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 171,
+// DEFAULT-NEXT:                                   length: 85,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 20,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 20,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Call {

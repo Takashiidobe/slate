@@ -16,24 +16,31 @@ INT_64 int_64_com (INT_64 a)
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* PR 10073 */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 1,
-// DEFAULT-NEXT:           length: 14,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* PR 10073 */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 1,
+// DEFAULT-NEXT:                       length: 14,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 1,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Typedef {
 // DEFAULT-NEXT:       name: "INT_64",
 // DEFAULT-NEXT:       ty: Tagged {

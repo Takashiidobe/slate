@@ -30,24 +30,31 @@ int main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Test whether bit field boundaries aren't advanced if bit field type\n   has alignment large enough.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 105,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Test whether bit field boundaries aren't advanced if bit field type\n   has alignment large enough.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 105,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
@@ -338,24 +345,31 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* If short is not at least 16 bits wide, don't test anything.  */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 344,
-// DEFAULT-NEXT:                       length: 66,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* If short is not at least 16 bits wide, don't test anything.  */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 344,
+// DEFAULT-NEXT:                                   length: 66,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 18,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 18,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Const(
 // DEFAULT-NEXT:                       Binary {

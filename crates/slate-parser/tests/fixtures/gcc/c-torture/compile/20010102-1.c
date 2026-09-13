@@ -105,43 +105,43 @@ _obstack_newchunk (h, length)
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* This testcase derives from gnu obstack.c/obstack.h and failed with\n   -O3 -funroll-all-loops, or -O1 -frename-registers -funroll-loops on\n   sparc-sun-solaris2.7.\n\n   Copyright (C) 2001  Free Software Foundation.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 1,
-// DEFAULT-NEXT:           length: 219,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* This testcase derives from gnu obstack.c/obstack.h and failed with\n   -O3 -funroll-all-loops, or -O1 -frename-registers -funroll-loops on\n   sparc-sun-solaris2.7.\n\n   Copyright (C) 2001  Free Software Foundation.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 1,
+// DEFAULT-NEXT:                       length: 219,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-require-effective-target indirect_calls } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 222,
+// DEFAULT-NEXT:                       length: 52,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 1,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-require-effective-target indirect_calls } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 222,
-// DEFAULT-NEXT:           length: 52,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Record(
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -245,7 +245,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Record(
+// DEFAULT-NEXT: decl[2]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -672,7 +672,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT: decl[3]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -717,7 +717,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Record(
+// DEFAULT-NEXT: decl[4]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -781,7 +781,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Record(
+// DEFAULT-NEXT: decl[5]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Union,
 // DEFAULT-NEXT:           name: Some(
@@ -846,7 +846,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT: decl[6]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "_obstack_newchunk",

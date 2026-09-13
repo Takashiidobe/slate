@@ -62,43 +62,43 @@ int main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Copyright (C) 1999 Free Software Foundation, Inc.\n  Contributed by Nathan Sidwell 20 Jan 1999 <nathan@acm.org> */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 116,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Copyright (C) 1999 Free Software Foundation, Inc.\n  Contributed by Nathan Sidwell 20 Jan 1999 <nathan@acm.org> */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 116,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* check range combining boolean operations work */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 118,
+// DEFAULT-NEXT:                       length: 51,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* check range combining boolean operations work */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 118,
-// DEFAULT-NEXT:           length: 51,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -119,7 +119,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Function(
+// DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "func",
@@ -139,42 +139,42 @@ int main() {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* fold-const does some clever things with range tests. Make sure\n     we get (some of) them right */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 228,
-// DEFAULT-NEXT:                       length: 101,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* fold-const does some clever things with range tests. Make sure\n     we get (some of) them right */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 228,
+// DEFAULT-NEXT:                                   length: 101,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* these must fail, regardless of the value of i */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 333,
+// DEFAULT-NEXT:                                   length: 51,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 10,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 10,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* these must fail, regardless of the value of i */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 333,
-// DEFAULT-NEXT:                       length: 51,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 13,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Const(
 // DEFAULT-NEXT:                       Binary {
@@ -479,24 +479,31 @@ int main() {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* these must pass, regardless of the value of i */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 709,
-// DEFAULT-NEXT:                       length: 51,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* these must pass, regardless of the value of i */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 709,
+// DEFAULT-NEXT:                                   length: 51,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 32,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 32,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Const(
 // DEFAULT-NEXT:                       Unary {
@@ -837,7 +844,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

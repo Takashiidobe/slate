@@ -75,24 +75,31 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* noreturn via an infinite loop: correct C, but Slate's lowering does not yet\n * prove this diverges (the generated Rust loop keeps a conditional break\n * guard), so it must fall back to a conservative, non-`!` return type\n * instead of emitting Rust that rustc would reject. */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 20,
-// DEFAULT-NEXT:           length: 279,
+// DEFAULT-NEXT: decl[1]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* noreturn via an infinite loop: correct C, but Slate's lowering does not yet\n * prove this diverges (the generated Rust loop keeps a conditional break\n * guard), so it must fall back to a conservative, non-`!` return type\n * instead of emitting Rust that rustc would reject. */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 20,
+// DEFAULT-NEXT:                       length: 279,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 2,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,

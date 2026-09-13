@@ -55,61 +55,54 @@ main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* PR tree-optimization/58791 */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 32,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* PR tree-optimization/58791 */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 32,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-do run } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 33,
+// DEFAULT-NEXT:                       length: 19,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-options \"-g -ffast-math\" } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 53,
+// DEFAULT-NEXT:                       length: 37,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-do run } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 33,
-// DEFAULT-NEXT:           length: 19,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-options \"-g -ffast-math\" } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 53,
-// DEFAULT-NEXT:           length: 37,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Function(
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Floating(
 // DEFAULT-NEXT:               Double,
@@ -818,42 +811,56 @@ main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-final { gdb-test pr58791-4.c:32 \"i\" \"486\" { target { { i?86-*-* x86_64-*-* } && lp64 } } } } */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 567,
-// DEFAULT-NEXT:                       length: 103,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* { dg-final { gdb-test pr58791-4.c:32 \"i\" \"486\" { target { { i?86-*-* x86_64-*-* } && lp64 } } } } */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 567,
+// DEFAULT-NEXT:                                   length: 103,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 22,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 22,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* { dg-final { gdb-test pr58791-4.c:32 \"i2\" \"487\" { target { { i?86-*-* x86_64-*-* } && lp64 } } } } */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 706,
+// DEFAULT-NEXT:                                   length: 104,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 25,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-final { gdb-test pr58791-4.c:32 \"i2\" \"487\" { target { { i?86-*-* x86_64-*-* } && lp64 } } } } */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 706,
-// DEFAULT-NEXT:                       length: 104,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 25,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
@@ -869,7 +876,7 @@ main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

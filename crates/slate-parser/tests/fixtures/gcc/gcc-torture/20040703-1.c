@@ -133,43 +133,43 @@ int main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* PR 16341 */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 14,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* PR 16341 */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 14,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-require-effective-target int32plus } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 15,
+// DEFAULT-NEXT:                       length: 47,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-require-effective-target int32plus } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 15,
-// DEFAULT-NEXT:           length: 47,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -189,7 +189,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -219,7 +219,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Typedef {
+// DEFAULT-NEXT: decl[3]: Typedef {
 // DEFAULT-NEXT:       name: "cpp_num_part",
 // DEFAULT-NEXT:       ty: Integer(
 // DEFAULT-NEXT:           Ranked {
@@ -236,7 +236,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Typedef {
+// DEFAULT-NEXT: decl[4]: Typedef {
 // DEFAULT-NEXT:       name: "cpp_num",
 // DEFAULT-NEXT:       ty: Tagged {
 // DEFAULT-NEXT:           kind: Struct,
@@ -253,7 +253,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: Record(
+// DEFAULT-NEXT: decl[5]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -304,24 +304,31 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* True if value should be treated as unsigned.  */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 303,
-// DEFAULT-NEXT:                       length: 51,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* True if value should be treated as unsigned.  */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 303,
+// DEFAULT-NEXT:                                   length: 51,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 13,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 13,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
 // DEFAULT-NEXT:                       declaration: Declaration {
@@ -347,24 +354,31 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* True if the most recent calculation overflowed.  */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 381,
-// DEFAULT-NEXT:                       length: 54,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* True if the most recent calculation overflowed.  */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 381,
+// DEFAULT-NEXT:                                   length: 54,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 14,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 14,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
 // DEFAULT-NEXT:                   FieldDecl {
 // DEFAULT-NEXT:                       declaration: Declaration {
@@ -401,7 +415,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT: decl[6]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -575,7 +589,7 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT: decl[7]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Named(
 // DEFAULT-NEXT:               "cpp_num",
@@ -810,25 +824,32 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Comment {
-// DEFAULT-NEXT:       text: "/* Shift NUM, of width PRECISION, right by N bits.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 1069,
-// DEFAULT-NEXT:           length: 54,
+// DEFAULT-NEXT: decl[8]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Shift NUM, of width PRECISION, right by N bits.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 1069,
+// DEFAULT-NEXT:                       length: 54,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 40,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 40,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[10]: Function(
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[9]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Named(
 // DEFAULT-NEXT:               "cpp_num",
@@ -1397,24 +1418,31 @@ int main() {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Sign-extend.  */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1439,
-// DEFAULT-NEXT:                       length: 19,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* Sign-extend.  */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 1439,
+// DEFAULT-NEXT:                                   length: 19,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 53,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 53,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
@@ -1427,7 +1455,7 @@ int main() {
 // DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[11]: Function(
+// DEFAULT-NEXT: decl[10]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Named(
 // DEFAULT-NEXT:               "cpp_num",
@@ -1933,7 +1961,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[12]: Declaration {
+// DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -1965,7 +1993,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[13]: Declaration {
+// DEFAULT-NEXT: decl[12]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -1997,7 +2025,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[14]: Declaration {
+// DEFAULT-NEXT: decl[13]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -2063,7 +2091,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[15]: Function(
+// DEFAULT-NEXT: decl[14]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

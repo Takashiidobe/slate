@@ -314,7 +314,7 @@ Comment { text: String, kind: Line | Block, loc: Loc }
 
 - Consecutive comments with no code between them form **one** group, including
   across blank lines. Each `Comment.loc` is kept, so blank-line separation is
-  recoverable.
+  recoverable. A group never spans files.
 - Groups appear where items can: `ExternalItem`, `BlockItem`, `MemberItem`,
   `EnumItem`. Comments inside expressions or declarators are not preserved.
 
@@ -425,7 +425,7 @@ the AST redesign epic.
 
 | Current | Target | Also fixes |
 | --- | --- | --- |
-| one `Comment` node per comment | `CommentGroup` | |
+| enum bodies drop comments | `CommentGroup` as an `EnumItem` (`lh7.3.11`) | |
 | `Decl::Declaration` holds one declarator; lists split by token hacks at file scope, in blocks, in tag definitions | `Declaration { specifiers, declarators }` everywhere, including `for` init | file-scope tag definitions drop declarators, initializers, storage (`lh7.1.11`); local `int a, b;` becomes `Block` (`lh7.1.12`); `typedef struct {..} T, *PT` drops `PT`; `for (int i = 0, j = 1;;)` fails to parse |
 | `Decl::Typedef`, `Decl::Record`, `Decl::Enum`; `CType::Tagged { body }` inline for local tags | storage `Typedef`; `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
 | `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` and `Typedef.ty` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |

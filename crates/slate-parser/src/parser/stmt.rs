@@ -334,9 +334,11 @@ impl Parser {
         let mut pending_comments = Vec::new();
         let mut run_text = String::new();
         let mut run_tokens = Vec::new();
-        for node in nodes {
+        let mut index = 0;
+        while index < nodes.len() {
+            let node = &nodes[index];
             match &node.value {
-                PPNodeKind::Comment { text, provenance } => {
+                PPNodeKind::Comment { provenance, .. } => {
                     if !run_tokens.is_empty()
                         && let Ok(parsed) = self.parse_stmts_from_tokens(&run_text, &run_tokens)
                     {
@@ -345,16 +347,14 @@ impl Parser {
                         run_text.clear();
                         run_tokens.clear();
                     }
-                    let comment = node.clone().with_value(Stmt::Comment {
-                        text: text.clone(),
-                        loc: node.expansion,
-                        provenance: *provenance,
-                    });
+                    let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
+                    let comment = group.map(Stmt::Comment);
                     if run_tokens.is_empty() {
                         stmts.push(comment);
                     } else {
                         pending_comments.push(comment);
                     }
+                    index += consumed;
                 }
                 PPNodeKind::Code { text, .. } if !lex(text).is_empty() => {
                     if !run_text.is_empty() {
@@ -362,8 +362,9 @@ impl Parser {
                     }
                     run_text.push_str(text);
                     run_tokens.extend(self.node_tokens(node));
+                    index += 1;
                 }
-                PPNodeKind::Code { .. } => {}
+                PPNodeKind::Code { .. } => index += 1,
             }
         }
         if !run_tokens.is_empty() {

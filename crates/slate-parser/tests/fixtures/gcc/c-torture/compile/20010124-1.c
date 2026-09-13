@@ -11,24 +11,31 @@ struct s { int a; int b; };
 char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Origin: testcase from Joseph Myers <jsm28@cam.ac.uk>, problem pointed\n   out in a post to comp.std.c\n   <980283801.3063.0.nnrp-07.c2deb1c2@news.demon.co.uk>\n   by Dibyendu Majumdar <dibyendu@mazumdar.demon.co.uk>.\n   Compound literals should be parsed as postfix expressions, rather than\n   as cast expressions.  In particular, they are valid operands of sizeof.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 1,
-// DEFAULT-NEXT:           length: 369,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Origin: testcase from Joseph Myers <jsm28@cam.ac.uk>, problem pointed\n   out in a post to comp.std.c\n   <980283801.3063.0.nnrp-07.c2deb1c2@news.demon.co.uk>\n   by Dibyendu Majumdar <dibyendu@mazumdar.demon.co.uk>.\n   Compound literals should be parsed as postfix expressions, rather than\n   as cast expressions.  In particular, they are valid operands of sizeof.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 1,
+// DEFAULT-NEXT:                       length: 369,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 1,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,

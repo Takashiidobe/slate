@@ -72,24 +72,31 @@ void f2(void) { abort(); }
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* PR target/6838 from cato@df.lth.se.\n   cris-elf got an ICE with -O2: the insn matching\n      (insn 49 48 52 (parallel[\n                  (set (mem/s:HI (plus:SI (reg/v/f:SI 0 r0 [24])\n                              (const_int 8 [0x8])) [5 <variable>.c+0 S2 A8])\n                      (reg:HI 2 r2 [27]))\n                  (set (reg/f:SI 2 r2 [31])\n                      (plus:SI (reg/v/f:SI 0 r0 [24])\n                          (const_int 8 [0x8])))\n              ] ) 24 {*mov_sidehi_mem} (nil)\n          (nil))\n   forced a splitter through the output pattern \"#\", but there was no\n   matching splitter.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 609,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* PR target/6838 from cato@df.lth.se.\n   cris-elf got an ICE with -O2: the insn matching\n      (insn 49 48 52 (parallel[\n                  (set (mem/s:HI (plus:SI (reg/v/f:SI 0 r0 [24])\n                              (const_int 8 [0x8])) [5 <variable>.c+0 S2 A8])\n                      (reg:HI 2 r2 [27]))\n                  (set (reg/f:SI 2 r2 [31])\n                      (plus:SI (reg/v/f:SI 0 r0 [24])\n                          (const_int 8 [0x8])))\n              ] ) 24 {*mov_sidehi_mem} (nil)\n          (nil))\n   forced a splitter through the output pattern \"#\", but there was no\n   matching splitter.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 609,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {

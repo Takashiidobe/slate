@@ -136,61 +136,54 @@ int main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Based on execute/simd-1.c, modified by joern.rennecke@st.com to\n   trigger a reload bug.  Verified for gcc mainline from 20050722 13:00 UTC\n   for sh-elf -m4 -O2.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 169,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Based on execute/simd-1.c, modified by joern.rennecke@st.com to\n   trigger a reload bug.  Verified for gcc mainline from 20050722 13:00 UTC\n   for sh-elf -m4 -O2.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 169,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-options \"-Wno-psabi -fwrapv\" } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 170,
+// DEFAULT-NEXT:                       length: 41,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-add-options stack_size } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 212,
+// DEFAULT-NEXT:                       length: 35,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-options \"-Wno-psabi -fwrapv\" } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 170,
-// DEFAULT-NEXT:           length: 41,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-add-options stack_size } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 212,
-// DEFAULT-NEXT:           length: 35,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 4,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -211,7 +204,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Declaration {
+// DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -242,7 +235,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Record(
+// DEFAULT-NEXT: decl[3]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: None,
@@ -289,7 +282,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Typedef {
+// DEFAULT-NEXT: decl[4]: Typedef {
 // DEFAULT-NEXT:       name: "big_t",
 // DEFAULT-NEXT:       ty: Tagged {
 // DEFAULT-NEXT:           kind: Struct,
@@ -304,7 +297,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[7]: Typedef {
+// DEFAULT-NEXT: decl[5]: Typedef {
 // DEFAULT-NEXT:       name: "vecint",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -340,7 +333,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: Typedef {
+// DEFAULT-NEXT: decl[6]: Typedef {
 // DEFAULT-NEXT:       name: "siint",
 // DEFAULT-NEXT:       ty: Integer(
 // DEFAULT-NEXT:           Ranked {
@@ -362,7 +355,7 @@ int main() {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[9]: Declaration {
+// DEFAULT-NEXT: decl[7]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -408,7 +401,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[10]: Declaration {
+// DEFAULT-NEXT: decl[8]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -454,7 +447,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[11]: Declaration {
+// DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -474,7 +467,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[12]: Record(
+// DEFAULT-NEXT: decl[10]: Record(
 // DEFAULT-NEXT:       RecordDecl {
 // DEFAULT-NEXT:           kind: Union,
 // DEFAULT-NEXT:           name: None,
@@ -541,7 +534,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[13]: Declaration {
+// DEFAULT-NEXT: decl[11]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tagged {
@@ -562,7 +555,7 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[14]: Function(
+// DEFAULT-NEXT: decl[12]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "verify",
@@ -668,7 +661,7 @@ int main() {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[15]: Function(
+// DEFAULT-NEXT: decl[13]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -963,24 +956,31 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This is the observed failure - reload 0 has the wrong type and thus the\n     conflict with reload 1 is missed:\n\n  (insn:HI 94 92 96 1 pr23135.c:46 (parallel [\n              (set (subreg:SI (reg:DI 253) 0)\n                  (div:SI (reg:SI 4 r4)\n                      (reg:SI 5 r5)))\n              (clobber (reg:SI 146 pr))\n              (clobber (reg:DF 64 fr0))\n              (clobber (reg:DF 66 fr2))\n              (use (reg:PSI 151 ))\n              (use (reg/f:SI 256))\n          ]) 60 {divsi3_i4} (insn_list:REG_DEP_TRUE 90 (insn_list:REG_DEP_TRUE\n  89 (insn_list:REG_DEP_TRUE 42 (insn_list:REG_DEP_TRUE 83\n  (insn_list:REG_DEP_TRUE 92 (insn_list:REG_DEP_TRUE 91 (nil)))))))\n      (expr_list:REG_DEAD (reg:SI 4 r4)\n          (expr_list:REG_DEAD (reg:SI 5 r5)\n              (expr_list:REG_UNUSED (reg:DF 66 fr2)\n                  (expr_list:REG_UNUSED (reg:DF 64 fr0)\n                      (expr_list:REG_UNUSED (reg:SI 146 pr)\n                          (insn_list:REG_RETVAL 91 (nil))))))))\n\n  Reloads for insn # 94\n  Reload 0: reload_in (SI) = (plus:SI (reg/f:SI 14 r14)\n                                                      (const_int 64 [0x40]))\n          GENERAL_REGS, RELOAD_FOR_OUTADDR_ADDRESS (opnum = 0)\n          reload_in_reg: (plus:SI (reg/f:SI 14 r14)\n                                                      (const_int 64 [0x40]))\n          reload_reg_rtx: (reg:SI 3 r3)\n  Reload 1: GENERAL_REGS, RELOAD_FOR_OUTPUT_ADDRESS (opnum = 0), can't combine,\n  se condary_reload_p reload_reg_rtx: (reg:SI 3 r3) Reload 2: reload_out (SI) =\n  (mem:SI (plus:SI (plus:SI (reg/f:SI 14 r14) (const_int 64 [0x40])) (const_int\n  28 [0x1c])) [ 16 S8 A32]) FPUL_REGS, RELOAD_FOR_OUTPUT (opnum = 0)\n          reload_out_reg: (subreg:SI (reg:DI 253) 0)\n          reload_reg_rtx: (reg:SI 150 fpul)\n          secondary_out_reload = 1\n\n  Reload 3: reload_in (SI) = (symbol_ref:SI (\"__sdivsi3_i4\") [flags 0x1])\n          GENERAL_REGS, RELOAD_FOR_INPUT (opnum = 1), can't combine\n          reload_in_reg: (reg/f:SI 256)\n          reload_reg_rtx: (reg:SI 3 r3)\n    */",
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1016,
-// DEFAULT-NEXT:                       length: 2058,
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comments: [
+// DEFAULT-NEXT:                           Comment {
+// DEFAULT-NEXT:                               text: "/* This is the observed failure - reload 0 has the wrong type and thus the\n     conflict with reload 1 is missed:\n\n  (insn:HI 94 92 96 1 pr23135.c:46 (parallel [\n              (set (subreg:SI (reg:DI 253) 0)\n                  (div:SI (reg:SI 4 r4)\n                      (reg:SI 5 r5)))\n              (clobber (reg:SI 146 pr))\n              (clobber (reg:DF 64 fr0))\n              (clobber (reg:DF 66 fr2))\n              (use (reg:PSI 151 ))\n              (use (reg/f:SI 256))\n          ]) 60 {divsi3_i4} (insn_list:REG_DEP_TRUE 90 (insn_list:REG_DEP_TRUE\n  89 (insn_list:REG_DEP_TRUE 42 (insn_list:REG_DEP_TRUE 83\n  (insn_list:REG_DEP_TRUE 92 (insn_list:REG_DEP_TRUE 91 (nil)))))))\n      (expr_list:REG_DEAD (reg:SI 4 r4)\n          (expr_list:REG_DEAD (reg:SI 5 r5)\n              (expr_list:REG_UNUSED (reg:DF 66 fr2)\n                  (expr_list:REG_UNUSED (reg:DF 64 fr0)\n                      (expr_list:REG_UNUSED (reg:SI 146 pr)\n                          (insn_list:REG_RETVAL 91 (nil))))))))\n\n  Reloads for insn # 94\n  Reload 0: reload_in (SI) = (plus:SI (reg/f:SI 14 r14)\n                                                      (const_int 64 [0x40]))\n          GENERAL_REGS, RELOAD_FOR_OUTADDR_ADDRESS (opnum = 0)\n          reload_in_reg: (plus:SI (reg/f:SI 14 r14)\n                                                      (const_int 64 [0x40]))\n          reload_reg_rtx: (reg:SI 3 r3)\n  Reload 1: GENERAL_REGS, RELOAD_FOR_OUTPUT_ADDRESS (opnum = 0), can't combine,\n  se condary_reload_p reload_reg_rtx: (reg:SI 3 r3) Reload 2: reload_out (SI) =\n  (mem:SI (plus:SI (plus:SI (reg/f:SI 14 r14) (const_int 64 [0x40])) (const_int\n  28 [0x1c])) [ 16 S8 A32]) FPUL_REGS, RELOAD_FOR_OUTPUT (opnum = 0)\n          reload_out_reg: (subreg:SI (reg:DI 253) 0)\n          reload_reg_rtx: (reg:SI 150 fpul)\n          secondary_out_reload = 1\n\n  Reload 3: reload_in (SI) = (symbol_ref:SI (\"__sdivsi3_i4\") [flags 0x1])\n          GENERAL_REGS, RELOAD_FOR_INPUT (opnum = 1), can't combine\n          reload_in_reg: (reg/f:SI 256)\n          reload_reg_rtx: (reg:SI 3 r3)\n    */",
+// DEFAULT-NEXT:                               kind: Block,
+// DEFAULT-NEXT:                               loc: Loc {
+// DEFAULT-NEXT:                                   file: FileId(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   offset: 1016,
+// DEFAULT-NEXT:                                   length: 2058,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 49,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 49,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Const(
 // DEFAULT-NEXT:                       Assign {

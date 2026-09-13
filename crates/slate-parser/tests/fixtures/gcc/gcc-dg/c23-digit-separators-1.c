@@ -42,61 +42,54 @@ _Static_assert(__LINE__ == 456789);
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* Test C23 digit separators.  Valid usages.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 48,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* Test C23 digit separators.  Valid usages.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 48,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-do run } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 49,
+// DEFAULT-NEXT:                       length: 19,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-options \"-std=c23 -pedantic-errors\" } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 69,
+// DEFAULT-NEXT:                       length: 48,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-do run } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 49,
-// DEFAULT-NEXT:           length: 19,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 1,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-options \"-std=c23 -pedantic-errors\" } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 69,
-// DEFAULT-NEXT:           length: 48,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: StaticAssert {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -119,7 +112,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: StaticAssert {
+// DEFAULT-NEXT: decl[2]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -142,7 +135,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: StaticAssert {
+// DEFAULT-NEXT: decl[3]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -165,7 +158,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: StaticAssert {
+// DEFAULT-NEXT: decl[4]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -188,7 +181,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[7]: StaticAssert {
+// DEFAULT-NEXT: decl[5]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -217,7 +210,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: StaticAssert {
+// DEFAULT-NEXT: decl[6]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -246,7 +239,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[9]: StaticAssert {
+// DEFAULT-NEXT: decl[7]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -275,7 +268,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[10]: StaticAssert {
+// DEFAULT-NEXT: decl[8]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -305,7 +298,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[11]: Declaration {
+// DEFAULT-NEXT: decl[9]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -336,7 +329,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[12]: Declaration {
+// DEFAULT-NEXT: decl[10]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -357,7 +350,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[13]: Function(
+// DEFAULT-NEXT: decl[11]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -426,7 +419,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[14]: StaticAssert {
+// DEFAULT-NEXT: decl[12]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {
@@ -449,7 +442,7 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[15]: StaticAssert {
+// DEFAULT-NEXT: decl[13]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
 // DEFAULT-NEXT:           condition: Const(
 // DEFAULT-NEXT:               Binary {

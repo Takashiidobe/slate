@@ -49,43 +49,43 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment {
-// DEFAULT-NEXT:       text: "/* This testcase generates MMX instructions together with x87 instructions.\n   Currently, there is no \"emms\" generated to switch between register sets,\n   so the testcase fails for targets where MMX insns are enabled.  */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 0,
-// DEFAULT-NEXT:           length: 221,
+// DEFAULT: decl[0]: Comment(
+// DEFAULT-NEXT:       CommentGroup {
+// DEFAULT-NEXT:           comments: [
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* This testcase generates MMX instructions together with x87 instructions.\n   Currently, there is no \"emms\" generated to switch between register sets,\n   so the testcase fails for targets where MMX insns are enabled.  */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 0,
+// DEFAULT-NEXT:                       length: 221,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Comment {
+// DEFAULT-NEXT:                   text: "/* { dg-options \"-mno-mmx -Wno-psabi\" { target { x86_64-*-* i?86-*-* } } } */",
+// DEFAULT-NEXT:                   kind: Block,
+// DEFAULT-NEXT:                   loc: Loc {
+// DEFAULT-NEXT:                       file: FileId(
+// DEFAULT-NEXT:                           3,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       offset: 222,
+// DEFAULT-NEXT:                       length: 77,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           provenance: Provenance {
+// DEFAULT-NEXT:               file: FileId(
+// DEFAULT-NEXT:                   3,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               kind: User,
+// DEFAULT-NEXT:               line: 0,
+// DEFAULT-NEXT:               header: None,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment {
-// DEFAULT-NEXT:       text: "/* { dg-options \"-mno-mmx -Wno-psabi\" { target { x86_64-*-* i?86-*-* } } } */",
-// DEFAULT-NEXT:       loc: Loc {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           offset: 222,
-// DEFAULT-NEXT:           length: 77,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 3,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -106,7 +106,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Typedef {
+// DEFAULT-NEXT: decl[2]: Typedef {
 // DEFAULT-NEXT:       name: "V2SI",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -139,7 +139,7 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Typedef {
+// DEFAULT-NEXT: decl[3]: Typedef {
 // DEFAULT-NEXT:       name: "V2USI",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -172,7 +172,7 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[5]: Typedef {
+// DEFAULT-NEXT: decl[4]: Typedef {
 // DEFAULT-NEXT:       name: "V2SF",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -202,7 +202,7 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[6]: Typedef {
+// DEFAULT-NEXT: decl[5]: Typedef {
 // DEFAULT-NEXT:       name: "V2HI",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -235,7 +235,7 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[7]: Typedef {
+// DEFAULT-NEXT: decl[6]: Typedef {
 // DEFAULT-NEXT:       name: "V2UHI",
 // DEFAULT-NEXT:       ty: Vector(
 // DEFAULT-NEXT:           VectorType {
@@ -268,7 +268,7 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT: decl[7]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -323,7 +323,7 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Function(
+// DEFAULT-NEXT: decl[8]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -372,7 +372,7 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[10]: Function(
+// DEFAULT-NEXT: decl[9]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -427,7 +427,7 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[11]: Function(
+// DEFAULT-NEXT: decl[10]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

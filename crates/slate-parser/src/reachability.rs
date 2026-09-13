@@ -61,7 +61,7 @@ impl<'a> Reachability<'a> {
             return;
         }
         match &self.nodes[id].value {
-            Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
+            Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             Decl::Function(function) => self.mark_function(function),
             Decl::Declaration { declaration, .. } => self.mark_declaration(declaration),
             Decl::Typedef { ty, .. } => self.mark_type(ty),
@@ -174,7 +174,7 @@ impl<'a> Reachability<'a> {
                 self.mark_stmts(body);
             }
             Stmt::NestedFunction(function) => self.mark_function(function),
-            Stmt::Comment { .. }
+            Stmt::Comment(_)
             | Stmt::ReturnVoid
             | Stmt::StaticAssert(_)
             | Stmt::Attribute(_)

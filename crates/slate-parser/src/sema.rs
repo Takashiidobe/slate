@@ -65,14 +65,14 @@ impl TranslationUnit {
                     collect_tag_names(&declaration.specifiers.ty, &mut tags);
                 }
                 Decl::Typedef { ty, .. } => collect_tag_names(ty, &mut tags),
-                Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
+                Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             }
         }
 
         let mut errors = Vec::new();
         for decl in &self.decls {
             match &decl.value {
-                Decl::Comment { .. } | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
+                Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
                 Decl::Function(function) => {
                     check_attributes(
                         &function.attributes,
@@ -527,7 +527,7 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             walk_stmts(body, visit);
         }
         Stmt::NestedFunction(_)
-        | Stmt::Comment { .. }
+        | Stmt::Comment(_)
         | Stmt::ReturnVoid
         | Stmt::StaticAssert(_)
         | Stmt::Attribute(_)

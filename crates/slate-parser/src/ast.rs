@@ -90,11 +90,7 @@ pub enum Initializer {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
-    Comment {
-        text: String,
-        loc: Loc,
-        provenance: Provenance,
-    },
+    Comment(CommentGroup),
     Return(SpannedExpr),
     ReturnVoid,
     Expr(SpannedExpr),
@@ -213,6 +209,10 @@ impl<T: std::fmt::Display> std::fmt::Display for Span<T> {
 impl<T> Span<T> {
     pub fn with_value<U>(self, value: U) -> Span<U> {
         Span::new(value, self.spelling, self.expansion)
+    }
+
+    pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Span<U> {
+        Span::new(f(self.value), self.spelling, self.expansion)
     }
 
     pub fn cover<U>(value: T, spans: &[Span<U>]) -> Self {
@@ -769,12 +769,27 @@ pub struct RecordDecl {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldItem {
-    Comment {
-        text: String,
-        loc: Loc,
-        provenance: Provenance,
-    },
+    Comment(CommentGroup),
     Field(FieldDecl),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CommentGroup {
+    pub comments: Vec<Comment>,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Comment {
+    pub text: String,
+    pub kind: CommentKind,
+    pub loc: Loc,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentKind {
+    Line,
+    Block,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -801,11 +816,7 @@ pub struct Enumerator {
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum Decl {
-    Comment {
-        text: String,
-        loc: Loc,
-        provenance: Provenance,
-    },
+    Comment(CommentGroup),
     Function(FunctionDecl),
     Declaration {
         declaration: Declaration,
@@ -835,7 +846,7 @@ pub enum Decl {
 impl Decl {
     pub fn name(&self) -> Option<&str> {
         match self {
-            Self::Comment { .. } => None,
+            Self::Comment(_) => None,
             Self::Function(function) => Some(&function.name),
             Self::Declaration { declaration, .. } => declaration.declarator.name(),
             Self::StaticAssert { .. } | Self::Asm { .. } => None,
@@ -847,7 +858,7 @@ impl Decl {
 
     pub fn provenance(&self) -> FileId {
         match self {
-            Self::Comment { provenance, .. } => provenance.file,
+            Self::Comment(group) => group.provenance.file,
             Self::Function(function) => function.provenance.file,
             Self::Declaration { provenance, .. }
             | Self::StaticAssert { provenance, .. }

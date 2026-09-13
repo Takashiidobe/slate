@@ -329,6 +329,40 @@ impl Parser {
             PPNodeKind::Code { provenance, .. } => *provenance,
         }
     }
+
+    fn comment_group(
+        &self,
+        nodes: &[PPNode],
+        provenance: Provenance,
+    ) -> (Span<CommentGroup>, usize) {
+        let file = nodes[0].expansion.file;
+        let mut comments = Vec::new();
+        let mut consumed = 0;
+        for (index, node) in nodes.iter().enumerate() {
+            match &node.value {
+                PPNodeKind::Comment { text, .. } if node.expansion.file == file => {
+                    let kind = if text.starts_with("//") {
+                        CommentKind::Line
+                    } else {
+                        CommentKind::Block
+                    };
+                    comments.push(Comment {
+                        text: text.clone(),
+                        kind,
+                        loc: node.expansion,
+                    });
+                    consumed = index + 1;
+                }
+                PPNodeKind::Code { .. } if self.node_tokens(node).is_empty() => {}
+                _ => break,
+            }
+        }
+        let group = CommentGroup {
+            comments,
+            provenance,
+        };
+        (Span::cover(group, &nodes[..consumed]), consumed)
+    }
 }
 
 pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {

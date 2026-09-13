@@ -344,14 +344,10 @@ impl Parser {
             }
         }
         match &nodes[0].value {
-            PPNodeKind::Comment { text, provenance } => Ok((
-                vec![nodes[0].clone().with_value(Decl::Comment {
-                    text: text.clone(),
-                    loc: nodes[0].expansion,
-                    provenance: *provenance,
-                })],
-                1,
-            )),
+            PPNodeKind::Comment { provenance, .. } => {
+                let (group, consumed) = self.comment_group(nodes, *provenance);
+                Ok((vec![group.map(Decl::Comment)], consumed))
+            }
             PPNodeKind::Code {
                 text, provenance, ..
             } if text_starts_with_typedef(text) => {
@@ -934,13 +930,10 @@ impl Parser {
         let mut index = 0;
         while index < nodes.len() {
             match &nodes[index].value {
-                PPNodeKind::Comment { text, provenance } => {
-                    fields.push(nodes[index].clone().with_value(FieldItem::Comment {
-                        text: text.clone(),
-                        loc: nodes[index].expansion,
-                        provenance: *provenance,
-                    }));
-                    index += 1;
+                PPNodeKind::Comment { provenance, .. } => {
+                    let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
+                    fields.push(group.map(FieldItem::Comment));
+                    index += consumed;
                 }
                 PPNodeKind::Code { .. } => {
                     if self.node_tokens(&nodes[index]).is_empty() {
