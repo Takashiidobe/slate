@@ -7,7 +7,7 @@ use slate_parser::render::Renderer;
 use std::env;
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
@@ -21,12 +21,12 @@ fn main() -> miette::Result<()> {
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
+    let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
+    if let Some(home) = env::var_os("HOME") {
+        system.push(Path::new(&home).join("Projects/slate/libc-shim/include"));
+    }
     let search = SearchPaths {
-        system: compiler_args
-            .isystem
-            .iter()
-            .map(std::path::PathBuf::from)
-            .collect(),
+        system,
         ..SearchPaths::default()
     };
     let mut parser = Parser::new(search)
