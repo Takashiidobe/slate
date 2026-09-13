@@ -1,3 +1,4 @@
+use super::asm::is_asm_keyword;
 use super::attributes::apply_vector_attributes;
 use super::declarator::{DeclaratorParser, apply_abstract_declarator};
 use super::{Loc, Parser, lex, span_decl_result, span_pp_nodes, span_tokens, synthetic};
@@ -12,8 +13,17 @@ use std::collections::{HashMap, HashSet};
 impl Parser {
     pub(super) fn parse_declaration_tokens(
         &self,
+        code: &str,
+        tokens: &[Span<Token>],
+    ) -> Result<Declaration, ParseError> {
+        self.parse_declaration_tokens_with(code, tokens, true)
+    }
+
+    fn parse_declaration_tokens_with(
+        &self,
         _code: &str,
         tokens: &[Span<Token>],
+        allow_asm_label: bool,
     ) -> Result<Declaration, ParseError> {
         let mut parser = DeclaratorParser {
             tokens,
@@ -135,6 +145,16 @@ impl Parser {
                 .parse_declarator(false)
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
         };
+        if !allow_asm_label && is_asm_keyword(parser.peek()) {
+            return Err(self.error_at_tokens(
+                tokens,
+                parser.pos,
+                "expected `;` at end of declaration list",
+            ));
+        }
+        let asm_label = parser
+            .parse_asm_label(storage)
+            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
         let (trailing_attributes, position) = self
             .parse_attribute_groups(parser.tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
@@ -191,6 +211,7 @@ impl Parser {
                 is_constexpr,
             },
             declarator,
+            asm_label,
             initializer,
             attributes,
         })
@@ -202,14 +223,14 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let Some(colon) = top_level_token(tokens, &Token::Colon) else {
-            return self.parse_declaration_tokens(code, tokens);
+            return self.parse_declaration_tokens_with(code, tokens, false);
         };
         let Some(semi) = top_level_token(tokens, &Token::Semi) else {
             return Err(self.error_at_tokens(tokens, tokens.len(), "expected `;`"));
         };
         let mut declaration_tokens = tokens[..colon].to_vec();
         declaration_tokens.push(tokens[semi].clone());
-        self.parse_declaration_tokens(code, &declaration_tokens)
+        self.parse_declaration_tokens_with(code, &declaration_tokens, false)
     }
 
     pub(super) fn parse_static_assert(
@@ -375,17 +396,12 @@ impl Parser {
                             part = with_prefix;
                         }
                         part.push(semi.clone());
-                        let (name, ty, attributes) =
-                            self.parse_typedef_line(&typedef_text, &part)?;
-                        typedefs.push(span_pp_nodes(
-                            Decl::Typedef {
-                                name,
-                                ty,
-                                provenance: self.node_provenance(&nodes[0]),
-                                attributes,
-                            },
-                            &nodes[..span],
-                        ));
+                        let typedef = self.parse_typedef_line(
+                            &typedef_text,
+                            &part,
+                            self.node_provenance(&nodes[0]),
+                        )?;
+                        typedefs.push(span_pp_nodes(typedef, &nodes[..span]));
                     }
                 }
                 Ok((typedefs, span))
@@ -979,7 +995,8 @@ impl Parser {
         &self,
         code: &str,
         tokens: &[Span<Token>],
-    ) -> Result<(String, CType, Vec<Attribute>), ParseError> {
+        provenance: Provenance,
+    ) -> Result<Decl, ParseError> {
         let declaration = self.parse_declaration_tokens(code, tokens)?;
         let name = declaration
             .declarator
@@ -993,7 +1010,13 @@ impl Parser {
                 ty: Box::new(declaration.specifiers.ty),
             }
         };
-        Ok((name.to_string(), ty, declaration.attributes))
+        Ok(Decl::Typedef {
+            name: name.to_string(),
+            ty,
+            asm_label: declaration.asm_label,
+            provenance,
+            attributes: declaration.attributes,
+        })
     }
 }
 
@@ -1219,6 +1242,7 @@ pub(super) fn build_tag_alias_decl(
         Decl::Typedef {
             name: alias,
             ty: apply_abstract_declarator(base, declarator),
+            asm_label: None,
             provenance,
             attributes: Vec::new(),
         }
@@ -1235,6 +1259,7 @@ pub(super) fn build_tag_alias_decl(
                     is_constexpr: false,
                 },
                 declarator,
+                asm_label: None,
                 initializer: None,
                 attributes: Vec::new(),
             },

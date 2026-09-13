@@ -162,11 +162,14 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             };
-            let Some((arguments, end)) = invocation_arguments(tokens, i + 1) else {
+            let Some((mut arguments, end)) = invocation_arguments(tokens, i + 1) else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
             };
+            if arguments.is_empty() && parameters.len() == 1 && !macro_def.variadic {
+                arguments.push(Vec::new());
+            }
             if !macro_def.variadic && arguments.len() != parameters.len()
                 || macro_def.variadic && arguments.len() < parameters.len()
             {

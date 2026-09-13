@@ -1,3 +1,4 @@
+mod asm;
 mod attributes;
 mod decl;
 mod declarator;

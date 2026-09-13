@@ -256,6 +256,12 @@ impl Default for Provenance {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AsmLabel {
+    Symbol(String),
+    Register(Register),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Register {
     X86(X86Register),
     Other(String),
@@ -643,6 +649,8 @@ pub struct Declaration {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
+    pub asm_label: Option<Span<AsmLabel>>,
+    #[debug(skip_if = Option::is_none)]
     pub initializer: Option<Initializer>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
@@ -715,6 +723,8 @@ pub enum Decl {
     Typedef {
         name: String,
         ty: CType,
+        #[debug(skip_if = Option::is_none)]
+        asm_label: Option<Span<AsmLabel>>,
         provenance: Provenance,
         #[debug(skip_if = Vec::is_empty)]
         attributes: Vec<Attribute>,

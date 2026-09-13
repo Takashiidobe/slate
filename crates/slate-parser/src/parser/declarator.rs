@@ -497,6 +497,7 @@ impl<'a> DeclaratorParser<'a> {
                             is_constexpr: false,
                         },
                         declarator,
+                        asm_label: None,
                         initializer: None,
                         attributes: Vec::new(),
                     },

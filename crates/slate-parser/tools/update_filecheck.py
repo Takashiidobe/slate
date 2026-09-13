@@ -120,7 +120,7 @@ def render_error(
         raise RuntimeError(f"expected {fixture} to fail parsing")
     fixture_display = os.path.relpath(fixture, repo)
     return [
-        line.strip().replace(temp_display, fixture_display)
+        line.strip().replace(str(parsed_fixture), fixture_display).replace(temp_display, fixture_display)
         for line in result.stderr.splitlines()
         if line.startswith("Error:")
         or re.match(r"^\s*(?:\d+ │|×|⚠|╭─|·|╰─)", line)
