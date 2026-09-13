@@ -39,7 +39,12 @@ impl WideInt {
     }
 
     fn combined_width_signed(&self, rhs: &Self) -> (u32, bool) {
-        (self.width.max(rhs.width), self.signed && rhs.signed)
+        match (self.signed, rhs.signed) {
+            (true, true) | (false, false) => (self.width.max(rhs.width), self.signed),
+            (true, false) if self.width > rhs.width => (self.width, true),
+            (false, true) if rhs.width > self.width => (rhs.width, true),
+            _ => (self.width.max(rhs.width), false),
+        }
     }
 
     fn binary(&self, rhs: &Self, op: impl FnOnce(&BigInt, &BigInt) -> BigInt) -> Self {
@@ -439,6 +444,8 @@ pub enum ConstExprError {
     UnsupportedCall(String),
     #[error("{0} is not a constant expression")]
     NotConstant(&'static str),
+    #[error("{0} requires semantic type evaluation")]
+    RequiresSemanticEvaluation(&'static str),
     #[error("invalid floating literal `{0}`")]
     InvalidFloatLiteral(String),
 }
@@ -524,7 +531,8 @@ fn parse_wide_integer_literal(spelling: &str) -> WideInt {
 fn contains_wide(expression: &ConstExpr) -> bool {
     match expression {
         ConstExpr::WideInteger(_) => true,
-        ConstExpr::Unary { value, .. } | ConstExpr::Cast { value, .. } => contains_wide(value),
+        ConstExpr::Unary { value, .. } => contains_wide(value),
+        ConstExpr::Cast { ty, value, .. } => bit_int_width(ty).is_some() || contains_wide(value),
         ConstExpr::Binary { left, right, .. } => contains_wide(left) || contains_wide(right),
         ConstExpr::Ternary {
             then_value,
@@ -648,7 +656,9 @@ impl Parser {
             | ConstExpr::Utf16StringLit(_)
             | ConstExpr::Utf32StringLit(_)
             | ConstExpr::WideStringLit(_) => Err(ConstExprError::NotConstant("string literal")),
-            ConstExpr::Generic { .. } => Err(ConstExprError::NotConstant("generic selection")),
+            ConstExpr::Generic { .. } => Err(ConstExprError::RequiresSemanticEvaluation(
+                "generic selection",
+            )),
             ConstExpr::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
             ConstExpr::Identifier(name) => match is_defined {
                 Some(_) if name == "true" => Ok(1),
@@ -681,6 +691,9 @@ impl Parser {
                     }
                     _ => Err(ConstExprError::UnsupportedCall(callee.to_string())),
                 }
+            }
+            ConstExpr::Cast { ty, value, .. } if bit_int_width(ty).is_some() => {
+                Self::evaluate_wide(expression, is_defined).map(|wide| wide.truncate_to_i64())
             }
             ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
             ConstExpr::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
@@ -844,7 +857,13 @@ impl Parser {
                     )),
                 }
             }
-            ConstExpr::Cast { value, .. } => Self::evaluate_wide(value, is_defined),
+            ConstExpr::Cast { ty, value, .. } => {
+                let value = Self::evaluate_wide(value, is_defined)?;
+                match bit_int_width(ty) {
+                    Some((width, signed)) => Ok(WideInt::wrap(value.value, width, signed)),
+                    None => Ok(value),
+                }
+            }
             ConstExpr::Ternary {
                 condition,
                 then_value,
@@ -1635,7 +1654,22 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
             IntegerRank::LongLong => 8,
             IntegerRank::Int128 => 16,
         }),
-        CType::Integer(IntegerType::BitInt { .. }) => Err(ConstExprError::UnsupportedTypeSize),
+        CType::Integer(IntegerType::BitInt { width, .. }) => {
+            let width = Parser::evaluate_expr(width, None)?;
+            let width = u64::try_from(width).map_err(|_| ConstExprError::UnsupportedTypeSize)?;
+            let bytes = width
+                .checked_add(7)
+                .and_then(|width| width.checked_div(8))
+                .ok_or(ConstExprError::UnsupportedTypeSize)?;
+            if bytes <= 16 {
+                Ok(bytes.next_power_of_two())
+            } else {
+                bytes
+                    .checked_add(7)
+                    .map(|bytes| bytes / 8 * 8)
+                    .ok_or(ConstExprError::UnsupportedTypeSize)
+            }
+        }
         CType::Floating(kind) => Ok(match kind {
             FloatingType::BFloat16 | FloatingType::Float16 | FloatingType::Fp16 => 2,
             FloatingType::Float => 4,
@@ -1668,6 +1702,15 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
         | CType::Vector(_)
         | CType::FixedPoint(_) => Err(ConstExprError::UnsupportedTypeSize),
     }
+}
+
+fn bit_int_width(ty: &CType) -> Option<(u32, bool)> {
+    let CType::Integer(IntegerType::BitInt { width, signed }) = ty else {
+        return None;
+    };
+    let width = Parser::evaluate_expr(width, None).ok()?;
+    let width = u32::try_from(width).ok()?;
+    (width > 0).then_some((width, *signed))
 }
 
 pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -> bool {
