@@ -82,7 +82,7 @@ impl<'p, 'a> Fragment<'p, 'a> {
     }
 
     fn error(&self, message: impl Into<String>) -> ParseError {
-        self.parser.error_at(Loc::whole(self.code), message)
+        self.parser.error_at_tokens(self.tokens, self.pos, message)
     }
 
     fn expect(&mut self, token: Token, message: &str) -> Result<(), ParseError> {
@@ -489,7 +489,9 @@ impl Parser {
                 } else {
                     join_node_text(&nodes[..span])
                 };
-                let (name, ty, attributes) = self.parse_typedef_line(&typedef_text)?;
+                let typedef_tokens = self.nodes_tokens(&nodes[..span]);
+                let (name, ty, attributes) =
+                    self.parse_typedef_line(&typedef_text, &typedef_tokens)?;
                 Ok((
                     vec![span_pp_nodes(
                         Decl::Typedef {
@@ -1000,8 +1002,9 @@ impl Parser {
     fn parse_typedef_line(
         &self,
         code: &str,
+        tokens: &[Span<Token>],
     ) -> Result<(String, CType, Vec<Attribute>), ParseError> {
-        let declaration = self.parse_declaration(code)?;
+        let declaration = self.parse_declaration_tokens(code, tokens)?;
         let name = declaration
             .declarator
             .name()
@@ -1062,25 +1065,30 @@ impl Parser {
         message: impl Into<String>,
     ) -> ParseError {
         let message = message.into();
-        let Some(token) = tokens.get(position).or_else(|| tokens.last()) else {
+        if tokens.is_empty() {
             return self.error_at(Loc::whole(""), message);
-        };
-        let loc = token.expansion;
-        let Some(path) = self.files.get_path(loc.file) else {
-            return ParseError::new(
-                self.source_name.clone(),
-                self.source.clone(),
-                loc.offset,
-                loc.length.max(1),
-                message,
-            );
-        };
-        let source = std::fs::read_to_string(path).unwrap_or_default();
+        }
+        let end = position.min(tokens.len() - 1) + 1;
+        for token in tokens[..end].iter().rev() {
+            let loc = token.expansion;
+            let Some(path) = self.files.get_path(loc.file) else {
+                continue;
+            };
+            let Ok(source) = std::fs::read_to_string(path) else {
+                continue;
+            };
+            if loc.offset >= source.len() {
+                continue;
+            }
+            let length = loc.length.max(1).min(source.len() - loc.offset);
+            return ParseError::new(display_path(path), source, loc.offset, length, message);
+        }
+        let offset = self.source.len().saturating_sub(1);
         ParseError::new(
-            display_path(path),
-            source,
-            loc.offset,
-            loc.length.max(1),
+            self.source_name.clone(),
+            self.source.clone(),
+            offset,
+            usize::from(!self.source.is_empty()),
             message,
         )
     }
