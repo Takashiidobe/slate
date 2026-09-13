@@ -25,6 +25,7 @@ the concept page to reflect the new decision (see below).
 
 **Log entry (`llog log "<title>" "<entry>"`)** — a point-in-time record. Use
 it for:
+
 - A decision made and why, including tradeoffs considered and rejected.
 - A root cause found for a bug, especially if it wasn't obvious from the
   symptom.
@@ -35,6 +36,7 @@ it for:
 
 **Concept page (`llog new "<title>"`, then edit the file directly)** — a
 durable reference. Use it for:
+
 - How a subsystem or mechanism works, once it's stable enough to describe
   without hedging.
 - A standing convention or invariant the codebase relies on.
@@ -51,7 +53,7 @@ belongs in log entries, not in edits piling up in the concept page.
 - Routine mechanical actions (ran the tests, fixed a typo, formatted a file)
   — these have no decision content and clutter search results.
 - Anything already fully evident from reading the diff or commit message.
-- Restating what the code does — write *why*, not *what*. If it needs no
+- Restating what the code does — write _why_, not _what_. If it needs no
   explanation beyond the diff, it doesn't need a log entry either.
 - Speculative or unconfirmed claims. Only log what actually happened or was
   actually decided this session, not a plan or a guess.

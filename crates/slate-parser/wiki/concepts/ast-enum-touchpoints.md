@@ -61,7 +61,7 @@ the wrapper's `.value`.
   `array_size`) but both are exhaustive over `Expr` too — see below,
   they'll fail to compile and tell you.
 
-Note: most *general* expressions never construct `ast::Expr` directly —
+Note: most _general_ expressions never construct `ast::Expr` directly —
 they go through `const_expr::Parser` and get wrapped once as
 `Expr::Const(Box<ConstExpr>)` by `Parser::parse_expression` in
 `src/parser/stmt.rs`. Only bare string literals are built as an `Expr` variant
@@ -69,7 +69,7 @@ directly, bypassing `const_expr`. When in doubt, a new expression-level
 construct belongs in `ConstExpr`, not `Expr`.
 
 GNU statement expressions `({ ... })` are split across both: when the
-*entire* statement is `({ ... });` (or the whole initializer is
+_entire_ statement is `({ ... });` (or the whole initializer is
 `= ({ ... })`), `src/parser/`'s statement/initializer parsing special-cases
 it directly into `ast::Expr::StatementExpression(Vec<SpannedStmt>)` with
 real parsed statements (see `parse_one_stmt` and the initializer path in
@@ -82,13 +82,13 @@ has no way to call back into `src/parser/stmt.rs`'s statement grammar (that need
 as `ConstExpr::StatementExpression(Vec<Span<Token>>)` — unparsed — when it
 sees `(` `{`. The two `StatementExpression` variants (one on `ast::Expr`
 holding parsed statements, one on `ConstExpr` holding raw tokens) are
-*not* the same shape; don't assume parity between them without checking
+_not_ the same shape; don't assume parity between them without checking
 which parser produced the node.
 
 `_Generic` used to be one of those bypassing special forms (its own
 `Expr::Generic` variant, parsed by a hand-rolled paren/comma scanner in
 `parser.rs::parse_expression`, now `src/parser/stmt.rs`), removed in slate-parser-wf8.2.4: that
-scanner only matched when the *entire* expression span was exactly
+scanner only matched when the _entire_ expression span was exactly
 `_Generic(...)`, so `_Generic(x, int: 1) != 1` (a `_Generic` embedded as
 a primary expression inside a larger expression) hit "expected `)` after
 `_Generic`". `const_expr::Parser::parse_primary` already had a correct,
@@ -135,7 +135,7 @@ is now `Err(DeclaratorError::ExpectedToken(..))`.
   `ConstExprError::UnsupportedTypeSize`.
 - `tests/filecheck.rs` — `array_size`: exhaustive, used only for the
   clang-oracle comparison path; needs a string rendering.
-- `src/parser/declarator.rs` — wherever `ArraySize` is *constructed*
+- `src/parser/declarator.rs` — wherever `ArraySize` is _constructed_
   (`DeclaratorParser::parse_declarator`'s `[` handling) — not a match
   site, but the natural place to add parsing for a new array-size form.
 

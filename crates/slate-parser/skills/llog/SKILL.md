@@ -35,26 +35,32 @@ cheaper and searchable just the same.
 ## Commands
 
 **Start a new project's wiki:**
+
 ```
 llog init
 ```
+
 Scaffolds `wiki/{concepts,log}/` and `wiki/index.md`, and builds the (empty)
 `.llog/` search index. Run this once per project, from the project root,
 before using any other command. Fails loudly if `wiki/` already exists
 rather than touching it — safe to run speculatively to check.
 
 **Create a concept page:**
+
 ```
 llog new "<title>"
 ```
+
 Scaffolds `wiki/concepts/<slug>.md` with a `# <title>` heading and links it
 from `wiki/index.md` automatically. Fails if the slug already exists — edit
 the existing file directly instead of creating a near-duplicate.
 
 **Add a log entry:**
+
 ```
 llog log "<title>" "<entry text>" [--date "<when>"]
 ```
+
 Creates a new file `wiki/log/YYYY-MM-DD-HH-MM.md` (collision-suffixed if two
 entries land in the same minute) with the title as an `# ` heading, a
 timestamp line, and the entry body. Every call creates a new file — never
@@ -68,15 +74,18 @@ actual date/time so entries stay in true chronological order in `wiki/log/`
 rather than clustering under today's date.
 
 **Search:**
+
 ```
 llog search "<query>" [--limit N] [--plain]     # default limit: 3
 ```
+
 Lazily reindexes any changed/new/deleted `.md` file under `wiki/` (no
 separate index step needed) and prints the matched file paths in ranked
 order. `index.md` itself is excluded from results since it's pure
 navigation, not content.
 
 What happens after the path list depends on where stdout is going:
+
 - **Real terminal (you, interactively):** `llog search` also opens all
   matched files in `nvim` as an arglist. Each file opens with the cursor
   already jumped to the first match of the query terms (case-insensitive,
@@ -98,9 +107,11 @@ current by editing in place, so their rank should reflect relevance, not
 recency.
 
 **Review the log for concept-worthy material:**
+
 ```
 llog review [--mark "<path>"]
 ```
+
 `llog review` (no args) lists log entries created since the last review,
 oldest first — the raw material for deciding whether something should be
 promoted into a concept page. It's read-only: it doesn't change anything.
@@ -111,9 +122,11 @@ needed) — if that work gets interrupted, leaving the marker unmoved means
 the same entries surface again next time instead of being silently skipped.
 
 **Check for dangling links:**
+
 ```
 llog check
 ```
+
 Walks every `.md` file under `wiki/`, extracts markdown links (`[text](target)`),
 and verifies each local target resolves to a real file. Targets are resolved
 relative to the linking file's directory, same as a markdown renderer would

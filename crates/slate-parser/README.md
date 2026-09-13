@@ -2,7 +2,7 @@
 
 A C frontend (preprocessing + parsing + sema) that, unlike clang, does not
 collapse conditional compilation into a single configuration. Instead it
-preserves *all* preprocessor branches as first-class data in the AST, so a
+preserves _all_ preprocessor branches as first-class data in the AST, so a
 downstream tool can later evaluate that AST against a chosen set of flags
 (e.g. a Rust target + feature set) and get back a concrete, clang-equivalent
 AST for that one configuration — repeated cheaply for every configuration
@@ -72,6 +72,7 @@ AST              into Rust.
 
 If sema ran on the polyvariant AST before eval, it would have to handle
 code like:
+
 ```c
 #ifdef _WIN32
 typedef HANDLE Socket;
@@ -81,10 +82,11 @@ typedef int Socket;
 ...
 Socket x; x = foo();     // unconditional code, conditional type
 ```
+
 The `Socket` lookup here returns `Conditional<Type>`, so checking `x =
 foo()` would need to become `Conditional<Diagnostic>` too, joining
 conditions with `And` wherever multiple conditional bindings are jointly
-live at a use site — i.e. type-checking every reachable *combination* of
+live at a use site — i.e. type-checking every reachable _combination_ of
 conditional bindings, not just every branch in isolation. That's exactly
 the combinatorial blowup structural per-config parsing was meant to
 avoid, just moved one phase later.
@@ -130,6 +132,7 @@ typedef HANDLE Socket;
 typedef int Socket;
 #endif
 ```
+
 is divergence at a structural site — the parser sees two different
 `typedef` branches directly.
 
@@ -142,7 +145,8 @@ is divergence at a structural site — the parser sees two different
 ...
 int x = FLAG;
 ```
-is divergence *inside a macro definition*, observed far from any
+
+is divergence _inside a macro definition_, observed far from any
 `#ifdef` in the token stream. This is why the macro table is
 `HashMap<String, Conditional<MacroDef>>` from day one, and expansion of
 a divergent macro produces `Conditional<TokenStream>` that the parser
@@ -157,7 +161,7 @@ known stdlib constants (`ULONG_MAX` → `u64::MAX`, say) instead of emitting
 a raw translated value for everything. That requires knowing which file a
 declaration actually came from, which requires `#include` resolution to
 exist — pulled forward ahead of full macro expansion (phase 2) rather
-than deferred, since there's nothing to report provenance *of* without it.
+than deferred, since there's nothing to report provenance _of_ without it.
 
 ```rust
 struct FileId(u32);   // interned path
@@ -180,7 +184,7 @@ don't need real headers, tagging the whole source as `User` provenance
 under a synthetic file name.
 
 Confirmed against clang empirically before building this: `-ast-dump=json`
-does *not* expose macro definitions directly (`-detailed-preprocessing-record`
+does _not_ expose macro definitions directly (`-detailed-preprocessing-record`
 doesn't inject `MacroDefinitionRecord` nodes into that dump — tested, not
 just assumed), but every location clang emits already distinguishes
 `spellingLoc` (where a token's text actually lives) from `expansionLoc`
@@ -211,6 +215,7 @@ everything else builds on.
 Add `#ifdef`/`#ifndef`/`#if`/`#elif`/`#else`/`#endif` and `defined()`,
 tracked as a condition stack. No macro object/function-like expansion
 yet — just enough to make
+
 ```c
 int main() {
 #ifdef _WIN32
@@ -220,6 +225,7 @@ int main() {
 #endif
 }
 ```
+
 parse into a `Conditional<Stmt>` for the `return` statement. Parser
 becomes branch-point aware here: this is the invasive step where
 statement/decl lists must accept an interleaved branch point mid-list.
@@ -275,7 +281,7 @@ happen for straightforward `defined()`/`not()` pairs and would indicate
 a construction bug once real `#if`/`#elif` arithmetic is added. This was
 built alongside phases 1's `Conditional<Stmt>` and the typedef example's
 `Decl::Conditional`, rather than deferred to the end, since both already
-needed *some* eval path to be testable end-to-end.
+needed _some_ eval path to be testable end-to-end.
 
 **Phase 6 — sema, on the concrete AST** (in progress — see `src/sema.rs`)
 Ordinary monomorphic C sema: implicit conversions, integer promotions,
@@ -304,7 +310,7 @@ configuration).
 
 A first version of the oracle comparison is already implemented in the
 filecheck integration test, ahead of full fuzzing infrastructure, since
-eval() and the typedef example needed *some* correctness check against
+eval() and the typedef example needed _some_ correctness check against
 real clang to be worth trusting. The comparison is deliberately made
 only after eval: the polyvariant AST retains preprocessing branches and
 is checked by its own FileCheck expectations, while Clang's AST is
@@ -322,7 +328,7 @@ Instead, both sides get projected down into a small canonical
 `DeclSummary` (defined only in the test) — "function X returns these
 integer literals in order", "typedef X aliases this type name" — and
 the two summaries are compared. This only needs to grow in step with
-what *our evaluated, reachable* AST currently claims to model, not with
+what _our evaluated, reachable_ AST currently claims to model, not with
 clang's entire schema. Parsing clang's JSON side uses the `clang-ast`
 crate (dtolnay):
 you declare only the node-kind variants and fields you care about

@@ -133,19 +133,19 @@ Hard cases hoisting must respect (evaluation order and sequencing):
 **Decided:** the shown type is the concrete, target-resolved type. The
 original C type is metadata.
 
-| C | Shown | Metadata |
-|---|---|---|
-| `int` | `i32` | `c=int` |
-| `long` (LP64 / LLP64) | `i64` / `i32` | `c=long` |
-| `char` / `signed char` / `unsigned char` | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc. |
-| `_Bool` | `bool` | `c=_Bool` |
-| `size_t` | `u64` | `c=size_t`, `c_canon=unsigned long` |
-| `float` / `double` | `f32` / `f64` | `c=float` / `c=double` |
-| `long double` (x86) | `f80` | `c=long double` |
-| `__float128` | `f128` | |
-| `const char *` | `*const i8` | `c=const char *` |
-| `enum E` | `enum E` (underlying `u32`) | underlying type computed per compiler |
-| `struct S` | `struct S` | layout in module |
+| C                                        | Shown                            | Metadata                              |
+| ---------------------------------------- | -------------------------------- | ------------------------------------- |
+| `int`                                    | `i32`                            | `c=int`                               |
+| `long` (LP64 / LLP64)                    | `i64` / `i32`                    | `c=long`                              |
+| `char` / `signed char` / `unsigned char` | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc.                         |
+| `_Bool`                                  | `bool`                           | `c=_Bool`                             |
+| `size_t`                                 | `u64`                            | `c=size_t`, `c_canon=unsigned long`   |
+| `float` / `double`                       | `f32` / `f64`                    | `c=float` / `c=double`                |
+| `long double` (x86)                      | `f80`                            | `c=long double`                       |
+| `__float128`                             | `f128`                           |                                       |
+| `const char *`                           | `*const i8`                      | `c=const char *`                      |
+| `enum E`                                 | `enum E` (underlying `u32`)      | underlying type computed per compiler |
+| `struct S`                               | `struct S`                       | layout in module                      |
 
 The whole typedef chain is kept in metadata (`uint32_t` → `__uint32_t` →
 `unsigned int`) since it's the strongest idiomization signal
@@ -189,15 +189,15 @@ the parser propagates it into every expression node, including `ConstExpr`.
 
 Each conversion node does exactly one thing; the reason is metadata.
 
-| Node | Meaning | Metadata |
-|---|---|---|
-| `widen<i32>(x)` | value-preserving sign/zero extend (by source signedness) | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|explicit` |
-| `truncate<i8>(x)` | keep low bits | `fits=always\|unknown` |
-| `reinterpret<u32>(x)` | same width, sign change | `fits=always\|unknown` |
-| `to_bool(x)` / `from_bool<i32>(b)` | `!= 0` / 0-1 | |
-| `float_widen<f64>(x)` / `float_narrow<f32>(x)` | | |
-| `int_to_float<f64>(x)` | | `exact=true\|false` |
-| `float_to_int<i32>(x)` | | `out_of_range=ub` |
+| Node                                           | Meaning                                                  | Metadata                                                       |
+| ---------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
+| `widen<i32>(x)`                                | value-preserving sign/zero extend (by source signedness) | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|explicit` |
+| `truncate<i8>(x)`                              | keep low bits                                            | `fits=always\|unknown`                                         |
+| `reinterpret<u32>(x)`                          | same width, sign change                                  | `fits=always\|unknown`                                         |
+| `to_bool(x)` / `from_bool<i32>(b)`             | `!= 0` / 0-1                                             |                                                                |
+| `float_widen<f64>(x)` / `float_narrow<f32>(x)` |                                                          |                                                                |
+| `int_to_float<f64>(x)`                         |                                                          | `exact=true\|false`                                            |
+| `float_to_int<i32>(x)`                         |                                                          | `out_of_range=ub`                                              |
 
 A C conversion changing width and signedness is two nodes in fixed order:
 width first (in source signedness), then reinterpret.
@@ -253,24 +253,24 @@ keeps every local fact as metadata for the analysis pass and Slate.
 **Decided:** memory access through a pointer or array is an explicit
 read/write at an offset, in element units.
 
-| C | IR | Metadata |
-|---|---|---|
-| `a[i]` (read) | `ptr_read(a, i)` | `form=index`, `decay[len=N]` if `a` is an array |
-| `a[i] = v` | `ptr_write(a, i, v)` | same |
-| `*p` | `ptr_read(p, 0)` | `form=deref` |
-| `*p = v` | `ptr_write(p, 0, v)` | `form=deref` |
-| `*(p + i)` | `ptr_read(p, i)` | `form=deref_offset` |
-| `p + i`, `p++` | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type |
-| `p - q` | `ptr_diff(p, q)` → `i64` | elem type, `c=ptrdiff_t` |
-| `p < q` | `ptr_lt(p, q)` | |
-| `&x` | `addr_of(x)` | |
-| `arr` as value | `arr` typed `*T` | `decay[len=N]` |
-| `f` as value | `f` typed `*fn(..)` | `decay=function` |
-| `0`, `NULL`, `(void*)0` | `null<*T>` | `macro=NULL` if applicable |
-| `if (p)`, `!p` | `is_non_null(p)` / `is_null(p)` | |
-| `char* → const char*` | (no node) | `add_const` |
-| `void* ↔ T*` | `ptr_cast<*T>(p)` | `implicit` |
-| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)` | |
+| C                        | IR                                          | Metadata                                        |
+| ------------------------ | ------------------------------------------- | ----------------------------------------------- |
+| `a[i]` (read)            | `ptr_read(a, i)`                            | `form=index`, `decay[len=N]` if `a` is an array |
+| `a[i] = v`               | `ptr_write(a, i, v)`                        | same                                            |
+| `*p`                     | `ptr_read(p, 0)`                            | `form=deref`                                    |
+| `*p = v`                 | `ptr_write(p, 0, v)`                        | `form=deref`                                    |
+| `*(p + i)`               | `ptr_read(p, i)`                            | `form=deref_offset`                             |
+| `p + i`, `p++`           | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type                                       |
+| `p - q`                  | `ptr_diff(p, q)` → `i64`                    | elem type, `c=ptrdiff_t`                        |
+| `p < q`                  | `ptr_lt(p, q)`                              |                                                 |
+| `&x`                     | `addr_of(x)`                                |                                                 |
+| `arr` as value           | `arr` typed `*T`                            | `decay[len=N]`                                  |
+| `f` as value             | `f` typed `*fn(..)`                         | `decay=function`                                |
+| `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable                      |
+| `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                                 |
+| `char* → const char*`    | (no node)                                   | `add_const`                                     |
+| `void* ↔ T*`             | `ptr_cast<*T>(p)`                           | `implicit`                                      |
+| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)`  |                                                 |
 
 Pointer qualifiers are metadata: `restrict`, `volatile`, pointee `const` is
 shown in the type (`*const T`) since Rust distinguishes it.

@@ -10,7 +10,7 @@ separately per `Item::Text`, i.e. per logical line.
 
 That per-line boundary matters because a function-like macro invocation's
 argument list is free to span multiple physical lines in valid C (only
-*directives* are required to fit on one line). Before
+_directives_ are required to fit on one line). Before
 `merge_open_lines` existed, `expand_macros`'s `invocation_arguments` scan
 for the matching `)` never crossed a line boundary, so any macro call
 split across lines was silently left unexpanded -- it just fell through
@@ -28,7 +28,7 @@ line's end, so `expand_line` sees the whole invocation as one unit. Two
 things it deliberately does NOT do, both load-bearing:
 
 - **Never merge across a `#` line.** GCC-dg fixtures rely on being able to
-  select one *argument* of an open call via `#ifdef`/`#else`/`#endif`
+  select one _argument_ of an open call via `#ifdef`/`#else`/`#endif`
   (e.g. `printf(..., limits_total,\n#ifdef X\n bounds_total\n#else\n 0\n#endif\n);`
   in `tests/fixtures/c11.c`). If merging swallowed the directive lines as
   plain tokens, the conditional would corrupt the token stream. A line
@@ -38,18 +38,18 @@ things it deliberately does NOT do, both load-bearing:
   multiple `PPNode`s regardless of how the preprocessor split them (see
   `matching_brace`/`matching_paren` callers in `src/parser/`, defined in `decl.rs`), so nothing
   needed to change there.
-- **Only merge when a line's own depth is `> 0`.** A line that *starts*
+- **Only merge when a line's own depth is `> 0`.** A line that _starts_
   with unmatched closing brackets (net `<= 0`) is closing a span opened on
   an earlier, already-flushed line (or by a directive-interrupted run,
   see above) -- not something that itself needs to pull in more lines.
   Treating `!= 0` as the trigger instead of `> 0` causes cascading,
   incorrect merges forward from an unrelated trailing `);`.
 
-**Comment ordering inside a merge.** A comment on the *first* line of a
+**Comment ordering inside a merge.** A comment on the _first_ line of a
 merge is kept as that merged line's leading comment (matches the
 pre-existing single-line rule: `GroupParser::group` always emits a line's
 comments before its `Item::Text`, regardless of whether the comment
-trailed the code on that physical line). But comments on *continuation*
+trailed the code on that physical line). But comments on _continuation_
 lines are **deferred to their own entry emitted right after** the merged
 line, not bundled into the head. This matters because `src/parser/`
 reconstructs a statement that spans multiple `PPNode`s by skipping over an
@@ -60,15 +60,15 @@ resulting `Asm` statement, not before it (see
 `tests/fixtures/gcc-dg/guality__pr43329-1.c`,
 `guality__pr45003-*.c`, `guality__pr58791-*.c`). Bundling a
 continuation line's comment into the head (the simplest merge
-implementation) reproduces the *old* per-line node layout's comment
-*content* correctly but changes its *position* relative to the
+implementation) reproduces the _old_ per-line node layout's comment
+_content_ correctly but changes its _position_ relative to the
 reconstructed statement, which several `guality__*` FileCheck goldens
 pin down precisely (including, for at least one fixture, whether a
 trailing comment lands before or after a `return` and gets marked
 `Unreachable`).
 
 **Corollary for `src/parser/`'s own multi-node span helpers.** Because a
-`Comment` PPNode can land *between* two `Code` PPNodes that belong to the
+`Comment` PPNode can land _between_ two `Code` PPNodes that belong to the
 same declaration (see above), any helper in `src/parser/decl.rs` that walks
 `nodes[..]` looking for a span-terminating token must skip `Comment` nodes
 rather than treat them as a stopping point. `signature_node_span` used to
