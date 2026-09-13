@@ -507,15 +507,7 @@ impl Parser {
                     (Some(_), ConstExpr::Identifier(name), [ConstExpr::Identifier(_)])
                         if matches!(
                             name.as_str(),
-                            "__has_include"
-                                | "__has_include_next"
-                                | "__has_feature"
-                                | "__has_extension"
-                                | "__has_builtin"
-                                | "__has_attribute"
-                                | "__has_c_attribute"
-                                | "__has_cpp_attribute"
-                                | "__building_module"
+                            "__has_c_attribute" | "__has_cpp_attribute" | "__building_module"
                         ) =>
                     {
                         Ok(0)
@@ -1062,11 +1054,6 @@ impl Parser {
                 | Token::WideCharLit(_, value),
             ) => Ok(ConstExpr::Integer(*value)),
             Some(Token::Ident(value)) if value == "defined" => self.parse_defined(),
-            Some(Token::Ident(value))
-                if value == "__has_include" || value == "__has_include_next" =>
-            {
-                self.parse_has_include(value.clone())
-            }
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
             Some(Token::Ident(value)) if value == "__builtin_bit_cast" => self.parse_bit_cast(),
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
@@ -1147,43 +1134,6 @@ impl Parser {
         Ok(ConstExpr::Call {
             callee: Box::new(ConstExpr::Identifier("defined".to_string())),
             arguments: vec![ConstExpr::Identifier(name)],
-        })
-    }
-
-    fn parse_has_include(&mut self, name: String) -> Result<ConstExpr, ConstExprError> {
-        self.expect(Token::LParen)?;
-        let header = if self.peek() == Some(&Token::Less) {
-            self.take();
-            let mut text = String::new();
-            loop {
-                match self.take() {
-                    Some(Token::Greater) => break,
-                    Some(Token::Ident(part)) => text.push_str(&part),
-                    Some(Token::Keyword(keyword)) => text.push_str(<&str>::from(keyword)),
-                    Some(Token::Dot) => text.push('.'),
-                    Some(Token::Slash) => text.push('/'),
-                    Some(Token::Minus) => text.push('-'),
-                    Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
-                    None => {
-                        return Err(ConstExprError::Expected {
-                            expected: Token::Greater,
-                            found: None,
-                        });
-                    }
-                }
-            }
-            format!("<{text}>")
-        } else {
-            match self.take() {
-                Some(Token::StringLit(text)) => format!("\"{text}\""),
-                Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
-                None => return Err(ConstExprError::ExpectedIntegerExpression),
-            }
-        };
-        self.expect(Token::RParen)?;
-        Ok(ConstExpr::Call {
-            callee: Box::new(ConstExpr::Identifier(name)),
-            arguments: vec![ConstExpr::Identifier(header)],
         })
     }
 

@@ -1,6 +1,7 @@
 /target
 .llog/index
 .llog/state.json
+__pycache__
 
 # Beads / Dolt files (added by bd init)
 .dolt/

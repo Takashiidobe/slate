@@ -1,6 +1,7 @@
 mod define;
 mod error;
 mod expand;
+mod has_checks;
 mod include;
 mod syntax;
 
@@ -486,10 +487,10 @@ impl<'a> Preprocessor<'a> {
         directive: &Directive,
         name: &'static str,
     ) -> Result<bool, PPFailure> {
-        let expanded = self.expand_has_embed(
-            &self.expand_condition(&directive.arguments),
-            directive.loc.file,
-        );
+        let expanded = self.expand_condition(&directive.arguments);
+        let expanded = self.expand_has_embed(&expanded, directive.loc.file);
+        let expanded = self.expand_has_include(&expanded, directive.loc.file);
+        let expanded = expand_has_checks(&expanded);
         const_expr::Parser::evaluate_with_defined(&expanded, &|macro_name| {
             self.macros.contains_key(macro_name)
         })
@@ -529,6 +530,39 @@ impl<'a> Preprocessor<'a> {
                         .with_value(Token::IntLit((found as i64).to_string())),
                 );
                 index += 4;
+            } else {
+                expanded.push(tokens[index].clone());
+                index += 1;
+            }
+        }
+        expanded
+    }
+
+    fn expand_has_include(&self, tokens: &[Span<Token>], from: FileId) -> Vec<Span<Token>> {
+        let mut expanded = Vec::with_capacity(tokens.len());
+        let mut index = 0;
+        while index < tokens.len() {
+            let next_kind = match tokens.value_at(index) {
+                Some(Token::Ident(name)) if name == "__has_include" => Some(false),
+                Some(Token::Ident(name)) if name == "__has_include_next" => Some(true),
+                _ => None,
+            };
+            let parsed = next_kind
+                .filter(|_| tokens.value_at(index + 1) == Some(&Token::LParen))
+                .and_then(|is_next| parse_header_name(tokens, index + 2).map(|(h, e)| (is_next, h, e)));
+            if let Some((is_next, header, end)) = parsed {
+                let directive = match (is_next, header) {
+                    (true, header) => include::IncludeDirective::Next(header.into_name()),
+                    (false, HeaderName::Angled(name)) => include::IncludeDirective::Angled(name),
+                    (false, HeaderName::Quoted(name)) => include::IncludeDirective::Quoted(name),
+                };
+                let found = self.resolve_include(&directive, from).is_some();
+                expanded.push(
+                    tokens[index]
+                        .clone()
+                        .with_value(Token::IntLit((found as i64).to_string())),
+                );
+                index = end;
             } else {
                 expanded.push(tokens[index].clone());
                 index += 1;
@@ -578,6 +612,83 @@ impl<'a> Preprocessor<'a> {
             .get(loc.offset..loc.offset + loc.length)
             .unwrap_or_default()
     }
+}
+
+enum HeaderName {
+    Angled(String),
+    Quoted(String),
+}
+
+impl HeaderName {
+    fn into_name(self) -> String {
+        match self {
+            HeaderName::Angled(name) | HeaderName::Quoted(name) => name,
+        }
+    }
+}
+
+fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName, usize)> {
+    if let Some(Token::StringLit(text)) = tokens.value_at(start) {
+        return (tokens.value_at(start + 1) == Some(&Token::RParen))
+            .then_some((HeaderName::Quoted(text.clone()), start + 2));
+    }
+    if tokens.value_at(start) != Some(&Token::Less) {
+        return None;
+    }
+    let mut text = String::new();
+    let mut index = start + 1;
+    loop {
+        match tokens.value_at(index) {
+            Some(Token::Greater) => break,
+            Some(Token::Ident(part)) => text.push_str(part),
+            Some(Token::Keyword(keyword)) => text.push_str(<&str>::from(*keyword)),
+            Some(Token::Dot) => text.push('.'),
+            Some(Token::Slash) => text.push('/'),
+            Some(Token::Minus) => text.push('-'),
+            _ => return None,
+        }
+        index += 1;
+    }
+    (tokens.value_at(index + 1) == Some(&Token::RParen))
+        .then_some((HeaderName::Angled(text), index + 2))
+}
+
+fn expand_has_checks(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
+    let mut expanded = Vec::with_capacity(tokens.len());
+    let mut index = 0;
+    while index < tokens.len() {
+        let check = match tokens.value_at(index) {
+            Some(Token::Ident(name)) if name == "__has_attribute" => {
+                Some(has_checks::has_attribute as fn(&str) -> bool)
+            }
+            Some(Token::Ident(name)) if name == "__has_builtin" => {
+                Some(has_checks::has_builtin as fn(&str) -> bool)
+            }
+            Some(Token::Ident(name)) if name == "__has_feature" => {
+                Some(has_checks::has_feature as fn(&str) -> bool)
+            }
+            Some(Token::Ident(name)) if name == "__has_extension" => {
+                Some(has_checks::has_extension as fn(&str) -> bool)
+            }
+            _ => None,
+        };
+        if let Some(check) = check
+            && tokens.value_at(index + 1) == Some(&Token::LParen)
+            && let Some(Token::Ident(name)) = tokens.value_at(index + 2)
+            && tokens.value_at(index + 3) == Some(&Token::RParen)
+        {
+            expanded.push(
+                tokens[index]
+                    .clone()
+                    .with_value(Token::IntLit((check(name) as i64).to_string())),
+            );
+            index += 4;
+        } else {
+            expanded.push(tokens[index].clone());
+            index += 1;
+        }
+    }
+    expanded
 }
 
 fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {
