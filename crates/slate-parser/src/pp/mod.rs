@@ -6,7 +6,7 @@ mod include;
 mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
-use crate::compiler_args::LanguageStandard;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
@@ -160,6 +160,42 @@ impl<'a> Preprocessor<'a> {
         let file = self
             .files
             .intern(PathBuf::from("<command line>"), HeaderKind::User);
+        self.parse_source(&source, file)
+            .map(drop)
+            .map_err(|failure| self.render_error(failure))
+    }
+
+    pub fn configure(
+        &mut self,
+        target: crate::target_info::TargetInfo,
+        options: &crate::compiler_options::CompilerOptions,
+        flavor: CompilerFlavor,
+    ) -> Result<(), PPError> {
+        let mut defines = target.long_double.predefines();
+        if flavor == CompilerFlavor::Gcc
+            && options.operations.floating.rounding == crate::ir::Rounding::Environment
+        {
+            defines.push("__ROUNDING_MATH__=1".into());
+        }
+        for define in &defines {
+            if let Some((name, _)) = define.split_once('=') {
+                self.macros.remove(name);
+            }
+        }
+        if defines.is_empty() {
+            return Ok(());
+        }
+        let source: String = defines
+            .iter()
+            .filter_map(|define| {
+                define
+                    .split_once('=')
+                    .map(|(name, value)| format!("#define {name} {value}\n"))
+            })
+            .collect();
+        let file = self
+            .files
+            .intern(PathBuf::from("<target options>"), HeaderKind::User);
         self.parse_source(&source, file)
             .map(drop)
             .map_err(|failure| self.render_error(failure))

@@ -79,6 +79,7 @@ impl FromStr for LanguageStandard {
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct CompilerArgs {
+    pub options: crate::compiler_options::CompilerOptions,
     pub defines: Vec<String>,
     pub standard: LanguageStandard,
     pub isystem: Vec<String>,
@@ -92,7 +93,8 @@ impl CompilerArgParser {
     where
         I: IntoIterator<Item = String>,
     {
-        let mut args = args.into_iter().peekable();
+        let arguments: Vec<String> = args.into_iter().collect();
+        let mut args = arguments.clone().into_iter().peekable();
         let mut parsed = CompilerArgs::default();
         while let Some(arg) = args.next() {
             if let Some(define) = arg.strip_prefix("-D") {
@@ -109,10 +111,14 @@ impl CompilerArgParser {
                 parsed.flavor = flavor.parse()?;
             } else if arg == "--flavor" {
                 parsed.flavor = Self::next_value(&mut args, "--flavor")?.parse()?;
+            } else if crate::compiler_options::CompilerOptions::recognizes(&arg) {
             } else {
                 return Err(format!("unsupported argument: {arg}"));
             }
         }
+        parsed.options =
+            crate::compiler_options::CompilerOptions::resolve(arguments, parsed.flavor)
+                .map_err(|error| error.to_string())?;
         Ok(parsed)
     }
 

@@ -63,21 +63,34 @@ The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64
 conversion. NaNs retain hexadecimal bits in every format.
 Addition is not folded or reassociated. Signed overflow defaults to
 `undefined`, unsigned overflow to `wrap`; floating addition defaults to
-nearest-even rounding with ignored exceptions. The context exposes separate
-integer and floating semantic settings for future option resolution.
+nearest-even rounding with ignored exceptions for the default Clang flavor
+(observable exceptions for GCC). Translation-unit operation options
+initialize the context's independent integer and floating semantic settings.
 Overflow metadata describes the operation's behavior if overflow occurs,
 not a prediction that these operands overflow. Both i32 and i64 additions
 use the context's signed-overflow policy; u32 and u64 additions wrap.
 
 The initial numeric type stores integer width/signedness or one of five
 floating formats: f16, f32, f64, f80, f128. These denote value formats, not
-storage sizes. The IR can represent and print f80, but target-based sema
-resolution of `long double` remains the next hookup.
+storage sizes. Sema resolves `long double` through `TargetInfo.long_double`:
+the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
+selects the corresponding format. Literal digits are parsed directly into
+that format, never rounded through an intermediate f80 or f64 value.
 It does not yet implement the full type/storage metadata proposed below.
 Mixed-type additions requiring conversions, `_BitInt`, decimal/imaginary
-and target-dependent long-double literals, and other expressions return
-explicit unsupported errors. Flags and scoped pragma semantics are not yet
-wired into this path.
+literals, target-dependent `f64x` suffixes, and other expressions return
+explicit unsupported errors.
+Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
+`-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
+`-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
+semantics and function attribute overrides are not yet wired into this path.
+The `pointer_wrap` setting implied by strict-overflow options is retained
+for future pointer lowering; it is not attached to numeric operations.
+
+`CompilerOptions` groups operation and layout settings and preserves ordered
+compiler arguments on the translation unit. Argument provenance supplies no
+missing operation semantics. There is no IR module header yet: the current
+CLI dumps only expression roots. Other flag families remain unsupported.
 
 Each `Value` owns `Span<ValueKind>`, retaining node identity, spelling and
 expansion locations, header provenance, and macro origin from its AST node.

@@ -5,6 +5,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file);
     TranslationUnit {
+        options: tu.options.clone(),
         decls: tu
             .decls
             .iter()

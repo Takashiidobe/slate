@@ -1,6 +1,9 @@
 use super::validate::{fits_rank, integer_candidates, integer_rank_width};
 use crate::ast::{Expr, ExprKind, Span};
-use crate::const_expr::{BinaryOp, FloatValue, IntegerSizeSuffix, resolve_float};
+use crate::const_expr::{
+    BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat,
+    resolve_float,
+};
 use crate::ir::{
     AddSemantics, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
     Rounding, Value, ValueKind,
@@ -30,6 +33,12 @@ pub struct Context {
 }
 
 impl Context {
+    pub fn with_options(mut self, options: &crate::compiler_options::CompilerOptions) -> Self {
+        self.target = options.effective_target(self.target);
+        self.signed_overflow = options.operations.signed_overflow;
+        self.floating = options.operations.floating;
+        self
+    }
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
@@ -60,18 +69,20 @@ impl Context {
                 )
             }
             ExprKind::FloatLiteral(literal) => {
+                if literal.suffix == FloatSuffix::F64x {
+                    return Err(ResolveError::Unsupported("target-dependent f64x literals"));
+                }
                 if literal.imaginary {
                     return Err(ResolveError::Unsupported("imaginary literals"));
                 }
-                let (format, bits) = match resolve_float(literal)?.value {
+                let (format, bits) = match resolve_float_literal(literal, &self.target)?.value {
                     FloatValue::Half(bits) => (FloatType::F16, u128::from(bits)),
                     FloatValue::Single(value) => (FloatType::F32, u128::from(value.to_bits())),
                     FloatValue::Double(value) => (FloatType::F64, u128::from(value.to_bits())),
                     FloatValue::Quad(bits) => (FloatType::F128, bits),
+                    FloatValue::LongDouble(bits) => (FloatType::F80, bits),
                     _ => {
-                        return Err(ResolveError::Unsupported(
-                            "target-dependent or decimal floating literals",
-                        ));
+                        return Err(ResolveError::Unsupported("decimal floating literals"));
                     }
                 };
                 (
@@ -130,4 +141,19 @@ impl Context {
             },
         })
     }
+}
+
+pub(super) fn resolve_float_literal(
+    literal: &FloatLiteral,
+    target: &TargetInfo,
+) -> Result<ResolvedFloat, crate::const_expr::ConstExprError> {
+    let mut literal = literal.clone();
+    if literal.suffix == FloatSuffix::L {
+        literal.suffix = match target.long_double {
+            crate::target_info::LongDoubleFormat::Binary64 => FloatSuffix::F64,
+            crate::target_info::LongDoubleFormat::X87 => FloatSuffix::L,
+            crate::target_info::LongDoubleFormat::Binary128 => FloatSuffix::F128,
+        };
+    }
+    resolve_float(&literal)
 }

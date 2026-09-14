@@ -83,7 +83,12 @@ Sema constructs typed IR directly; there is no separate semantic AST.
 The first implemented slice uses `Value { ty, node: Span<ValueKind> }`
 with constants and addition, preserving spelling/expansion spans, node IDs,
 header provenance, and macro origins. Numeric types currently carry only
-width and integer signedness. The complete type/storage metadata below
+integer width/signedness or one of five explicit float formats. Sema uses
+translation-unit `CompilerOptions.operations` for addition contracts and
+the effective `TargetInfo.long_double` for long-double literals. Layout
+options are applied before both target predefines and sema; consumers do not
+re-read flags. Ordered arguments remain translation-unit provenance until
+module lowering exists. The complete type/storage metadata below
 remains the design target; see [implemented numeric seed](ir-spec.md#implemented-numeric-seed)
 for current scope and dump examples.
 

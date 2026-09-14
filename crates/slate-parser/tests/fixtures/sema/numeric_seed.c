@@ -23,6 +23,8 @@ void numbers(void) {
     1.0000000000000000000000000000000002f128;
     1.0f16 + 2.0f16;
     1.0f128 + 2.0f128;
+    1.5L;
+    1.0L + 2.0L;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -47,4 +49,6 @@ void numbers(void) {
 // CHECK-NEXT: const<f128>(1.00000000000000000000000000000000019)
 // CHECK-NEXT: add<f16, rounding=nearest_even, exceptions=ignore>(const<f16>(1), const<f16>(2))
 // CHECK-NEXT: add<f128, rounding=nearest_even, exceptions=ignore>(const<f128>(1), const<f128>(2))
+// CHECK-NEXT: const<f80>(1.5)
+// CHECK-NEXT: add<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(1), const<f80>(2))
 // SLATE-FILECHECK-END CHECK

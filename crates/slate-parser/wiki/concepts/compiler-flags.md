@@ -297,10 +297,37 @@ examples that hide overflow behavior need adjustment.
 The first implementation seed now lives in `src/sema/`, which resolves AST
 numeric literals and same-type addition directly into typed IR. `src/ir/`
 owns nodes, spans, printing, and separate integer-overflow and floating-point
-properties. There is no intermediate semantic AST. `TargetInfo` still
-contains basic integer/pointer widths and character signedness; compiler
-flags and local overrides are not yet integrated. See the
+properties. There is no intermediate semantic AST. `CompilerOptions` now
+groups operation settings, layout overrides, and ordered argument provenance.
+The parser retains it on `TranslationUnit`; sema materializes its operation
+contracts without making IR consumers interpret options. See the
 [numeric seed](ir-spec.md#implemented-numeric-seed) for supported scope.
+
+The first flag hookup accepts positive/negative wrapv, trapv, strict-overflow,
+rounding-math, and trapping-math options for Clang/GCC flavors. GCC uses the
+last active wrap/trap setting (negation can reveal an earlier active option);
+Clang gives active trapv precedence over wrapv, checked against Clang 22.
+Clang defaults to ignored FP exceptions; GCC defaults to observable ones.
+Rounding and exceptions remain independent. GCC's `-frounding-math` defines
+`__ROUNDING_MATH__=1`; Clang does not. Other supported operation flags add
+no predefines.
+MSVC flavor rejects these spellings rather than claiming compatible behavior.
+
+`-mlong-double-64/80/128` changes the effective `TargetInfo.long_double` and
+the current x86-64 Linux baseline's long-double predefines together, before
+user `-D` definitions. Sema parses the original literal directly at the
+selected precision. f80 has 80 value bits but 16-byte storage in this baseline;
+the options do not select a different target triple or implement full layouts.
+
+```sh
+cargo run -- parse tests/fixtures/sema/numeric_seed.c --dump-ir-expressions -fwrapv -frounding-math -ftrapping-math
+cargo run -- parse tests/fixtures/sema/long_double_128.c --dump-ir-expressions -mlong-double-128
+```
+
+Pointer wrapping implied by strict-overflow flags is retained in the
+configuration for future pointer operations. Other flag families, local
+pragma/attribute overrides, and the eventual IR module provenance header
+remain unimplemented; this does not complete `ixa.15`.
 
 Open choices include the exact operation field shapes, pointer/null-access
 contracts, floating-point effect representation, compiler-flavor precedence

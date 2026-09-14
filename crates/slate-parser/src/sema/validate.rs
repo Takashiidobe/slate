@@ -1,8 +1,6 @@
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
-use crate::const_expr::{
-    CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp, resolve_float,
-};
+use crate::const_expr::{CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::target_info::TargetInfo;
 use miette::{Diagnostic, NamedSource, SourceSpan};
@@ -776,9 +774,9 @@ fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
     match &expr.value {
         ExprKind::IntegerLiteral(literal) => resolve_integer_literal(literal, target).err(),
         ExprKind::CharLiteral(literal) => resolve_char_literal(literal, target).err(),
-        ExprKind::FloatLiteral(literal) => {
-            resolve_float(literal).err().map(|error| error.to_string())
-        }
+        ExprKind::FloatLiteral(literal) => super::numeric::resolve_float_literal(literal, target)
+            .err()
+            .map(|error| error.to_string()),
         _ => None,
     }
 }

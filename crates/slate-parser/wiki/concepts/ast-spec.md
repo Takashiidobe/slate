@@ -94,6 +94,8 @@ TranslationUnit {
     items: Vec<ExternalItem>,
     tags: Vec<TagDefinition>,      // indexed by TagId, every tag definition in the TU
     flavor: CompilerFlavor,        // Gcc | Clang | Msvc personality
+    target: TargetInfo,
+    options: CompilerOptions,
 }
 
 ExternalItem =
@@ -103,6 +105,13 @@ ExternalItem =
     | Asm(GnuAsm)                   // file-scope asm("...")
     | CommentGroup
 ```
+
+`options` retains grouped operation/layout settings and ordered compiler
+arguments. `target` is the effective target after layout options, shared
+with predefine generation. Semantic lowering resolves these inputs into
+operation contracts and concrete numeric formats; later IR consumers do not
+interpret the arguments. Long-double literal spelling remains unresolved
+in the AST and is interpreted at the target precision by sema.
 
 There is no `Typedef`, `Record` or `Enum` item. `typedef` is a storage
 class, and tag definitions live in the specifiers that wrote them (see

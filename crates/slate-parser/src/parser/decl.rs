@@ -228,12 +228,14 @@ impl Parser {
     ) -> Result<TranslationUnit, ParseError> {
         self.tags.borrow_mut().clear();
         let decls = self.parse_decls(nodes)?;
+        let options = self.effective_options();
         let ast = filter_translation_unit(
             &TranslationUnit {
+                options: options.clone(),
                 decls,
                 tags: self.tags.take(),
                 flavor: self.flavor(),
-                target: self.target,
+                target: options.effective_target(self.target),
             },
             root_file,
         );

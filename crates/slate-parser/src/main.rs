@@ -61,6 +61,7 @@ fn main() -> miette::Result<()> {
     let mut parser = Parser::new(search)
         .with_defines(compiler_args.defines)
         .with_flavor(compiler_args.flavor)
+        .with_options(compiler_args.options)
         .with_standard(compiler_args.standard);
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
