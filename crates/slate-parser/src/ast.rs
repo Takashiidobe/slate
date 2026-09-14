@@ -67,7 +67,7 @@ pub enum ExprKind {
     },
     Member {
         base: Expr,
-        field: String,
+        field: Span<String>,
         #[debug(skip_if = is_false)]
         arrow: bool,
     },
@@ -120,7 +120,7 @@ pub enum ExprKind {
         declarator: Declarator,
         value: Expr,
     },
-    LabelAddress(String),
+    LabelAddress(Span<String>),
     StatementExpression(Vec<SpannedStmt>),
     BoolLiteral(bool),
     NullPtrLiteral,
@@ -225,7 +225,7 @@ impl std::fmt::Display for ExprKind {
 pub enum Designator {
     Array(Expr),
     ArrayRange { start: Expr, end: Expr },
-    Field(String),
+    Field(Span<String>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -274,16 +274,16 @@ pub enum Stmt {
         body: Vec<SpannedStmt>,
     },
     Labeled {
-        label: String,
+        label: Span<String>,
         body: Box<SpannedStmt>,
     },
     SwitchLabel {
         label: SwitchLabel,
         body: Box<SpannedStmt>,
     },
-    LocalLabelDecl(Vec<String>),
+    LocalLabelDecl(Vec<Span<String>>),
     Asm(GnuAsm),
-    Goto(String),
+    Goto(Span<String>),
     ComputedGoto(Expr),
     NestedFunction(Box<FunctionDecl>),
     Break,

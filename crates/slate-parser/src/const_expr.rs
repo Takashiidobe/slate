@@ -1207,8 +1207,12 @@ impl<'a> Parser<'a> {
                 } else if let Some(Token::Ident(name)) = self.peek().cloned()
                     && self.peek_at(1) == Some(&Token::Colon)
                 {
+                    let start = self.position;
                     self.position += 2;
-                    designators.push(Designator::Field(name));
+                    designators.push(Designator::Field(Span::cover(
+                        name,
+                        &self.tokens[start..start + 1],
+                    )));
                 } else {
                     break;
                 }
@@ -1335,8 +1339,10 @@ impl<'a> Parser<'a> {
             Some(Token::Star) => UnaryOp::Deref,
             Some(Token::AndAnd) => {
                 self.take();
+                let label_start = self.position;
                 return match self.take() {
                     Some(Token::Ident(label)) => {
+                        let label = Span::cover(label, &self.tokens[label_start..self.position]);
                         Ok(self.node(ExprKind::LabelAddress(label), start))
                     }
                     Some(token) => Err(ConstExprError::UnexpectedToken(token)),
@@ -1416,9 +1422,10 @@ impl<'a> Parser<'a> {
         Ok(expression)
     }
 
-    fn expect_field_name(&mut self) -> Result<String, ConstExprError> {
+    fn expect_field_name(&mut self) -> Result<Span<String>, ConstExprError> {
+        let start = self.position;
         match self.take() {
-            Some(Token::Ident(name)) => Ok(name),
+            Some(Token::Ident(name)) => Ok(Span::cover(name, &self.tokens[start..self.position])),
             Some(token) => Err(ConstExprError::UnexpectedToken(token)),
             None => Err(ConstExprError::ExpectedIdentifier),
         }
@@ -1625,7 +1632,7 @@ impl<'a> Parser<'a> {
         self.expect(Token::Comma)?;
         let member_start = self.position;
         let name = self.expect_field_name()?;
-        let mut member = self.node(ExprKind::Identifier(name), member_start);
+        let mut member = self.node(ExprKind::Identifier(name.value), member_start);
         loop {
             let kind = match self.peek() {
                 Some(Token::Dot) => {

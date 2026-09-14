@@ -600,10 +600,10 @@ impl Parser {
         if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
             && tokens.value_at(fragment.pos + 1) == Some(&Token::Colon)
         {
-            let name = name.clone();
+            let label = span_tokens(name.clone(), &tokens[fragment.pos..fragment.pos + 1]);
             fragment.pos += 2;
             let body = self.parse_labeled_body(fragment)?;
-            return Ok(Stmt::Labeled { label: name, body });
+            return Ok(Stmt::Labeled { label, body });
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::Ident("__label__".into())) {
@@ -615,7 +615,9 @@ impl Parser {
                 .filter(|part| !part.is_empty())
                 .map(|part| match part.as_slice() {
                     [single] => match &single.value {
-                        Token::Ident(name) => Ok(name.clone()),
+                        Token::Ident(name) => {
+                            Ok(span_tokens(name.clone(), std::slice::from_ref(single)))
+                        }
                         _ => Err(self.error_at(Loc::whole(code), "expected label name")),
                     },
                     _ => Err(self.error_at(Loc::whole(code), "expected label name")),
@@ -704,7 +706,9 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Goto)) => {
                 fragment.pos += 1;
+                let label_start = fragment.pos;
                 let label = fragment.expect_ident("expected label after `goto`")?;
+                let label = span_tokens(label, &tokens[label_start..fragment.pos]);
                 fragment.expect(Token::Semi, "expected `;` after `goto` label")?;
                 Ok(Stmt::Goto(label))
             }

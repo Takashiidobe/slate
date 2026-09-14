@@ -750,13 +750,21 @@ impl<'a> DeclaratorParser<'a> {
                         let Some(Token::Ident(name)) = self.peek().cloned() else {
                             panic!("field designator must name a field")
                         };
+                        let start = self.pos;
                         self.pos += 1;
-                        designators.push(Designator::Field(name));
+                        designators.push(Designator::Field(span_tokens(
+                            name,
+                            &self.tokens[start..self.pos],
+                        )));
                     } else if let Some(Token::Ident(name)) = self.peek().cloned()
                         && self.tokens.value_at(self.pos + 1) == Some(&Token::Colon)
                     {
+                        let start = self.pos;
                         self.pos += 2;
-                        designators.push(Designator::Field(name));
+                        designators.push(Designator::Field(span_tokens(
+                            name,
+                            &self.tokens[start..start + 1],
+                        )));
                     } else {
                         break;
                     }

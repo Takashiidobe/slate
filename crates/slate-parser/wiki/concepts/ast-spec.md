@@ -289,7 +289,7 @@ BlockItem =
     | Declaration(Declaration)
     | StaticAssert
     | NestedFunction(FunctionDefinition)
-    | LocalLabelDeclaration(Vec<String>)        // GNU __label__
+    | LocalLabelDeclaration(Vec<Span<String>>)  // GNU __label__
     | CommentGroup
     | Stmt(Stmt)
 
@@ -302,9 +302,9 @@ StmtKind =
     | While { condition, body: Box<Stmt> }
     | DoWhile { body: Box<Stmt>, condition }
     | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Box<Stmt> }
-    | Labeled { label: String, body: Box<Stmt> }              // goto target
+    | Labeled { label: Span<String>, body: Box<Stmt> }        // goto target
     | SwitchLabel { label: SwitchLabel, body: Box<Stmt> }     // case/default
-    | Goto(String)
+    | Goto(Span<String>)
     | IndirectGoto(Expr)                        // GNU goto *p
     | Continue
     | Break
@@ -365,7 +365,7 @@ Comment { text: Vec<String>, loc: Loc }
 | `Conditional { condition, then_value: Option<Expr>, else_value }`                              | `?:`; `then_value: None` is GNU `a ?: b`               |
 | `Comma { left, right }`                                                                        |                                                        |
 | `Call { callee, arguments }`                                                                   |                                                        |
-| `Member { base, field, arrow: bool }`                                                          | `.` / `->`                                             |
+| `Member { base, field: Span<String>, arrow: bool }`                                            | `.` / `->`                                             |
 | `Index { base, index }`                                                                        | as written                                             |
 | `Cast { ty: TypeName, value }`                                                                 |                                                        |
 | `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }`                      | C23 storage in compound literals                       |
@@ -375,13 +375,13 @@ Comment { text: Vec<String>, loc: Loc }
 | `VaArg { list, ty: TypeName }`                                                                 |                                                        |
 | `TypesCompatible(TypeName, TypeName)`                                                          | GNU                                                    |
 | `BitCast { ty: TypeName, value }`                                                              |                                                        |
-| `LabelAddress(String)`                                                                         | GNU `&&label`                                          |
+| `LabelAddress(Span<String>)`                                                                   | GNU `&&label`                                          |
 | `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`, parsed                                |
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)
 GenericAssociation = Type { ty: TypeName, value: Expr } | Default(Expr)
-MemberDesignator = Vec<Field(String) | Index(Expr)>
+MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 ```
 
 Whether an identifier in `_Generic`, `sizeof(x)` or `(x)(y)` is a type is
@@ -426,7 +426,7 @@ StringLiteral {
 Initializer = Expr(Expr) | List(InitializerList)
 InitializerList { items: Vec<InitializerItem>, trailing_comma: bool }
 InitializerItem { designators: Vec<Designator>, value: Initializer }
-Designator = Field(String) | Index(Expr) | IndexRange { start: Expr, end: Expr }   // GNU range
+Designator = Field(Span<String>) | Index(Expr) | IndexRange { start: Expr, end: Expr }   // GNU range
 ```
 
 Designator indices are expressions, not evaluated integers.
