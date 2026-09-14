@@ -6,19 +6,31 @@ use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
 
 #[derive(Debug, ThisError)]
+/// Errors returned by [`translate`], [`translate_with_args`], and related API functions.
+///
+/// ```
+/// use std::path::Path;
+/// use slate::api::{self, Error};
+///
+/// let error = api::translate(Path::new("missing.c")).unwrap_err();
+/// assert!(matches!(error, Error::Read { .. }));
+/// ```
 pub enum Error {
+    /// The source file could not be read.
     #[error("read {path}: {source}")]
     Read {
         path: PathBuf,
         #[source]
         source: std::io::Error,
     },
+    /// Preprocessing the source file failed.
     #[error("preprocess {path}: {source}")]
     Preprocess {
         path: PathBuf,
         #[source]
         source: preprocess::PreprocessError,
     },
+    /// A diagnostic's conditional state could not be evaluated.
     #[error(
         "translate: cannot determine whether #{name} at line {line} is active because predicate `{predicate}` cannot be evaluated"
     )]
@@ -28,41 +40,48 @@ pub enum Error {
         line: usize,
         predicate: String,
     },
+    /// Preparing the source for Clang failed.
     #[error("prepare Clang input for {path}: {source}")]
     ClangInput {
         path: PathBuf,
         #[source]
         source: preprocess::PreprocessError,
     },
+    /// Loading the generated ClangIR module failed.
     #[error("load CIR for {path}: {source}")]
     Cir {
         path: PathBuf,
         #[source]
         source: cir_input::ModuleError,
     },
+    /// Loading the Clang AST failed.
     #[error("load Clang AST for {path}: {source}")]
     Ast {
         path: PathBuf,
         #[source]
         source: c_ast::AstError,
     },
+    /// Lowering ClangIR and AST data into Rust failed.
     #[error("lowering failed for {path}:{diagnostics}")]
     Lowering {
         path: PathBuf,
         diagnostics: ctx::Diagnostics,
     },
+    /// An active preprocessor directive is unsupported.
     #[error("{context}: {message}")]
     UnsupportedDirective {
         context: String,
         line: usize,
         message: String,
     },
+    /// A directive's active state could not be determined.
     #[error("{context}: cannot determine whether {message} is active")]
     IndeterminateDirective {
         context: String,
         line: usize,
         message: String,
     },
+    /// A directive's conditional predicate could not be evaluated.
     #[error(
         "{context}: cannot determine whether {message} is active because predicate `{predicate}` cannot be evaluated"
     )]
@@ -72,23 +91,28 @@ pub enum Error {
         message: String,
         predicate: String,
     },
-    #[error("SLATE_SKIP_PASS is not valid Unicode: {source}")]
-    SkipPassEnvironment {
-        #[source]
-        source: std::env::VarError,
-    },
-    #[error("unknown SLATE_SKIP_PASS: {name}")]
-    UnknownSkipPass { name: String },
+    /// Formatting the generated Rust failed.
     #[error("format generated Rust: {message}")]
     Format { message: String },
+    /// Translating preprocessor directives failed.
     #[error(transparent)]
     Directive(#[from] directive_translate::DirectiveError),
 }
 
+/// Translates a C source file into Rust.
+///
+/// # Errors
+///
+/// Returns [`Error`] when reading, lowering, formatting, or translating the source fails.
 pub fn translate(path: &Path) -> Result<String, Error> {
     translate_with_args(path, &[])
 }
 
+/// Translates a C source file into Rust with additional Clang arguments.
+///
+/// # Errors
+///
+/// Returns [`Error`] when preprocessing, lowering, formatting, or translation fails.
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
     let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
@@ -101,10 +125,15 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
             .map_err(Error::Directive);
     }
     let (_, program) = lowered_program_with_args(path, extra_args)?;
-    let source = backend::apply_with(program, &skip_set_from_env()?).emit();
+    let source = backend::apply(program).emit();
     backend::format_rust(&source).map_err(|message| Error::Format { message })
 }
 
+/// Translates a C source file for the requested target triples.
+///
+/// # Errors
+///
+/// Returns [`Error::Directive`] if target-specific directive translation fails.
 pub fn translate_targets_with_args(
     path: &Path,
     extra_args: &[String],
@@ -114,10 +143,20 @@ pub fn translate_targets_with_args(
         .map_err(Error::Directive)
 }
 
+/// Lowers a C source file into ClangIR and the baseline Rust program.
+///
+/// # Errors
+///
+/// Returns [`Error`] if reading, preprocessing, parsing, or lowering fails.
 pub fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), Error> {
     lowered_program_with_args(path, &[])
 }
 
+/// Lowers a C source file with additional Clang arguments.
+///
+/// # Errors
+///
+/// Returns [`Error`] if reading, preprocessing, parsing, or lowering fails.
 pub fn lowered_program_with_args(
     path: &Path,
     extra_args: &[String],
@@ -211,6 +250,12 @@ pub fn lowered_program_with_args(
     Ok((module, program))
 }
 
+/// Rejects active unsupported directives in recorded preprocessing data.
+///
+/// # Errors
+///
+/// Returns [`Error::UnsupportedDirective`], [`Error::IndeterminateDirective`], or
+/// [`Error::UnevaluableDirective`] when an unsupported directive cannot be accepted.
 pub fn reject_active_unsupported(
     pp: &preprocess::Preprocessing,
     context: &str,
@@ -251,6 +296,12 @@ pub fn reject_active_unsupported(
     Ok(())
 }
 
+/// Reads a source file and rejects its active unsupported directives.
+///
+/// # Errors
+///
+/// Returns [`Error::Read`], [`Error::Preprocess`], or a directive rejection error from
+/// [`reject_active_unsupported`].
 pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), Error> {
     let (source, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
@@ -263,14 +314,4 @@ pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), 
         }
     })?;
     reject_active_unsupported(&pp, context)
-}
-
-pub fn skip_set_from_env() -> Result<backend::SkipSet, Error> {
-    match std::env::var("SLATE_SKIP_PASS") {
-        Ok(name) if !name.trim().is_empty() => backend::Pass::parse(name.trim())
-            .map(backend::SkipSet::skip)
-            .ok_or(Error::UnknownSkipPass { name }),
-        Ok(_) | Err(std::env::VarError::NotPresent) => Ok(backend::SkipSet::none()),
-        Err(source) => Err(Error::SkipPassEnvironment { source }),
-    }
 }
