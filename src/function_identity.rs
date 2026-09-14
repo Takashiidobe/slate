@@ -51,6 +51,7 @@ macro_rules! known_function_catalog {
 
 macro_rules! define_known {
     ($($variant:ident, $symbol:literal, $header:literal;)*) => {
+        /// This enum is a list of function calls we know come from libc.
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub enum Known {
             $($variant,)*

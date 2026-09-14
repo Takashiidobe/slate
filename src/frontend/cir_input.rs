@@ -156,12 +156,6 @@ fn merge_flattened_functions(
     }
 }
 
-/// Parses `src` into a `Module` exactly like `parse_module(&emit_generic_with_args(..))`,
-/// except that structured functions requiring dispatch are replaced with a
-/// flattened form that `lower_dispatch` can turn into a state machine. Raw
-/// `cir.goto` functions use `--cir-flatten-cfg --cir-goto-solver`; nested asm
-/// goto functions use `--cir-flatten-cfg` alone so their label identities
-/// survive. Other functions keep their structured form.
 pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleError> {
     let generic = match emit_generic_with_args(src, extra_args) {
         Ok(generic) => generic,

@@ -319,10 +319,6 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
     }
 }
 
-/// Renders a scalar (non-aggregate) attribute directly: `#cir.int<>`,
-/// `#cir.fp<>`, `#cir.bool<>`/`#true`/`#false`, and `#cir.ptr<null>` -
-/// other `!cir.ptr` forms, e.g. int-to-pointer casts, need the destination
-/// type and are handled by the caller instead.
 pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
         Attr::Int { value, .. } => Some(int_value_expr(*value)),

@@ -56,6 +56,8 @@ impl X86Reg {
         matches!(self, Self::Ebx)
     }
 
+    /// rust doesn't support use of the ebx register, we need to find a scratch register to use in
+    /// case we use that one.
     pub(super) fn pick_ebx_scratch(used: &BTreeSet<X86Reg>) -> Option<X86Reg> {
         [Self::Edi, Self::Esi, Self::Eax, Self::Ecx, Self::Edx]
             .into_iter()
