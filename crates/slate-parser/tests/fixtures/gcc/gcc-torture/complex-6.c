@@ -60,30 +60,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-skip-if \"requires io\" { freestanding } }  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 52,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-skip-if \"requires io\" { freestanding } }  */",
+// DEFAULT-NEXT:                   "/* This test tests complex conjugate and passing/returning of\n   complex parameter.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 141,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This test tests complex conjugate and passing/returning of\n   complex parameter.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 54,
-// DEFAULT-NEXT:                       length: 87,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

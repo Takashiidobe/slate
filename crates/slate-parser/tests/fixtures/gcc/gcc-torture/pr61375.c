@@ -65,19 +65,18 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[1]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Some version of bswap optimization would ICE when analyzing a mask constant\n   too big for an uint64_t variable (PR210931).  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 169,
-// DEFAULT-NEXT:                       length: 130,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Some version of bswap optimization would ICE when analyzing a mask constant\n   too big for an uint64_t variable (PR210931).  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 169,
+// DEFAULT-NEXT:                   length: 130,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

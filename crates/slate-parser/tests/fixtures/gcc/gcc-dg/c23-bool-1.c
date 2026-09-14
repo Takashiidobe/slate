@@ -50,41 +50,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Test macro expansions in <stdbool.h> in C23.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 51,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Test macro expansions in <stdbool.h> in C23.  */",
+// DEFAULT-NEXT:                   "/* { dg-do run } */",
+// DEFAULT-NEXT:                   "/* { dg-options \"-std=c23 -pedantic-errors\" } */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 120,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do run } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 52,
-// DEFAULT-NEXT:                       length: 19,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-options \"-std=c23 -pedantic-errors\" } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 72,
-// DEFAULT-NEXT:                       length: 48,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

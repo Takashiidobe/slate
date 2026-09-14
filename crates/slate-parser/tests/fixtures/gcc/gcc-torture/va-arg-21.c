@@ -52,19 +52,18 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Copyright (C) 2000  Free Software Foundation.\n\n   If the argument to va_end() has side effects, test whether side\n   effects from that argument are honored.\n\n   Written by Kaveh R. Ghazi, 10/31/2000.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 206,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Copyright (C) 2000  Free Software Foundation.\n\n   If the argument to va_end() has side effects, test whether side\n   effects from that argument are honored.\n\n   Written by Kaveh R. Ghazi, 10/31/2000.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 206,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
@@ -567,19 +566,18 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* Increment the va_list pointer once.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 672,
-// DEFAULT-NEXT:                                   length: 42,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* Increment the va_list pointer once.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 672,
+// DEFAULT-NEXT:                               length: 42,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -613,19 +611,18 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* Increment the va_list pointer a second time.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 740,
-// DEFAULT-NEXT:                                   length: 51,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* Increment the va_list pointer a second time.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 740,
+// DEFAULT-NEXT:                               length: 51,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -677,19 +674,18 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* If we failed to increment ap_ptr twice, then the parameter passed\n     in here will dereference NULL and should cause a crash.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 836,
-// DEFAULT-NEXT:                                   length: 133,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* If we failed to increment ap_ptr twice, then the parameter passed\n     in here will dereference NULL and should cause a crash.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 836,
+// DEFAULT-NEXT:                               length: 133,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -741,19 +737,18 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* Just in case, If *ap_ptr is NULL abort anyway.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 1017,
-// DEFAULT-NEXT:                                   length: 53,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* Just in case, If *ap_ptr is NULL abort anyway.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 1017,
+// DEFAULT-NEXT:                               length: 53,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

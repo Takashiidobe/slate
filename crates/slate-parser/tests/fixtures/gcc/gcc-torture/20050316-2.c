@@ -178,30 +178,19 @@ int main(void) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This testcase generates MMX instructions together with x87 instructions.\n   Currently, there is no \"emms\" generated to switch between register sets,\n   so the testcase fails for targets where MMX insns are enabled.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 221,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* This testcase generates MMX instructions together with x87 instructions.\n   Currently, there is no \"emms\" generated to switch between register sets,\n   so the testcase fails for targets where MMX insns are enabled.  */",
+// DEFAULT-NEXT:                   "/* { dg-options \"-mno-mmx -Wno-psabi\" { target { x86_64-*-* i?86-*-* } } } */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 299,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-options \"-mno-mmx -Wno-psabi\" { target { x86_64-*-* i?86-*-* } } } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 222,
-// DEFAULT-NEXT:                       length: 77,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

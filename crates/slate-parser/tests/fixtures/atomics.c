@@ -477,19 +477,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// returns 100, a = 105",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 180,
-// DEFAULT-NEXT:                                   length: 23,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// returns 100, a = 105",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 180,
+// DEFAULT-NEXT:                               length: 23,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -560,19 +559,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// returns 105, a = 95",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 245,
-// DEFAULT-NEXT:                                   length: 22,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// returns 105, a = 95",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 245,
+// DEFAULT-NEXT:                               length: 22,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -643,19 +641,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// 95 & 60 = 28",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 309,
-// DEFAULT-NEXT:                                   length: 15,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// 95 & 60 = 28",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 309,
+// DEFAULT-NEXT:                               length: 15,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -726,19 +723,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// 28 | 1 = 29",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 366,
-// DEFAULT-NEXT:                                   length: 14,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// 28 | 1 = 29",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 366,
+// DEFAULT-NEXT:                               length: 14,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -809,19 +805,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// 29 ^ 15 = 18",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 422,
-// DEFAULT-NEXT:                                   length: 15,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// 29 ^ 15 = 18",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 422,
+// DEFAULT-NEXT:                               length: 15,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -892,19 +887,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// returns 18, a = 7",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 480,
-// DEFAULT-NEXT:                                   length: 20,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// returns 18, a = 7",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 480,
+// DEFAULT-NEXT:                               length: 20,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1009,19 +1003,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// success, a = 42",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 584,
-// DEFAULT-NEXT:                                   length: 18,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// success, a = 42",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 584,
+// DEFAULT-NEXT:                               length: 18,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -1343,19 +1336,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "// fail, a stays 42",
-// DEFAULT-NEXT:                               kind: Line,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 695,
-// DEFAULT-NEXT:                                   length: 19,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "// fail, a stays 42",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 695,
+// DEFAULT-NEXT:                               length: 19,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

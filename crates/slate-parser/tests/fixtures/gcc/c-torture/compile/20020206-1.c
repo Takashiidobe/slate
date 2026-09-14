@@ -69,30 +69,19 @@ unsigned int foo (A *x)
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Origin: PR optimization/5429 from Philipp Thomas <pthomas@suse.de>.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1,
-// DEFAULT-NEXT:                       length: 74,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Origin: PR optimization/5429 from Philipp Thomas <pthomas@suse.de>.  */",
+// DEFAULT-NEXT:                   "/* This testcase caused ICE on IA-32 -O2 -march=i686 due to rtl sharing\n   problem in noce_process_if_block.  Fixed by\n   http://gcc.gnu.org/ml/gcc-patches/2002-01/msg02146.html.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 1,
+// DEFAULT-NEXT:                   length: 257,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This testcase caused ICE on IA-32 -O2 -march=i686 due to rtl sharing\n   problem in noce_process_if_block.  Fixed by\n   http://gcc.gnu.org/ml/gcc-patches/2002-01/msg02146.html.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 76,
-// DEFAULT-NEXT:                       length: 182,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

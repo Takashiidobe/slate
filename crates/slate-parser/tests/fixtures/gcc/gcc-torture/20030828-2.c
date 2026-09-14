@@ -262,19 +262,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* The alias analyzer was creating the same memory tag for r, p and q\n     because 'struct rtx_def *' is type-compatible with 'int *'.  However,\n     the alias set of 'int[2]' is not the same as 'int *', so variable\n     'tmp' was deemed not aliased with anything.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 163,
-// DEFAULT-NEXT:                                   length: 268,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* The alias analyzer was creating the same memory tag for r, p and q\n     because 'struct rtx_def *' is type-compatible with 'int *'.  However,\n     the alias set of 'int[2]' is not the same as 'int *', so variable\n     'tmp' was deemed not aliased with anything.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 163,
+// DEFAULT-NEXT:                               length: 268,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -324,19 +323,18 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* If 'r' wasn't declared, then q and tmp would have had the same memory\n     tag.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 467,
-// DEFAULT-NEXT:                                   length: 86,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* If 'r' wasn't declared, then q and tmp would have had the same memory\n     tag.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 467,
+// DEFAULT-NEXT:                               length: 86,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

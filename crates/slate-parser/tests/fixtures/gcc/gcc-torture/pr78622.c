@@ -32,19 +32,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* PR middle-end/78622 - [7 Regression] -Wformat-overflow/-fprintf-return-value\n   incorrect with overflow/wrapping\n   { dg-skip-if \"Requires %hhd format\" { hppa*-*-hpux* } }\n   { dg-require-effective-target c99_runtime }\n   { dg-additional-options \"-Wformat-overflow=2\" } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 275,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* PR middle-end/78622 - [7 Regression] -Wformat-overflow/-fprintf-return-value\n   incorrect with overflow/wrapping\n   { dg-skip-if \"Requires %hhd format\" { hppa*-*-hpux* } }\n   { dg-require-effective-target c99_runtime }\n   { dg-additional-options \"-Wformat-overflow=2\" } */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 275,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

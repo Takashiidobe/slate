@@ -16,30 +16,19 @@ static unsigned long x = (unsigned long) &_text - 0x10000000L - 1;
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do compile { target { ptr32plus && { ! llp64 } } } } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1,
-// DEFAULT-NEXT:                       length: 63,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-do compile { target { ptr32plus && { ! llp64 } } } } */",
+// DEFAULT-NEXT:                   "/* This testcase tests whether GCC can produce static initialized data\n   that references addresses of size 'unsigned long', even if that's not\n   the same as __SIZE_TYPE__.  (See 20011114-1.c for the same test of\n   size __SIZE_TYPE__.)  \n\n   Some rare environments might not have the required relocs to support\n   this; they should have this test disabled in the .x file.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 1,
+// DEFAULT-NEXT:                   length: 442,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This testcase tests whether GCC can produce static initialized data\n   that references addresses of size 'unsigned long', even if that's not\n   the same as __SIZE_TYPE__.  (See 20011114-1.c for the same test of\n   size __SIZE_TYPE__.)  \n\n   Some rare environments might not have the required relocs to support\n   this; they should have this test disabled in the .x file.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 66,
-// DEFAULT-NEXT:                       length: 377,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

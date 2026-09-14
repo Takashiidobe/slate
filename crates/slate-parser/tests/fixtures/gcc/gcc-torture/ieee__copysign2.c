@@ -78,19 +78,18 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do run } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 19,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-do run } */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 19,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
@@ -293,41 +292,20 @@ int main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[6]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Work around the fact that with the Intel double-extended precision,\n   we've got a 10 byte type stuffed into some amount of padding.  And\n   the fact that -ffloat-store is going to stuff this value temporarily\n   into some bit of stack frame that we've no control over and can't zero.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 184,
-// DEFAULT-NEXT:                       length: 291,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Work around the fact that with the Intel double-extended precision,\n   we've got a 10 byte type stuffed into some amount of padding.  And\n   the fact that -ffloat-store is going to stuff this value temporarily\n   into some bit of stack frame that we've no control over and can't zero.  */",
+// DEFAULT-NEXT:                   "/* Work around the fact that the sign of the second double in the IBM\n   double-double format is not strictly specified when it contains a zero.\n   For instance, -0.0L can be represented with either (-0.0, +0.0) or\n   (-0.0, -0.0).  The former is what we'll get from the compiler when it\n   builds constants; the later is what we'll get from the negation operator\n   at runtime.  */",
+// DEFAULT-NEXT:                   "/* ??? This hack only works for big-endian, which is fortunately true for\n   AIX and Darwin.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 184,
+// DEFAULT-NEXT:                   length: 914,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Work around the fact that the sign of the second double in the IBM\n   double-double format is not strictly specified when it contains a zero.\n   For instance, -0.0L can be represented with either (-0.0, +0.0) or\n   (-0.0, -0.0).  The former is what we'll get from the compiler when it\n   builds constants; the later is what we'll get from the negation operator\n   at runtime.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 619,
-// DEFAULT-NEXT:                       length: 382,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* ??? This hack only works for big-endian, which is fortunately true for\n   AIX and Darwin.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1002,
-// DEFAULT-NEXT:                       length: 96,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

@@ -939,21 +939,14 @@ pub enum FieldItem {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CommentGroup {
-    pub comments: Vec<Comment>,
+    pub comment: Comment,
     pub provenance: Provenance,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Comment {
-    pub text: String,
-    pub kind: CommentKind,
+    pub text: Vec<String>,
     pub loc: Loc,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CommentKind {
-    Line,
-    Block,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

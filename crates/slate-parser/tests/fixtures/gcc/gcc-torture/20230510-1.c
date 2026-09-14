@@ -35,19 +35,18 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This code shows up in worse_state in ipa-pure-const.cc:\n   *looping = MAX (*looping, looping2);\n   was miscompiling it as just `return 1` though instead of\n   `MAX_EXPR<*a, b>` (which should be transformed into `*a | b`\n   note MAX_EXPR<bool, bool> is really `bool | bool` so we\n   use that to compare against here.\n */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 322,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* This code shows up in worse_state in ipa-pure-const.cc:\n   *looping = MAX (*looping, looping2);\n   was miscompiling it as just `return 1` though instead of\n   `MAX_EXPR<*a, b>` (which should be transformed into `*a | b`\n   note MAX_EXPR<bool, bool> is really `bool | bool` so we\n   use that to compare against here.\n */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 322,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

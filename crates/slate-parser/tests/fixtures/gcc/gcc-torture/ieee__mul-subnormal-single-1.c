@@ -212,41 +212,20 @@ int main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do run }\n   # C6X floating point hardware turns denormals to zero in multiplications.\n   { dg-xfail-if \"\" { tic6x-*-* && ti_c67x } }\n\n   # ColdFire FPUs require software handling of subnormals.  We are\n   # not aware of any system that has this.\n   { dg-xfail-if \"\" { m68k-*-* && coldfire_fpu } }\n\n   # The C-SKY hardware FPU only supports flush-to-zero mode.\n   { dg-xfail-if \"\" { csky-*-* && hard_float } }\n\n   # The Epiphany single-precision floating point format does not\n   # support subnormals.\n   { dg-skip-if \"\" { epiphany-*-* } } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 549,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-do run }\n   # C6X floating point hardware turns denormals to zero in multiplications.\n   { dg-xfail-if \"\" { tic6x-*-* && ti_c67x } }\n\n   # ColdFire FPUs require software handling of subnormals.  We are\n   # not aware of any system that has this.\n   { dg-xfail-if \"\" { m68k-*-* && coldfire_fpu } }\n\n   # The C-SKY hardware FPU only supports flush-to-zero mode.\n   { dg-xfail-if \"\" { csky-*-* && hard_float } }\n\n   # The Epiphany single-precision floating point format does not\n   # support subnormals.\n   { dg-skip-if \"\" { epiphany-*-* } } */",
+// DEFAULT-NEXT:                   "/* Check that certain subnormal numbers (formerly known as denormalized\n   numbers) are rounded to within 0.5 ulp.  PR other/14354.  */",
+// DEFAULT-NEXT:                   "/* This test requires that float and unsigned int are the same size and\n   that the sign-bit of the float is at MSB of the unsigned int.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 828,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Check that certain subnormal numbers (formerly known as denormalized\n   numbers) are rounded to within 0.5 ulp.  PR other/14354.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 551,
-// DEFAULT-NEXT:                       length: 135,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* This test requires that float and unsigned int are the same size and\n   that the sign-bit of the float is at MSB of the unsigned int.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 688,
-// DEFAULT-NEXT:                       length: 140,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
@@ -682,19 +661,18 @@ int main() {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* Set a variable rather than aborting here, to simplify tracing when\n       several computations are wrong.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 1288,
-// DEFAULT-NEXT:                                   length: 112,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* Set a variable rather than aborting here, to simplify tracing when\n       several computations are wrong.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 1288,
+// DEFAULT-NEXT:                               length: 112,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,
@@ -719,19 +697,18 @@ int main() {
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[8]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* We don't want to make this const and static, or else we risk inlining\n   causing the test to fold as constants at compile-time.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1416,
-// DEFAULT-NEXT:                       length: 134,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* We don't want to make this const and static, or else we risk inlining\n   causing the test to fold as constants at compile-time.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 1416,
+// DEFAULT-NEXT:                   length: 134,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

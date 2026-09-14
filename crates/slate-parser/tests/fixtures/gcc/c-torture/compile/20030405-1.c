@@ -35,19 +35,18 @@ bar(void)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* When compiled with -pedantic, this program will cause an ICE when the\n   constant propagator tries to set the value of *str to UNDEFINED.\n   \n   This happens because *str is erroneously considered as a store alias.\n   The aliasing code is then making *str an alias leader for its alias set\n   and when the PHI node at the end of the while() is visited the first\n   time, CCP will try to assign it a value of UNDEFINED, but the default\n   value for *str is a constant.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1,
-// DEFAULT-NEXT:                       length: 474,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* When compiled with -pedantic, this program will cause an ICE when the\n   constant propagator tries to set the value of *str to UNDEFINED.\n   \n   This happens because *str is erroneously considered as a store alias.\n   The aliasing code is then making *str an alias leader for its alias set\n   and when the PHI node at the end of the while() is visited the first\n   time, CCP will try to assign it a value of UNDEFINED, but the default\n   value for *str is a constant.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 1,
+// DEFAULT-NEXT:                   length: 474,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

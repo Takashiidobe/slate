@@ -383,20 +383,25 @@ impl Parser {
         provenance: Provenance,
     ) -> (Span<CommentGroup>, usize) {
         let file = nodes[0].expansion.file;
-        let mut comments = Vec::new();
+        let mut texts = Vec::new();
+        let mut loc: Option<crate::ast::Loc> = None;
         let mut consumed = 0;
         for (index, node) in nodes.iter().enumerate() {
             match &node.value {
                 PPNodeKind::Comment { text, .. } if node.expansion.file == file => {
-                    let kind = if text.starts_with("//") {
-                        CommentKind::Line
-                    } else {
-                        CommentKind::Block
-                    };
-                    comments.push(Comment {
-                        text: text.clone(),
-                        kind,
-                        loc: node.expansion,
+                    texts.push(text.clone());
+                    loc = Some(match loc {
+                        Some(loc) => {
+                            let start = loc.offset.min(node.expansion.offset);
+                            let end = (loc.offset + loc.length)
+                                .max(node.expansion.offset + node.expansion.length);
+                            crate::ast::Loc {
+                                file: loc.file,
+                                offset: start,
+                                length: end - start,
+                            }
+                        }
+                        None => node.expansion,
                     });
                     consumed = index + 1;
                 }
@@ -405,7 +410,10 @@ impl Parser {
             }
         }
         let group = CommentGroup {
-            comments,
+            comment: Comment {
+                text: texts,
+                loc: loc.expect("comment_group requires at least one comment"),
+            },
             provenance,
         };
         (Span::cover(group, &nodes[..consumed]), consumed)

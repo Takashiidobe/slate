@@ -120,19 +120,18 @@ int main(void) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* AArch64 wrong code at -O3.  An oversized vector\n   (V16DI, 128 bytes, no register mode) is expanded into two distinct\n   stack slots that shared the same MEM_EXPR.  The load/store pair fusion\n   pass then fused stores belonging to different slots, leaving part of a\n   slot uninitialized.  Self-checking: the checksum is target-independent.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 347,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* AArch64 wrong code at -O3.  An oversized vector\n   (V16DI, 128 bytes, no register mode) is expanded into two distinct\n   stack slots that shared the same MEM_EXPR.  The load/store pair fusion\n   pass then fused stores belonging to different slots, leaving part of a\n   slot uninitialized.  Self-checking: the checksum is target-independent.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 347,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

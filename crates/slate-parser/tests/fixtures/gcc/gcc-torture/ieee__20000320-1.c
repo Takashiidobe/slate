@@ -250,19 +250,18 @@ int main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do run }\n\n   # AVR doubles are floats\n   { dg-skip-if \"AVR doubles are floats\" { avr-*-* } }\n\n   # ColdFire FPUs require software handling of subnormals.  We are\n   # not aware of any system that has this.\n   { dg-xfail-if \"\" { m68k-*-* && coldfire_fpu } }\n\n   # C6X floating point hardware turns denormals to zero in FP conversions.\n   { dg-xfail-if \"\" { tic6x-*-* && ti_c67x } } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 391,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-do run }\n\n   # AVR doubles are floats\n   { dg-skip-if \"AVR doubles are floats\" { avr-*-* } }\n\n   # ColdFire FPUs require software handling of subnormals.  We are\n   # not aware of any system that has this.\n   { dg-xfail-if \"\" { m68k-*-* && coldfire_fpu } }\n\n   # C6X floating point hardware turns denormals to zero in FP conversions.\n   { dg-xfail-if \"\" { tic6x-*-* && ti_c67x } } */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 391,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

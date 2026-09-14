@@ -189,30 +189,19 @@ int main() {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-do run }\n   { dg-additional-options \"-fno-trapping-math\" }\n\n   # The ARM VxWorks kernel uses an external floating-point library in\n   # which routines like __ledf2 are just aliases for __cmpdf2.  These\n   # routines therefore don't handle NaNs correctly.\n   { dg-xfail-if \"\" { arm*-*-vxworks* } } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 307,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-do run }\n   { dg-additional-options \"-fno-trapping-math\" }\n\n   # The ARM VxWorks kernel uses an external floating-point library in\n   # which routines like __ledf2 are just aliases for __cmpdf2.  These\n   # routines therefore don't handle NaNs correctly.\n   { dg-xfail-if \"\" { arm*-*-vxworks* } } */",
+// DEFAULT-NEXT:                   "/* Copyright (C) 2004 Free Software Foundation.\n\n   Test for correctness of composite floating-point comparisons.\n\n   Written by Paolo Bonzini, 26th May 2004.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 471,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Copyright (C) 2004 Free Software Foundation.\n\n   Test for correctness of composite floating-point comparisons.\n\n   Written by Paolo Bonzini, 26th May 2004.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 309,
-// DEFAULT-NEXT:                       length: 162,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

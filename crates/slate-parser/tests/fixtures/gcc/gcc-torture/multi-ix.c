@@ -201,30 +201,19 @@ void c(int n, ...) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* { dg-add-options stack_size } */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 35,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* { dg-add-options stack_size } */",
+// DEFAULT-NEXT:                   "/* Test for a reload bug:\n   if you have a memory reference using the indexed addressing\n   mode, and the base address is a pseudo containing an address in the frame\n   and this pseudo fails to get a hard register, we end up with a double PLUS,\n   so the frame address gets reloaded.  Now, when the index got a hard register,\n   and it dies in this insn, push_reload will consider that hard register as\n   a reload register, and disregrad overlaps with rld[n_reloads].in .  That is\n   fine as long as the add can be done with a single insn, but when the\n   constant is so large that it has to be reloaded into a register first,\n   that clobbers the index.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 696,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Test for a reload bug:\n   if you have a memory reference using the indexed addressing\n   mode, and the base address is a pseudo containing an address in the frame\n   and this pseudo fails to get a hard register, we end up with a double PLUS,\n   so the frame address gets reloaded.  Now, when the index got a hard register,\n   and it dies in this insn, push_reload will consider that hard register as\n   a reload register, and disregrad overlaps with rld[n_reloads].in .  That is\n   fine as long as the add can be done with a single insn, but when the\n   constant is so large that it has to be reloaded into a register first,\n   that clobbers the index.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 37,
-// DEFAULT-NEXT:                       length: 659,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
@@ -3096,19 +3085,18 @@ void c(int n, ...) {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comments: [
-// DEFAULT-NEXT:                           Comment {
-// DEFAULT-NEXT:                               text: "/* CHUNK needs to be at least 40 to avoid stack corruption,\n     since index variable i0 in \"a[i0] = i0\" equals 39.  */",
-// DEFAULT-NEXT:                               kind: Block,
-// DEFAULT-NEXT:                               loc: Loc {
-// DEFAULT-NEXT:                                   file: FileId(
-// DEFAULT-NEXT:                                       3,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   offset: 4351,
-// DEFAULT-NEXT:                                   length: 119,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/* CHUNK needs to be at least 40 to avoid stack corruption,\n     since index variable i0 in \"a[i0] = i0\" equals 39.  */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 4351,
+// DEFAULT-NEXT:                               length: 119,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       provenance: Provenance {
 // DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               3,

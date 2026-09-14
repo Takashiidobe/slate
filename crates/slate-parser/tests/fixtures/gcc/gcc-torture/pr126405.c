@@ -55,19 +55,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* AArch64 wrong code at -O2.  Store motion creates several SSA versions of an\n   oversized vector temporary (V16DI, 128 bytes, no register mode).  The\n   partition holding the loop-carried versions has an anonymous representative,\n   so out-of-SSA left it and the partition of the copy taken for the use after\n   the loop sharing one MEM_EXPR.  The load/store pair-fusion pass then treated\n   two stores 144 bytes apart as adjacent, fused them, and left the tail of one\n   slot uninitialised.  Self-checking: aborts if the result is wrong.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 544,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* AArch64 wrong code at -O2.  Store motion creates several SSA versions of an\n   oversized vector temporary (V16DI, 128 bytes, no register mode).  The\n   partition holding the loop-carried versions has an anonymous representative,\n   so out-of-SSA left it and the partition of the copy taken for the use after\n   the loop sharing one MEM_EXPR.  The load/store pair-fusion pass then treated\n   two stores 144 bytes apart as adjacent, fused them, and left the tail of one\n   slot uninitialised.  Self-checking: aborts if the result is wrong.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 544,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
@@ -353,19 +352,18 @@ int main(void) {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* The wrong value is read from an uninitialised stack slot, so make sure the\n   stack the callee reuses does not happen to be zero.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 731,
-// DEFAULT-NEXT:                       length: 136,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* The wrong value is read from an uninitialised stack slot, so make sure the\n   stack the callee reuses does not happen to be zero.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 731,
+// DEFAULT-NEXT:                   length: 136,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

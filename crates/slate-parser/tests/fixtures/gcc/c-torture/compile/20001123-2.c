@@ -25,19 +25,18 @@ bar ()
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Copyright 2000 Free Software Foundation\n\n   by Alexandre Oliva  <aoliva@redhat.com>\n\n   Based on zlib/gzio.c.\n\n   This used to generate duplicate labels when compiled with\n   sh-elf-gcc -O2 -m3 -fPIC.\n\n   Bug reported by NIIBE Yutaka <gniibe@m17n.org>.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 1,
-// DEFAULT-NEXT:                       length: 259,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Copyright 2000 Free Software Foundation\n\n   by Alexandre Oliva  <aoliva@redhat.com>\n\n   Based on zlib/gzio.c.\n\n   This used to generate duplicate labels when compiled with\n   sh-elf-gcc -O2 -m3 -fPIC.\n\n   Bug reported by NIIBE Yutaka <gniibe@m17n.org>.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 1,
+// DEFAULT-NEXT:                   length: 259,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

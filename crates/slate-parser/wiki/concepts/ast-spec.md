@@ -309,13 +309,16 @@ Label = Named(String) | Case(Expr) | CaseRange { start: Expr, end: Expr } | Defa
 ## Comments
 
 ```
-CommentGroup { comments: Vec<Comment>, provenance }
-Comment { text: String, kind: Line | Block, loc: Loc }
+CommentGroup { comment: Comment, provenance }
+Comment { text: Vec<String>, loc: Loc }
 ```
 
 - Consecutive comments with no code between them form **one** group, including
-  across blank lines. Each `Comment.loc` is kept, so blank-line separation is
-  recoverable. A group never spans files.
+  across blank lines, coalesced into a single `Comment`. `text` holds the raw
+  text of each original comment in order (so line/block style and per-comment
+  boundaries are still visible); `loc` spans from the start of the first
+  comment to the end of the last, covering any blank lines between them. A
+  group never spans files.
 - Groups appear where items can: `ExternalItem`, `BlockItem`, `MemberItem`,
   `EnumItem`. Comments inside expressions or declarators are not preserved.
 

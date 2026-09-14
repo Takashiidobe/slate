@@ -140,19 +140,18 @@ int main() {
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[0]: Comment(
 // DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comments: [
-// DEFAULT-NEXT:               Comment {
-// DEFAULT-NEXT:                   text: "/* Test failed on an architecture that:\n\n   - had 16-bit registers,\n   - passed 64-bit structures in registers,\n   - only allowed SImode values in even numbered registers.\n\n   Before reload, s.i2 in foo() was represented as:\n\n        (subreg:SI (reg:DI 0) 2)\n\n   find_dummy_reload would return (reg:SI 1) for the subreg reload,\n   despite that not being a valid register.  */",
-// DEFAULT-NEXT:                   kind: Block,
-// DEFAULT-NEXT:                   loc: Loc {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       offset: 0,
-// DEFAULT-NEXT:                       length: 375,
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           comment: Comment {
+// DEFAULT-NEXT:               text: [
+// DEFAULT-NEXT:                   "/* Test failed on an architecture that:\n\n   - had 16-bit registers,\n   - passed 64-bit structures in registers,\n   - only allowed SImode values in even numbered registers.\n\n   Before reload, s.i2 in foo() was represented as:\n\n        (subreg:SI (reg:DI 0) 2)\n\n   find_dummy_reload would return (reg:SI 1) for the subreg reload,\n   despite that not being a valid register.  */",
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:               loc: Loc {
+// DEFAULT-NEXT:                   file: FileId(
+// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   offset: 0,
+// DEFAULT-NEXT:                   length: 375,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,
