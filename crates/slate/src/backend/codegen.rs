@@ -1,3 +1,9 @@
+//! Emit the backend's Rust AST as Rust source text.
+//!
+//! [`Codegen`](crate::backend::codegen::Codegen) writes structured AST nodes to any
+//! [`std::fmt::Write`] implementation,
+//! while the `*_to_string` helpers provide convenient allocation-based wrappers.
+
 use std::fmt::{self, Write};
 
 use crate::backend::rust_ast::{
@@ -108,15 +114,18 @@ fn rmw_method(op: AtomicRmwOp) -> &'static str {
     }
 }
 
+/// Writes Rust source for backend AST nodes.
 pub struct Codegen<W: Write> {
     out: W,
 }
 
 impl<W: Write> Codegen<W> {
+    /// Creates a code generator that writes to `out`.
     pub fn new(out: W) -> Self {
         Self { out }
     }
 
+    /// Returns the underlying writer after code generation is complete.
     pub fn into_inner(self) -> W {
         self.out
     }
@@ -135,6 +144,7 @@ impl<W: Write> Codegen<W> {
         Ok(())
     }
 
+    /// Emits a complete Rust program.
     pub fn program(&mut self, program: &Program) -> fmt::Result {
         for (i, item) in program.items.iter().enumerate() {
             if i > 0
@@ -774,6 +784,7 @@ impl<W: Write> Codegen<W> {
         Ok(())
     }
 
+    /// Emits a Rust statement.
     pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
             Stmt::Let {
@@ -1018,6 +1029,7 @@ impl<W: Write> Codegen<W> {
         }
     }
 
+    /// Emits a Rust expression.
     pub fn expr(&mut self, expr: &Expr) -> fmt::Result {
         self.expr_prec(expr, 0)
     }
@@ -1602,6 +1614,7 @@ fn same_item_group(left: &Item, right: &Item) -> bool {
     item_group(left).is_some_and(|group| item_group(right) == Some(group))
 }
 
+/// Emits a complete [`Program`] as a `String`.
 pub fn program_to_string(program: &Program) -> String {
     let mut cg = Codegen::new(String::new());
     cg.program(program)
@@ -1609,36 +1622,45 @@ pub fn program_to_string(program: &Program) -> String {
     cg.into_inner()
 }
 
+/// Emits an [`Item`] as a `String`.
 pub fn item_to_string(item: &Item) -> String {
     let mut cg = Codegen::new(String::new());
     cg.item(item).expect("writing to a String never fails");
     cg.into_inner()
 }
 
+/// Emits an [`Expr`] as a `String`.
 pub fn expr_to_string(expr: &Expr) -> String {
     let mut cg = Codegen::new(String::new());
     cg.expr(expr).expect("writing to a String never fails");
     cg.into_inner()
 }
 
+/// Emits a [`Stmt`] as a `String`.
 pub fn stmt_to_string(stmt: &Stmt) -> String {
     let mut cg = Codegen::new(String::new());
     cg.stmt(stmt).expect("writing to a String never fails");
     cg.into_inner()
 }
 
+/// Emits a [`Type`] as a `String`.
 pub fn type_to_string(ty: &Type) -> String {
     let mut cg = Codegen::new(String::new());
     cg.ty(ty).expect("writing to a String never fails");
     cg.into_inner()
 }
 
+/// Emits a [`Cfg`] expression as a `String`.
 pub fn cfg_to_string(cfg: &Cfg) -> String {
     let mut cg = Codegen::new(String::new());
     cg.cfg(cfg).expect("writing to a String never fails");
     cg.into_inner()
 }
 
+/// Escapes a C-derived name so it can be used as a Rust identifier.
+///
+/// Rust keywords receive an `r#` prefix, while boolean literals receive a
+/// trailing underscore because raw identifiers cannot represent them.
 pub fn escape_ident(name: &str) -> String {
     if name.starts_with("r#") || matches!(name, "crate" | "self" | "Self" | "super") {
         return name.to_string();
@@ -1652,6 +1674,7 @@ pub fn escape_ident(name: &str) -> String {
     name.to_string()
 }
 
+/// Returns whether `name` is reserved by Rust's grammar.
 pub fn is_rust_keyword(name: &str) -> bool {
     matches!(
         name,
