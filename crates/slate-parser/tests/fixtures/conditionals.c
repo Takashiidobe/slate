@@ -29,8 +29,16 @@ typedef int Socket;
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 3,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "3",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -113,8 +121,16 @@ typedef int Socket;
 // WIN32-NEXT:           name: "main",
 // WIN32-NEXT:           body: [
 // WIN32-NEXT:               Return(
-// WIN32-NEXT:                   Integer(
-// WIN32-NEXT:                       2,
+// WIN32-NEXT:                   IntegerLiteral(
+// WIN32-NEXT:                       IntegerLiteral {
+// WIN32-NEXT:                           value: 2,
+// WIN32-NEXT:                           radix: Decimal,
+// WIN32-NEXT:                           suffix: IntegerSuffix {
+// WIN32-NEXT:                               unsigned: false,
+// WIN32-NEXT:                               size: None,
+// WIN32-NEXT:                           },
+// WIN32-NEXT:                           spelling: "2",
+// WIN32-NEXT:                       },
 // WIN32-NEXT:                   ),
 // WIN32-NEXT:               ),
 // WIN32-NEXT:           ],

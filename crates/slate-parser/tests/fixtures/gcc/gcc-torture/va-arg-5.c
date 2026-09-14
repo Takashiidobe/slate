@@ -199,11 +199,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: Double(
-// DEFAULT-NEXT:                                   3.141592,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "3.141592",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: None,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -231,11 +231,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: Double(
-// DEFAULT-NEXT:                                   2.71827,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.71827",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: None,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -263,11 +263,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: Double(
-// DEFAULT-NEXT:                                   2.2360679,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.2360679",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: None,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -295,11 +295,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: Double(
-// DEFAULT-NEXT:                                   2.1474836,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.1474836",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: None,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -402,11 +402,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x4000c90fd7e45803cd14,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "3.141592L",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -434,11 +434,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x4000adf822bbecaab8a6,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.71827L",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -466,11 +466,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x40008f1bbc8988aa5e0d,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.2360679L",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -498,11 +498,11 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           declarator: Abstract,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x400089705f0dac90ed23,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "2.1474836L",
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -557,35 +557,43 @@ int main(void) {
 // DEFAULT-NEXT:                           "va_double",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       3.141592,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       2.71827,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "3.141592",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: None,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       2.2360679,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "2.71827",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: None,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       2.1474836,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "2.2360679",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           FloatLiteral(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   spelling: "2.1474836",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: None,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
@@ -597,35 +605,43 @@ int main(void) {
 // DEFAULT-NEXT:                           "va_long_double",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4000c90fd7e45803cd14,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x4000adf822bbecaab8a6,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "3.141592L",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: L,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x40008f1bbc8988aa5e0d,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "2.71827L",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: L,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                           FloatLiteral(
 // DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: LongDouble(
-// DEFAULT-NEXT:                                       0x400089705f0dac90ed23,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   spelling: "2.2360679L",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: L,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           FloatLiteral(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   spelling: "2.1474836L",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: L,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
@@ -637,8 +653,16 @@ int main(void) {
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

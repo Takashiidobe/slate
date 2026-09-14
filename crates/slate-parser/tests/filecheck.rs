@@ -461,7 +461,9 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
                 .iter()
                 .filter_map(|stmt| match &stmt.value {
                     Stmt::Return(expression) => match &expression.value {
-                        ExprKind::Integer(value) => Some(*value),
+                        ExprKind::IntegerLiteral(_) => {
+                            Some(ConstExprParser::evaluate_ast(expression).unwrap())
+                        }
                         ExprKind::StatementExpression(_) => None,
                         _ => panic!("clang return was not an integer"),
                     },

@@ -1,8 +1,12 @@
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
-use crate::const_expr::UnaryOp;
+use crate::const_expr::{
+    CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp, resolve_float,
+};
 use crate::files::{Files, decode_source_bytes, display_path};
+use crate::target_info::TargetInfo;
 use miette::{Diagnostic, NamedSource, SourceSpan};
+use num_bigint::BigUint;
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
@@ -91,6 +95,7 @@ impl TranslationUnit {
                     if flavor == CompilerFlavor::Clang {
                         check_function_asm(self, function, &mut errors);
                     }
+                    check_literals(function, &self.target, &mut errors);
                 }
                 Decl::Declaration {
                     declaration,
@@ -122,6 +127,7 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
+                    check_declaration_literals(declaration, &self.target, *provenance, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
                         if matches!(specifiers.ty, CType::Void)
@@ -275,8 +281,8 @@ fn check_attributes(
 
 fn is_integer_constant_expression(expression: &Expr) -> bool {
     match &expression.value {
-        ExprKind::Integer(_)
-        | ExprKind::WideInteger(_)
+        ExprKind::IntegerLiteral(_)
+        | ExprKind::CharLiteral(_)
         | ExprKind::SizeOfExpr(_)
         | ExprKind::SizeOfType { .. }
         | ExprKind::AlignOf { .. } => true,
@@ -304,13 +310,9 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
                 && is_integer_constant_expression(else_value)
         }
         ExprKind::Identifier(_)
-        | ExprKind::StringLit(_)
-        | ExprKind::Utf8StringLit(_)
-        | ExprKind::Utf16StringLit(_)
-        | ExprKind::Utf32StringLit(_)
-        | ExprKind::WideStringLit(_)
+        | ExprKind::StringLiteral(_)
         | ExprKind::Generic { .. }
-        | ExprKind::Float(_)
+        | ExprKind::FloatLiteral(_)
         | ExprKind::Call { .. }
         | ExprKind::Assign { .. }
         | ExprKind::Comma { .. }
@@ -471,6 +473,7 @@ fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaEr
 
 enum BodyNode<'a> {
     Stmt(&'a SpannedStmt),
+    Expr(&'a Expr),
     EnterJumpScope,
     ExitJumpScope,
 }
@@ -561,6 +564,7 @@ fn walk_initializer<'a>(initializer: &'a Initializer, visit: &mut impl FnMut(Bod
 }
 
 fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
+    visit(BodyNode::Expr(expr));
     match &expr.value {
         ExprKind::StatementExpression(body) => {
             visit(BodyNode::EnterJumpScope);
@@ -624,20 +628,148 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
                 walk_initializer(&item.value, visit);
             }
         }
-        ExprKind::Integer(_)
-        | ExprKind::WideInteger(_)
-        | ExprKind::Float(_)
+        ExprKind::IntegerLiteral(_)
+        | ExprKind::FloatLiteral(_)
+        | ExprKind::CharLiteral(_)
         | ExprKind::Identifier(_)
-        | ExprKind::StringLit(_)
-        | ExprKind::Utf8StringLit(_)
-        | ExprKind::Utf16StringLit(_)
-        | ExprKind::Utf32StringLit(_)
-        | ExprKind::WideStringLit(_)
+        | ExprKind::StringLiteral(_)
         | ExprKind::SizeOfType { .. }
         | ExprKind::AlignOf { .. }
         | ExprKind::OffsetOf { .. }
         | ExprKind::TypesCompatible { .. }
         | ExprKind::LabelAddress(_) => {}
+    }
+}
+
+fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
+    match rank {
+        IntegerRank::Short => target.short_width,
+        IntegerRank::Int => target.int_width,
+        IntegerRank::Long => target.long_width,
+        IntegerRank::LongLong => target.long_long_width,
+        IntegerRank::Int128 => 128,
+    }
+}
+
+fn fits_rank(value: &BigUint, width: u32, signed: bool) -> bool {
+    let limit = BigUint::from(1u32) << (width - u32::from(signed));
+    *value < limit
+}
+
+fn integer_candidates(literal: &IntegerLiteral) -> Vec<(IntegerRank, bool)> {
+    use IntegerRank::{Int, Long, LongLong};
+    let decimal = literal.radix == Radix::Decimal;
+    match (literal.suffix.size, literal.suffix.unsigned) {
+        (IntegerSizeSuffix::None, false) if decimal => {
+            vec![(Int, true), (Long, true), (LongLong, true)]
+        }
+        (IntegerSizeSuffix::None, false) => vec![
+            (Int, true),
+            (Int, false),
+            (Long, true),
+            (Long, false),
+            (LongLong, true),
+            (LongLong, false),
+        ],
+        (IntegerSizeSuffix::None, true) => vec![(Int, false), (Long, false), (LongLong, false)],
+        (IntegerSizeSuffix::Long, false) if decimal => vec![(Long, true), (LongLong, true)],
+        (IntegerSizeSuffix::Long, false) => vec![
+            (Long, true),
+            (Long, false),
+            (LongLong, true),
+            (LongLong, false),
+        ],
+        (IntegerSizeSuffix::Long, true) => vec![(Long, false), (LongLong, false)],
+        (IntegerSizeSuffix::LongLong, false) if decimal => vec![(LongLong, true)],
+        (IntegerSizeSuffix::LongLong, false) => vec![(LongLong, true), (LongLong, false)],
+        (IntegerSizeSuffix::LongLong, true) => vec![(LongLong, false)],
+        (IntegerSizeSuffix::BitInt, _) => Vec::new(),
+    }
+}
+
+fn resolve_integer_literal(literal: &IntegerLiteral, target: &TargetInfo) -> Result<(), String> {
+    if literal.suffix.size == IntegerSizeSuffix::BitInt {
+        return Ok(());
+    }
+    integer_candidates(literal)
+        .into_iter()
+        .any(|(rank, signed)| fits_rank(&literal.value, integer_rank_width(rank, target), signed))
+        .then_some(())
+        .ok_or_else(|| {
+            format!(
+                "integer literal `{}` is too large to be represented in any integer type",
+                literal.spelling
+            )
+        })
+}
+
+fn char_literal_max(encoding: Encoding, target: &TargetInfo) -> u32 {
+    match encoding {
+        Encoding::Plain | Encoding::Utf8 => 0xFF,
+        Encoding::Utf16 => 0xFFFF,
+        Encoding::Utf32 => u32::MAX,
+        Encoding::Wide => {
+            if target.wchar_width >= 32 {
+                u32::MAX
+            } else {
+                0xFFFF
+            }
+        }
+    }
+}
+
+fn resolve_char_literal(literal: &CharLiteral, target: &TargetInfo) -> Result<(), String> {
+    if literal.encoding == Encoding::Plain {
+        return Ok(());
+    }
+    if let [unit] = literal.code_units.as_slice()
+        && *unit > char_literal_max(literal.encoding, target)
+    {
+        return Err("character too large for enclosing character literal type".to_string());
+    }
+    Ok(())
+}
+
+fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
+    match &expr.value {
+        ExprKind::IntegerLiteral(literal) => resolve_integer_literal(literal, target).err(),
+        ExprKind::CharLiteral(literal) => resolve_char_literal(literal, target).err(),
+        ExprKind::FloatLiteral(literal) => {
+            resolve_float(literal).err().map(|error| error.to_string())
+        }
+        _ => None,
+    }
+}
+
+fn check_literals(function: &FunctionDecl, target: &TargetInfo, errors: &mut Vec<SemaError>) {
+    walk_stmts(&function.body, &mut |node| {
+        let BodyNode::Expr(expr) = node else {
+            return;
+        };
+        if let Some(message) = check_literal_expr(expr, target) {
+            errors.push(error(function.provenance, expr.expansion, message));
+        }
+    });
+}
+
+fn check_declaration_literals(
+    declaration: &Declaration,
+    target: &TargetInfo,
+    provenance: Provenance,
+    errors: &mut Vec<SemaError>,
+) {
+    for init_declarator in &declaration.declarators {
+        let Some(initializer) = &init_declarator.initializer else {
+            continue;
+        };
+        walk_initializer(initializer, &mut |node| {
+            let BodyNode::Expr(expr) = node else {
+                return;
+            };
+            if let Some(message) = check_literal_expr(expr, target) {
+                errors.push(error(provenance, expr.expansion, message));
+            }
+        });
     }
 }
 
@@ -655,6 +787,7 @@ fn check_function_asm(
                 labels.insert(name.as_str(), scope.clone());
             }
         }
+        BodyNode::Expr(_) => {}
         BodyNode::EnterJumpScope => {
             scope.push(next_scope);
             next_scope += 1;
@@ -690,6 +823,7 @@ fn check_function_asm(
             }
             _ => {}
         },
+        BodyNode::Expr(_) => {}
         BodyNode::EnterJumpScope => {
             scope.push(next_scope);
             next_scope += 1;
@@ -788,11 +922,7 @@ enum OutputLvalue {
 fn output_lvalue(expr: &Expr) -> OutputLvalue {
     match &expr.value {
         ExprKind::Identifier(_)
-        | ExprKind::StringLit(_)
-        | ExprKind::Utf8StringLit(_)
-        | ExprKind::Utf16StringLit(_)
-        | ExprKind::Utf32StringLit(_)
-        | ExprKind::WideStringLit(_)
+        | ExprKind::StringLiteral(_)
         | ExprKind::Unary {
             op: UnaryOp::Deref, ..
         }

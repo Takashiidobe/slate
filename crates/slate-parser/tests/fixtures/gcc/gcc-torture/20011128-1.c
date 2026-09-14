@@ -69,15 +69,50 @@ int main(void) {
 // DEFAULT-NEXT:                                       "blah",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           33,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 33,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "33",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "01234567890123456789",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   48,
+// DEFAULT-NEXT:                                                   49,
+// DEFAULT-NEXT:                                                   50,
+// DEFAULT-NEXT:                                                   51,
+// DEFAULT-NEXT:                                                   52,
+// DEFAULT-NEXT:                                                   53,
+// DEFAULT-NEXT:                                                   54,
+// DEFAULT-NEXT:                                                   55,
+// DEFAULT-NEXT:                                                   56,
+// DEFAULT-NEXT:                                                   57,
+// DEFAULT-NEXT:                                                   48,
+// DEFAULT-NEXT:                                                   49,
+// DEFAULT-NEXT:                                                   50,
+// DEFAULT-NEXT:                                                   51,
+// DEFAULT-NEXT:                                                   52,
+// DEFAULT-NEXT:                                                   53,
+// DEFAULT-NEXT:                                                   54,
+// DEFAULT-NEXT:                                                   55,
+// DEFAULT-NEXT:                                                   56,
+// DEFAULT-NEXT:                                                   57,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "01234567890123456789",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -91,8 +126,16 @@ int main(void) {
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

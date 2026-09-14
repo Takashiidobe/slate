@@ -105,11 +105,11 @@ int main() {
 // DEFAULT-NEXT:                       target: Identifier(
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                       value: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x3e0b8000000000000000,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "0x1.0p-500L",
+// DEFAULT-NEXT:                               radix: Hex,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -120,11 +120,11 @@ int main() {
 // DEFAULT-NEXT:                       target: Identifier(
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                       value: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x3df58000000000000000,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "0x1.0p-522L",
+// DEFAULT-NEXT:                               radix: Hex,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -135,11 +135,11 @@ int main() {
 // DEFAULT-NEXT:                       left: Identifier(
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                       right: FloatLiteral(
 // DEFAULT-NEXT:                           FloatLiteral {
-// DEFAULT-NEXT:                               value: LongDouble(
-// DEFAULT-NEXT:                                   0x3c018000000000000000,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               spelling: "0x1.0p-1022L",
+// DEFAULT-NEXT:                               radix: Hex,
+// DEFAULT-NEXT:                               suffix: L,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -161,8 +161,16 @@ int main() {
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

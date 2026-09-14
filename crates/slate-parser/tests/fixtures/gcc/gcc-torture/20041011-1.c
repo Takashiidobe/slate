@@ -168,8 +168,16 @@ int main() {
 // DEFAULT-NEXT:                           "gvol",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -452,8 +460,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               },
@@ -466,8 +482,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               },
@@ -481,8 +505,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           },
@@ -496,8 +528,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   4,
+// DEFAULT-NEXT:                                                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 4,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "4",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       },
@@ -511,8 +551,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                                                               5,
+// DEFAULT-NEXT:                                                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 5,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "5",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   },
@@ -526,8 +574,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                           6,
+// DEFAULT-NEXT:                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 6,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "6",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               },
@@ -541,8 +597,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                                       7,
+// DEFAULT-NEXT:                                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 7,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "7",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           },
@@ -556,8 +620,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                                   8,
+// DEFAULT-NEXT:                                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       },
@@ -571,8 +643,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                                               9,
+// DEFAULT-NEXT:                                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 9,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "9",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   },
@@ -586,8 +666,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                           10,
+// DEFAULT-NEXT:                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 10,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "10",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               },
@@ -601,8 +689,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                       11,
+// DEFAULT-NEXT:                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 11,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "11",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           },
@@ -616,8 +712,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                   12,
+// DEFAULT-NEXT:                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 12,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "12",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       },
@@ -631,8 +735,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                               13,
+// DEFAULT-NEXT:                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 13,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "13",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   },
@@ -646,8 +758,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                           14,
+// DEFAULT-NEXT:                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 14,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "14",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
@@ -661,8 +781,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                       15,
+// DEFAULT-NEXT:                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 15,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "15",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           },
@@ -676,8 +804,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                   16,
+// DEFAULT-NEXT:                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 16,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "16",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
@@ -691,8 +827,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                               17,
+// DEFAULT-NEXT:                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 17,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "17",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   },
@@ -706,8 +850,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                           18,
+// DEFAULT-NEXT:                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 18,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "18",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
@@ -721,8 +873,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                       19,
+// DEFAULT-NEXT:                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 19,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "19",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
@@ -736,8 +896,16 @@ int main() {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                   20,
+// DEFAULT-NEXT:                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 20,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "20",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
@@ -751,8 +919,16 @@ int main() {
 // DEFAULT-NEXT:                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                               "gvol",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                               21,
+// DEFAULT-NEXT:                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 21,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "21",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
@@ -766,8 +942,16 @@ int main() {
 // DEFAULT-NEXT:                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                           "gvol",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                           22,
+// DEFAULT-NEXT:                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 22,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "22",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
@@ -781,8 +965,16 @@ int main() {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "gvol",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                       23,
+// DEFAULT-NEXT:                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 23,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "23",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
@@ -796,8 +988,16 @@ int main() {
 // DEFAULT-NEXT:                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                   "gvol",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   24,
+// DEFAULT-NEXT:                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 24,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "24",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
@@ -811,8 +1011,16 @@ int main() {
 // DEFAULT-NEXT:                                                           base: Identifier(
 // DEFAULT-NEXT:                                                               "gvol",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Integer(
-// DEFAULT-NEXT:                                                               25,
+// DEFAULT-NEXT:                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 25,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "25",
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
@@ -826,8 +1034,16 @@ int main() {
 // DEFAULT-NEXT:                                                       base: Identifier(
 // DEFAULT-NEXT:                                                           "gvol",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           26,
+// DEFAULT-NEXT:                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 26,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "26",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
@@ -841,8 +1057,16 @@ int main() {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "gvol",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       27,
+// DEFAULT-NEXT:                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 27,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "27",
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
@@ -856,8 +1080,16 @@ int main() {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "gvol",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   28,
+// DEFAULT-NEXT:                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 28,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "28",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
@@ -871,8 +1103,16 @@ int main() {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "gvol",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               29,
+// DEFAULT-NEXT:                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 29,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "29",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
@@ -886,8 +1126,16 @@ int main() {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "gvol",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           30,
+// DEFAULT-NEXT:                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 30,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "30",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
@@ -929,8 +1177,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                   value: Identifier(
@@ -943,8 +1199,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                   value: Identifier(
@@ -958,8 +1222,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                               value: Identifier(
@@ -973,8 +1245,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   4,
+// DEFAULT-NEXT:                                                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 4,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "4",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                           value: Identifier(
@@ -988,8 +1268,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                                                               5,
+// DEFAULT-NEXT:                                                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 5,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "5",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                       value: Identifier(
@@ -1003,8 +1291,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                                           6,
+// DEFAULT-NEXT:                                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 6,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "6",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                   value: Identifier(
@@ -1018,8 +1314,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                                       7,
+// DEFAULT-NEXT:                                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 7,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "7",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                               value: Identifier(
@@ -1033,8 +1337,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                                   8,
+// DEFAULT-NEXT:                                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                           value: Identifier(
@@ -1048,8 +1360,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                                               9,
+// DEFAULT-NEXT:                                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 9,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "9",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                       value: Identifier(
@@ -1063,8 +1383,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                                           10,
+// DEFAULT-NEXT:                                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 10,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "10",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                   value: Identifier(
@@ -1078,8 +1406,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                                       11,
+// DEFAULT-NEXT:                                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 11,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "11",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                               value: Identifier(
@@ -1093,8 +1429,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                                   12,
+// DEFAULT-NEXT:                                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 12,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "12",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                           value: Identifier(
@@ -1108,8 +1452,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                                               13,
+// DEFAULT-NEXT:                                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 13,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "13",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                       value: Identifier(
@@ -1123,8 +1475,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                                           14,
+// DEFAULT-NEXT:                                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 14,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "14",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                                   value: Identifier(
@@ -1138,8 +1498,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                                       15,
+// DEFAULT-NEXT:                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 15,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "15",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               value: Identifier(
@@ -1153,8 +1521,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                                   16,
+// DEFAULT-NEXT:                                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 16,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "16",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                           value: Identifier(
@@ -1168,8 +1544,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                                               "gvol",
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                                               17,
+// DEFAULT-NEXT:                                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 17,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "17",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       value: Identifier(
@@ -1183,8 +1567,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                                           "gvol",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                                           18,
+// DEFAULT-NEXT:                                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 18,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "18",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   value: Identifier(
@@ -1198,8 +1590,16 @@ int main() {
 // DEFAULT-NEXT:                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                       "gvol",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                       19,
+// DEFAULT-NEXT:                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 19,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "19",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Identifier(
@@ -1213,8 +1613,16 @@ int main() {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "gvol",
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               index: Integer(
-// DEFAULT-NEXT:                                                                                   20,
+// DEFAULT-NEXT:                                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 20,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "20",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                           value: Identifier(
@@ -1228,8 +1636,16 @@ int main() {
 // DEFAULT-NEXT:                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                               "gvol",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           index: Integer(
-// DEFAULT-NEXT:                                                                               21,
+// DEFAULT-NEXT:                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 21,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "21",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       value: Identifier(
@@ -1243,8 +1659,16 @@ int main() {
 // DEFAULT-NEXT:                                                                       base: Identifier(
 // DEFAULT-NEXT:                                                                           "gvol",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Integer(
-// DEFAULT-NEXT:                                                                           22,
+// DEFAULT-NEXT:                                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 22,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "22",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Identifier(
@@ -1258,8 +1682,16 @@ int main() {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "gvol",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                       23,
+// DEFAULT-NEXT:                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 23,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "23",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Identifier(
@@ -1273,8 +1705,16 @@ int main() {
 // DEFAULT-NEXT:                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                   "gvol",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   24,
+// DEFAULT-NEXT:                                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 24,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "24",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Identifier(
@@ -1288,8 +1728,16 @@ int main() {
 // DEFAULT-NEXT:                                                           base: Identifier(
 // DEFAULT-NEXT:                                                               "gvol",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Integer(
-// DEFAULT-NEXT:                                                               25,
+// DEFAULT-NEXT:                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 25,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "25",
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: Identifier(
@@ -1303,8 +1751,16 @@ int main() {
 // DEFAULT-NEXT:                                                       base: Identifier(
 // DEFAULT-NEXT:                                                           "gvol",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           26,
+// DEFAULT-NEXT:                                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 26,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "26",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: Identifier(
@@ -1318,8 +1774,16 @@ int main() {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "gvol",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       27,
+// DEFAULT-NEXT:                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 27,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "27",
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               value: Identifier(
@@ -1333,8 +1797,16 @@ int main() {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "gvol",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   28,
+// DEFAULT-NEXT:                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 28,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "28",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Identifier(
@@ -1348,8 +1820,16 @@ int main() {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "gvol",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               29,
+// DEFAULT-NEXT:                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 29,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "29",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Identifier(
@@ -1363,8 +1843,16 @@ int main() {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "gvol",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           30,
+// DEFAULT-NEXT:                                       index: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 30,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "30",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Identifier(
@@ -1381,8 +1869,16 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       2048,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 2048,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "2048",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -1462,8 +1958,16 @@ int main() {
 // DEFAULT-NEXT:                       target: Identifier(
 // DEFAULT-NEXT:                           "gull",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Integer(
-// DEFAULT-NEXT:                           100,
+// DEFAULT-NEXT:                       value: IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 100,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "100",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -1475,13 +1979,29 @@ int main() {
 // DEFAULT-NEXT:                               "t1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1492,16 +2012,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       2048,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 2048,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "2048",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1525,11 +2069,27 @@ int main() {
 // DEFAULT-NEXT:                               "t1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1539,16 +2099,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       2048,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 2048,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "2048",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1572,13 +2156,29 @@ int main() {
 // DEFAULT-NEXT:                               "t2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1589,16 +2189,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       513,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 513,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "513",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1622,11 +2246,27 @@ int main() {
 // DEFAULT-NEXT:                               "t2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1636,16 +2276,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       513,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 513,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "513",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1669,13 +2333,29 @@ int main() {
 // DEFAULT-NEXT:                               "t3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1686,16 +2366,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       512,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 512,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "512",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1719,11 +2423,27 @@ int main() {
 // DEFAULT-NEXT:                               "t3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1733,16 +2453,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       512,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 512,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "512",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1766,13 +2510,29 @@ int main() {
 // DEFAULT-NEXT:                               "t4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1783,16 +2543,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       511,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 511,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "511",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1816,11 +2600,27 @@ int main() {
 // DEFAULT-NEXT:                               "t4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1830,16 +2630,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       511,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 511,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "511",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1863,13 +2687,29 @@ int main() {
 // DEFAULT-NEXT:                               "t5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1880,16 +2720,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1913,11 +2777,27 @@ int main() {
 // DEFAULT-NEXT:                               "t5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1927,16 +2807,40 @@ int main() {
 // DEFAULT-NEXT:                               op: Mul,
 // DEFAULT-NEXT:                               left: Unary {
 // DEFAULT-NEXT:                                   op: Minus,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -1960,13 +2864,29 @@ int main() {
 // DEFAULT-NEXT:                               "t6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -1975,15 +2895,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Sub,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 1,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "1",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2007,11 +2951,27 @@ int main() {
 // DEFAULT-NEXT:                               "t6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2019,15 +2979,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Add,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 1,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "1",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2051,13 +3035,29 @@ int main() {
 // DEFAULT-NEXT:                               "t7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -2066,15 +3066,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Sub,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   511,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 511,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "511",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2098,11 +3122,27 @@ int main() {
 // DEFAULT-NEXT:                               "t7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2110,15 +3150,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Add,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   511,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 511,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "511",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2142,13 +3206,29 @@ int main() {
 // DEFAULT-NEXT:                               "t8",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -2157,15 +3237,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Sub,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   512,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 512,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "512",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2189,11 +3293,27 @@ int main() {
 // DEFAULT-NEXT:                               "t8",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2201,15 +3321,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Add,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   512,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 512,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "512",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2233,13 +3377,29 @@ int main() {
 // DEFAULT-NEXT:                               "t9",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -2248,15 +3408,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Sub,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   513,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 513,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "513",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2280,11 +3464,27 @@ int main() {
 // DEFAULT-NEXT:                               "t9",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2292,15 +3492,39 @@ int main() {
 // DEFAULT-NEXT:                           op: Add,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   513,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 513,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "513",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2324,13 +3548,29 @@ int main() {
 // DEFAULT-NEXT:                               "t10",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -2342,12 +3582,28 @@ int main() {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "gull",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2371,11 +3627,27 @@ int main() {
 // DEFAULT-NEXT:                               "t10",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2386,12 +3658,28 @@ int main() {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "gull",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2415,13 +3703,29 @@ int main() {
 // DEFAULT-NEXT:                               "t11",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Unary {
 // DEFAULT-NEXT:                                   op: BitNot,
-// DEFAULT-NEXT:                                   operand: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   operand: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: true,
+// DEFAULT-NEXT:                                               size: LongLong,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0ULL",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -2436,12 +3740,28 @@ int main() {
 // DEFAULT-NEXT:                                       "gull",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2465,11 +3785,27 @@ int main() {
 // DEFAULT-NEXT:                               "t11",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4294967295,
+// DEFAULT-NEXT:                                       radix: Hex,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: true,
+// DEFAULT-NEXT:                                           size: LongLong,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -2483,12 +3819,28 @@ int main() {
 // DEFAULT-NEXT:                                       "gull",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4294967295,
+// DEFAULT-NEXT:                                   radix: Hex,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0xffffffffULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2519,8 +3871,16 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Unary {
 // DEFAULT-NEXT:                           op: Minus,
-// DEFAULT-NEXT:                           operand: Integer(
-// DEFAULT-NEXT:                               100,
+// DEFAULT-NEXT:                           operand: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: true,
+// DEFAULT-NEXT:                                       size: LongLong,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100ULL",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -2542,8 +3902,16 @@ int main() {
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

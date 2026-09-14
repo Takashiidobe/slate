@@ -398,7 +398,10 @@ pub(super) fn attribute_arguments(arguments: &[Span<Token>]) -> Vec<String> {
 }
 
 fn integer_argument(value: i64, arguments: &[Span<Token>]) -> Expr {
-    Box::new(Span::cover(ExprKind::Integer(value), arguments))
+    Box::new(Span::cover(
+        ExprKind::IntegerLiteral(const_expr::IntegerLiteral::decimal(value)),
+        arguments,
+    ))
 }
 
 pub(super) fn parse_attribute_expression(arguments: &[Span<Token>]) -> Result<Expr, String> {

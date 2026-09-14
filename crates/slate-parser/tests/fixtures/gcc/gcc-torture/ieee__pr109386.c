@@ -207,11 +207,11 @@ int main() {
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Float(
+// DEFAULT-NEXT:                   FloatLiteral(
 // DEFAULT-NEXT:                       FloatLiteral {
-// DEFAULT-NEXT:                           value: Single(
-// DEFAULT-NEXT:                               42.0,
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           spelling: "42.0f",
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: F,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -262,8 +262,14 @@ int main() {
 // DEFAULT-NEXT:                                               "__builtin_nanf",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },

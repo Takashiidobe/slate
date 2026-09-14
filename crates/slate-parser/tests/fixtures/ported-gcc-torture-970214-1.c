@@ -58,11 +58,23 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:                       arguments: [
 // GCC-NEXT:                           Binary {
 // GCC-NEXT:                               op: NotEqual,
-// GCC-NEXT:                               left: Integer(
-// GCC-NEXT:                                   49,
+// GCC-NEXT:                               left: CharLiteral(
+// GCC-NEXT:                                   CharLiteral {
+// GCC-NEXT:                                       encoding: Wide,
+// GCC-NEXT:                                       code_units: [
+// GCC-NEXT:                                           49,
+// GCC-NEXT:                                       ],
+// GCC-NEXT:                                       spelling: "1",
+// GCC-NEXT:                                   },
 // GCC-NEXT:                               ),
-// GCC-NEXT:                               right: Integer(
-// GCC-NEXT:                                   49,
+// GCC-NEXT:                               right: CharLiteral(
+// GCC-NEXT:                                   CharLiteral {
+// GCC-NEXT:                                       encoding: Wide,
+// GCC-NEXT:                                       code_units: [
+// GCC-NEXT:                                           49,
+// GCC-NEXT:                                       ],
+// GCC-NEXT:                                       spelling: "1",
+// GCC-NEXT:                                   },
 // GCC-NEXT:                               ),
 // GCC-NEXT:                           },
 // GCC-NEXT:                       ],

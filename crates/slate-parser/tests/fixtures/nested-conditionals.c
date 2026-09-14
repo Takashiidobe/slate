@@ -27,8 +27,16 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       2,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 2,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "2",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -55,8 +63,16 @@ int main() {
 // INNER-NEXT:           name: "main",
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Return(
-// INNER-NEXT:                   Integer(
-// INNER-NEXT:                       1,
+// INNER-NEXT:                   IntegerLiteral(
+// INNER-NEXT:                       IntegerLiteral {
+// INNER-NEXT:                           value: 1,
+// INNER-NEXT:                           radix: Decimal,
+// INNER-NEXT:                           suffix: IntegerSuffix {
+// INNER-NEXT:                               unsigned: false,
+// INNER-NEXT:                               size: None,
+// INNER-NEXT:                           },
+// INNER-NEXT:                           spelling: "1",
+// INNER-NEXT:                       },
 // INNER-NEXT:                   ),
 // INNER-NEXT:               ),
 // INNER-NEXT:           ],

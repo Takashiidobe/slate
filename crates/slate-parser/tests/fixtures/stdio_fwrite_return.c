@@ -485,8 +485,44 @@ int main(void) {
 // DEFAULT-NEXT:                           "remove",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       115,
+// DEFAULT-NEXT:                                       108,
+// DEFAULT-NEXT:                                       97,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       115,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       105,
+// DEFAULT-NEXT:                                       111,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       119,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       105,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       117,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       110,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       109,
+// DEFAULT-NEXT:                                       112,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
@@ -513,11 +549,55 @@ int main(void) {
 // DEFAULT-NEXT:                                               "fopen",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                           108,
+// DEFAULT-NEXT:                                                           97,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           100,
+// DEFAULT-NEXT:                                                           105,
+// DEFAULT-NEXT:                                                           111,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           102,
+// DEFAULT-NEXT:                                                           119,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           105,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           117,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           110,
+// DEFAULT-NEXT:                                                           46,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           109,
+// DEFAULT-NEXT:                                                           112,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "w",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           119,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "w",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -541,15 +621,39 @@ int main(void) {
 // DEFAULT-NEXT:                                   "puts",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "open-fail",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               102,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "open-fail",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
@@ -571,15 +675,45 @@ int main(void) {
 // DEFAULT-NEXT:                                       "buf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           16,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 16,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "16",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "0123456789abcde",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   48,
+// DEFAULT-NEXT:                                                   49,
+// DEFAULT-NEXT:                                                   50,
+// DEFAULT-NEXT:                                                   51,
+// DEFAULT-NEXT:                                                   52,
+// DEFAULT-NEXT:                                                   53,
+// DEFAULT-NEXT:                                                   54,
+// DEFAULT-NEXT:                                                   55,
+// DEFAULT-NEXT:                                                   56,
+// DEFAULT-NEXT:                                                   57,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   98,
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "0123456789abcde",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -609,11 +743,27 @@ int main(void) {
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "buf",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   15,
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 15,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "15",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "f",
@@ -632,8 +782,19 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%zu\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       122,
+// DEFAULT-NEXT:                                       117,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%zu\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "n",
@@ -659,15 +820,59 @@ int main(void) {
 // DEFAULT-NEXT:                           "remove",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       115,
+// DEFAULT-NEXT:                                       108,
+// DEFAULT-NEXT:                                       97,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       115,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       105,
+// DEFAULT-NEXT:                                       111,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       119,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       105,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       117,
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       110,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       116,
+// DEFAULT-NEXT:                                       109,
+// DEFAULT-NEXT:                                       112,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "slate_stdio_fwrite_return.tmp",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

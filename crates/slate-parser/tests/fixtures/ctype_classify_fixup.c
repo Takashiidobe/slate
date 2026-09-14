@@ -697,8 +697,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65,
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   65,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "A",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -722,8 +728,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           53,
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   53,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "5",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -747,8 +759,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: " ",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -772,8 +790,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           11,
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   11,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "\\v",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -797,8 +821,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           33,
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   33,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "!",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -826,8 +856,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "alpha-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "alpha-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -841,8 +888,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "alpha-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   104,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "alpha-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -873,8 +936,29 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "not-alpha-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "not-alpha-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -888,8 +972,28 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "not-alpha-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   104,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "not-alpha-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -917,8 +1021,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "digit-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "digit-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -932,8 +1053,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "digit-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   103,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "digit-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -961,8 +1098,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "upper-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "upper-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -976,8 +1130,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "upper-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   114,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "upper-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1005,8 +1175,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "lower-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               119,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "lower-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1020,8 +1207,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "lower-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   119,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   114,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "lower-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1049,8 +1252,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "alnum-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               109,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "alnum-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1064,8 +1284,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "alnum-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   109,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "alnum-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1093,8 +1329,26 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "xdigit-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               120,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "xdigit-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1108,8 +1362,25 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "xdigit-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   120,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   103,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "xdigit-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1137,8 +1408,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "punct-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "punct-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1152,8 +1440,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "punct-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "punct-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1181,8 +1485,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "cntrl-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "cntrl-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1196,8 +1517,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "cntrl-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   114,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "cntrl-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1225,8 +1562,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "graph-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "graph-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1240,8 +1594,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "graph-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   103,
+// DEFAULT-NEXT:                                                   114,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   104,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "graph-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1269,8 +1639,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "print-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "print-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1284,8 +1671,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "print-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   114,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "print-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1313,8 +1716,25 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "space-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "space-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1328,8 +1748,24 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "space-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "space-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1357,8 +1793,30 @@ int main(void) {
 // DEFAULT-NEXT:                                   "printf",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "vtab-space-yes\\n",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               118,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               10,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "vtab-space-yes\\n",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
@@ -1372,8 +1830,29 @@ int main(void) {
 // DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "vtab-space-no\\n",
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   118,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   98,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "vtab-space-no\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1387,8 +1866,18 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%d\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%d\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Call {
 // DEFAULT-NEXT:                               callee: Paren(
@@ -1406,8 +1895,16 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

@@ -392,14 +392,65 @@ int main(void) {
 // DEFAULT-NEXT:                           "setenv",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "SLATE_GETENV_FIXTURE_PRESENT",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       83,
+// DEFAULT-NEXT:                                       76,
+// DEFAULT-NEXT:                                       65,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       71,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       78,
+// DEFAULT-NEXT:                                       86,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       70,
+// DEFAULT-NEXT:                                       73,
+// DEFAULT-NEXT:                                       88,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       85,
+// DEFAULT-NEXT:                                       82,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       80,
+// DEFAULT-NEXT:                                       82,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       83,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       78,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "SLATE_GETENV_FIXTURE_PRESENT",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "1",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       49,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "1",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
@@ -428,8 +479,43 @@ int main(void) {
 // DEFAULT-NEXT:                                               "getenv",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "SLATE_GETENV_FIXTURE_PRESENT",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           83,
+// DEFAULT-NEXT:                                                           76,
+// DEFAULT-NEXT:                                                           65,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           71,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           86,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           70,
+// DEFAULT-NEXT:                                                           73,
+// DEFAULT-NEXT:                                                           88,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           85,
+// DEFAULT-NEXT:                                                           82,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           80,
+// DEFAULT-NEXT:                                                           82,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           83,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "SLATE_GETENV_FIXTURE_PRESENT",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -452,24 +538,48 @@ int main(void) {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: Some(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
@@ -503,8 +613,42 @@ int main(void) {
 // DEFAULT-NEXT:                           "unsetenv",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "SLATE_GETENV_FIXTURE_ABSENT",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       83,
+// DEFAULT-NEXT:                                       76,
+// DEFAULT-NEXT:                                       65,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       71,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       78,
+// DEFAULT-NEXT:                                       86,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       70,
+// DEFAULT-NEXT:                                       73,
+// DEFAULT-NEXT:                                       88,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       85,
+// DEFAULT-NEXT:                                       82,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       65,
+// DEFAULT-NEXT:                                       66,
+// DEFAULT-NEXT:                                       83,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       78,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "SLATE_GETENV_FIXTURE_ABSENT",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
@@ -533,8 +677,42 @@ int main(void) {
 // DEFAULT-NEXT:                                               "getenv",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "SLATE_GETENV_FIXTURE_ABSENT",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           83,
+// DEFAULT-NEXT:                                                           76,
+// DEFAULT-NEXT:                                                           65,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           71,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           86,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           70,
+// DEFAULT-NEXT:                                                           73,
+// DEFAULT-NEXT:                                                           88,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           85,
+// DEFAULT-NEXT:                                                           82,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           65,
+// DEFAULT-NEXT:                                                           66,
+// DEFAULT-NEXT:                                                           83,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "SLATE_GETENV_FIXTURE_ABSENT",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -557,24 +735,48 @@ int main(void) {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: Some(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
@@ -608,14 +810,70 @@ int main(void) {
 // DEFAULT-NEXT:                           "setenv",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "SLATE_GETENV_FIXTURE_REJECTED",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       83,
+// DEFAULT-NEXT:                                       76,
+// DEFAULT-NEXT:                                       65,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       71,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       78,
+// DEFAULT-NEXT:                                       86,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       70,
+// DEFAULT-NEXT:                                       73,
+// DEFAULT-NEXT:                                       88,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       85,
+// DEFAULT-NEXT:                                       82,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       95,
+// DEFAULT-NEXT:                                       82,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       74,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       67,
+// DEFAULT-NEXT:                                       84,
+// DEFAULT-NEXT:                                       69,
+// DEFAULT-NEXT:                                       68,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "SLATE_GETENV_FIXTURE_REJECTED",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "ready",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       114,
+// DEFAULT-NEXT:                                       101,
+// DEFAULT-NEXT:                                       97,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       121,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "ready",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
@@ -644,8 +902,44 @@ int main(void) {
 // DEFAULT-NEXT:                                               "getenv",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "SLATE_GETENV_FIXTURE_REJECTED",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           83,
+// DEFAULT-NEXT:                                                           76,
+// DEFAULT-NEXT:                                                           65,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           71,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           86,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           70,
+// DEFAULT-NEXT:                                                           73,
+// DEFAULT-NEXT:                                                           88,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           85,
+// DEFAULT-NEXT:                                                           82,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           82,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           74,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           67,
+// DEFAULT-NEXT:                                                           84,
+// DEFAULT-NEXT:                                                           69,
+// DEFAULT-NEXT:                                                           68,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "SLATE_GETENV_FIXTURE_REJECTED",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -687,8 +981,16 @@ int main(void) {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 0,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -710,13 +1012,33 @@ int main(void) {
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "value",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           StringLit(
-// DEFAULT-NEXT:                                               "ready",
+// DEFAULT-NEXT:                                           StringLiteral(
+// DEFAULT-NEXT:                                               StringLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       114,
+// DEFAULT-NEXT:                                                       101,
+// DEFAULT-NEXT:                                                       97,
+// DEFAULT-NEXT:                                                       100,
+// DEFAULT-NEXT:                                                       121,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   pieces: [
+// DEFAULT-NEXT:                                                       "ready",
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -730,8 +1052,16 @@ int main(void) {
 // DEFAULT-NEXT:                                   target: Identifier(
 // DEFAULT-NEXT:                                       "found",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -771,8 +1101,18 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%d\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%d\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Call {
 // DEFAULT-NEXT:                               callee: Identifier(
@@ -789,8 +1129,18 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%d\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%d\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Call {
 // DEFAULT-NEXT:                               callee: Identifier(
@@ -807,8 +1157,18 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%d\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       100,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%d\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Call {
 // DEFAULT-NEXT:                               callee: Identifier(
@@ -820,8 +1180,16 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

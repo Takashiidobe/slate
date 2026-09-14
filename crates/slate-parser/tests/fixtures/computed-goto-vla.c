@@ -65,8 +65,16 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 2,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "2",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -103,16 +111,32 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                   "L0",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Labeled(
 // DEFAULT-NEXT:                   "L1",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       1,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 1,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "1",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -204,16 +228,32 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                           base: Identifier(
 // DEFAULT-NEXT:                               "local",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           index: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           index: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Index {
 // DEFAULT-NEXT:                           base: Identifier(
 // DEFAULT-NEXT:                               "arr",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           index: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           index: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -271,8 +311,16 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                                       ),
 // COMPUTED-NEXT:                                   },
 // COMPUTED-NEXT:                                   size: Expression(
-// COMPUTED-NEXT:                                       Integer(
-// COMPUTED-NEXT:                                           2,
+// COMPUTED-NEXT:                                       IntegerLiteral(
+// COMPUTED-NEXT:                                           IntegerLiteral {
+// COMPUTED-NEXT:                                               value: 2,
+// COMPUTED-NEXT:                                               radix: Decimal,
+// COMPUTED-NEXT:                                               suffix: IntegerSuffix {
+// COMPUTED-NEXT:                                                   unsigned: false,
+// COMPUTED-NEXT:                                                   size: None,
+// COMPUTED-NEXT:                                               },
+// COMPUTED-NEXT:                                               spelling: "2",
+// COMPUTED-NEXT:                                           },
 // COMPUTED-NEXT:                                       ),
 // COMPUTED-NEXT:                                   ),
 // COMPUTED-NEXT:                               },
@@ -316,16 +364,32 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                   "L0",
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   Integer(
-// COMPUTED-NEXT:                       0,
+// COMPUTED-NEXT:                   IntegerLiteral(
+// COMPUTED-NEXT:                       IntegerLiteral {
+// COMPUTED-NEXT:                           value: 0,
+// COMPUTED-NEXT:                           radix: Decimal,
+// COMPUTED-NEXT:                           suffix: IntegerSuffix {
+// COMPUTED-NEXT:                               unsigned: false,
+// COMPUTED-NEXT:                               size: None,
+// COMPUTED-NEXT:                           },
+// COMPUTED-NEXT:                           spelling: "0",
+// COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                   ),
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Labeled(
 // COMPUTED-NEXT:                   "L1",
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   Integer(
-// COMPUTED-NEXT:                       1,
+// COMPUTED-NEXT:                   IntegerLiteral(
+// COMPUTED-NEXT:                       IntegerLiteral {
+// COMPUTED-NEXT:                           value: 1,
+// COMPUTED-NEXT:                           radix: Decimal,
+// COMPUTED-NEXT:                           suffix: IntegerSuffix {
+// COMPUTED-NEXT:                               unsigned: false,
+// COMPUTED-NEXT:                               size: None,
+// COMPUTED-NEXT:                           },
+// COMPUTED-NEXT:                           spelling: "1",
+// COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                   ),
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:           ],
@@ -417,16 +481,32 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                           base: Identifier(
 // COMPUTED-NEXT:                               "local",
 // COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                           index: Integer(
-// COMPUTED-NEXT:                               0,
+// COMPUTED-NEXT:                           index: IntegerLiteral(
+// COMPUTED-NEXT:                               IntegerLiteral {
+// COMPUTED-NEXT:                                   value: 0,
+// COMPUTED-NEXT:                                   radix: Decimal,
+// COMPUTED-NEXT:                                   suffix: IntegerSuffix {
+// COMPUTED-NEXT:                                       unsigned: false,
+// COMPUTED-NEXT:                                       size: None,
+// COMPUTED-NEXT:                                   },
+// COMPUTED-NEXT:                                   spelling: "0",
+// COMPUTED-NEXT:                               },
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                       right: Index {
 // COMPUTED-NEXT:                           base: Identifier(
 // COMPUTED-NEXT:                               "arr",
 // COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                           index: Integer(
-// COMPUTED-NEXT:                               0,
+// COMPUTED-NEXT:                           index: IntegerLiteral(
+// COMPUTED-NEXT:                               IntegerLiteral {
+// COMPUTED-NEXT:                                   value: 0,
+// COMPUTED-NEXT:                                   radix: Decimal,
+// COMPUTED-NEXT:                                   suffix: IntegerSuffix {
+// COMPUTED-NEXT:                                       unsigned: false,
+// COMPUTED-NEXT:                                       size: None,
+// COMPUTED-NEXT:                                   },
+// COMPUTED-NEXT:                                   spelling: "0",
+// COMPUTED-NEXT:                               },
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                   },
@@ -484,8 +564,16 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                                       ),
 // DOUBLED-NEXT:                                   },
 // DOUBLED-NEXT:                                   size: Expression(
-// DOUBLED-NEXT:                                       Integer(
-// DOUBLED-NEXT:                                           2,
+// DOUBLED-NEXT:                                       IntegerLiteral(
+// DOUBLED-NEXT:                                           IntegerLiteral {
+// DOUBLED-NEXT:                                               value: 2,
+// DOUBLED-NEXT:                                               radix: Decimal,
+// DOUBLED-NEXT:                                               suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                                   unsigned: false,
+// DOUBLED-NEXT:                                                   size: None,
+// DOUBLED-NEXT:                                               },
+// DOUBLED-NEXT:                                               spelling: "2",
+// DOUBLED-NEXT:                                           },
 // DOUBLED-NEXT:                                       ),
 // DOUBLED-NEXT:                                   ),
 // DOUBLED-NEXT:                               },
@@ -522,16 +610,32 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                   "L0",
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   Integer(
-// DOUBLED-NEXT:                       0,
+// DOUBLED-NEXT:                   IntegerLiteral(
+// DOUBLED-NEXT:                       IntegerLiteral {
+// DOUBLED-NEXT:                           value: 0,
+// DOUBLED-NEXT:                           radix: Decimal,
+// DOUBLED-NEXT:                           suffix: IntegerSuffix {
+// DOUBLED-NEXT:                               unsigned: false,
+// DOUBLED-NEXT:                               size: None,
+// DOUBLED-NEXT:                           },
+// DOUBLED-NEXT:                           spelling: "0",
+// DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                   ),
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Labeled(
 // DOUBLED-NEXT:                   "L1",
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   Integer(
-// DOUBLED-NEXT:                       1,
+// DOUBLED-NEXT:                   IntegerLiteral(
+// DOUBLED-NEXT:                       IntegerLiteral {
+// DOUBLED-NEXT:                           value: 1,
+// DOUBLED-NEXT:                           radix: Decimal,
+// DOUBLED-NEXT:                           suffix: IntegerSuffix {
+// DOUBLED-NEXT:                               unsigned: false,
+// DOUBLED-NEXT:                               size: None,
+// DOUBLED-NEXT:                           },
+// DOUBLED-NEXT:                           spelling: "1",
+// DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                   ),
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
@@ -612,8 +716,16 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                                           left: Identifier(
 // DOUBLED-NEXT:                                               "n",
 // DOUBLED-NEXT:                                           ),
-// DOUBLED-NEXT:                                           right: Integer(
-// DOUBLED-NEXT:                                               2,
+// DOUBLED-NEXT:                                           right: IntegerLiteral(
+// DOUBLED-NEXT:                                               IntegerLiteral {
+// DOUBLED-NEXT:                                                   value: 2,
+// DOUBLED-NEXT:                                                   radix: Decimal,
+// DOUBLED-NEXT:                                                   suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                                       unsigned: false,
+// DOUBLED-NEXT:                                                       size: None,
+// DOUBLED-NEXT:                                                   },
+// DOUBLED-NEXT:                                                   spelling: "2",
+// DOUBLED-NEXT:                                               },
 // DOUBLED-NEXT:                                           ),
 // DOUBLED-NEXT:                                       },
 // DOUBLED-NEXT:                                   ),
@@ -629,16 +741,32 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                           base: Identifier(
 // DOUBLED-NEXT:                               "local",
 // DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           index: Integer(
-// DOUBLED-NEXT:                               0,
+// DOUBLED-NEXT:                           index: IntegerLiteral(
+// DOUBLED-NEXT:                               IntegerLiteral {
+// DOUBLED-NEXT:                                   value: 0,
+// DOUBLED-NEXT:                                   radix: Decimal,
+// DOUBLED-NEXT:                                   suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                       unsigned: false,
+// DOUBLED-NEXT:                                       size: None,
+// DOUBLED-NEXT:                                   },
+// DOUBLED-NEXT:                                   spelling: "0",
+// DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                       right: Index {
 // DOUBLED-NEXT:                           base: Identifier(
 // DOUBLED-NEXT:                               "arr",
 // DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           index: Integer(
-// DOUBLED-NEXT:                               0,
+// DOUBLED-NEXT:                           index: IntegerLiteral(
+// DOUBLED-NEXT:                               IntegerLiteral {
+// DOUBLED-NEXT:                                   value: 0,
+// DOUBLED-NEXT:                                   radix: Decimal,
+// DOUBLED-NEXT:                                   suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                       unsigned: false,
+// DOUBLED-NEXT:                                       size: None,
+// DOUBLED-NEXT:                                   },
+// DOUBLED-NEXT:                                   spelling: "0",
+// DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                   },

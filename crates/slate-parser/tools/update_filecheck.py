@@ -145,6 +145,51 @@ def escape_filecheck_literal(line: str) -> str:
     return TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
 
 
+CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
+PIECES_OPEN_RE = re.compile(r"^(\s*)pieces: \[$")
+QUOTED_LINE_RE = re.compile(r'^\s*"((?:[^"\\]|\\.)*)",?$')
+
+
+def redact_code_units(lines: list[str]) -> list[tuple[str, bool, str | None]]:
+    """Loosen a code_units list into a forward scan when its decoded text (the
+    following pieces block) embeds the per-run temp fixture path: that path's
+    byte count varies run to run (e.g. pid digit count), so neither an exact
+    per-element CHECK-NEXT chain nor a single collapsed line can match it."""
+    result: list[tuple[str, bool, str | None]] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        open_match = CODE_UNITS_OPEN_RE.match(lines[i])
+        if not open_match:
+            result.append((lines[i], True, None))
+            i += 1
+            continue
+        indent = open_match.group(1)
+        start = i
+        close = i + 1
+        while close < n and lines[close] != f"{indent}],":
+            close += 1
+        if close == n:
+            result.extend((line, True, None) for line in lines[start:])
+            break
+        tainted = False
+        pieces_match = close + 1 < n and PIECES_OPEN_RE.match(lines[close + 1])
+        if pieces_match and pieces_match.group(1) == indent:
+            j = close + 2
+            while j < n and lines[j] != f"{indent}],":
+                quoted = QUOTED_LINE_RE.match(lines[j])
+                if quoted and ".filecheck." in quoted.group(1):
+                    tainted = True
+                j += 1
+        if tainted:
+            result.append((lines[start], True, None))
+            result.append((f"{indent}],", True, "plain"))
+        else:
+            result.extend((line, True, None) for line in lines[start : close + 1])
+        i = close + 1
+    return result
+
+
 def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     isystem = isystem_paths(source)
     blocks = []
@@ -160,11 +205,12 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         return "\n".join(blocks)
     for prefix, defines in configurations(source):
         output = render(repo, fixture, source, defines, isystem)
-        lines = output.splitlines()
+        lines = redact_code_units(output.splitlines())
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
-        for index, line in enumerate(lines):
-            directive = prefix if index == 0 else f"{prefix}-NEXT"
-            block.append(f"// {directive}: {escape_filecheck_literal(line)}")
+        for index, (line, escape, force) in enumerate(lines):
+            directive = prefix if force == "plain" or index == 0 else f"{prefix}-NEXT"
+            text = escape_filecheck_literal(line) if escape else line
+            block.append(f"// {directive}: {text}")
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
     return "\n".join(blocks)

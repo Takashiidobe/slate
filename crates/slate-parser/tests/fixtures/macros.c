@@ -37,8 +37,16 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               7,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 7,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "7",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -143,8 +151,16 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   initializer: Some(
 // SELECT-NEXT:                       Expr(
-// SELECT-NEXT:                           Integer(
-// SELECT-NEXT:                               7,
+// SELECT-NEXT:                           IntegerLiteral(
+// SELECT-NEXT:                               IntegerLiteral {
+// SELECT-NEXT:                                   value: 7,
+// SELECT-NEXT:                                   radix: Decimal,
+// SELECT-NEXT:                                   suffix: IntegerSuffix {
+// SELECT-NEXT:                                       unsigned: false,
+// SELECT-NEXT:                                       size: None,
+// SELECT-NEXT:                                   },
+// SELECT-NEXT:                                   spelling: "7",
+// SELECT-NEXT:                               },
 // SELECT-NEXT:                           ),
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),

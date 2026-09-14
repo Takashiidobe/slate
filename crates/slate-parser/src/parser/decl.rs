@@ -327,6 +327,7 @@ impl Parser {
                 decls,
                 tags: self.tags.take(),
                 flavor: self.flavor(),
+                target: self.target,
             },
             root_file,
         );

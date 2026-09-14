@@ -116,8 +116,16 @@ struct outer {
 // DEFAULT-NEXT:                                   size: Expression(
 // DEFAULT-NEXT:                                       Binary {
 // DEFAULT-NEXT:                                           op: Div,
-// DEFAULT-NEXT:                                           left: Integer(
-// DEFAULT-NEXT:                                               128,
+// DEFAULT-NEXT:                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 128,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "128",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
 // DEFAULT-NEXT:                                               ty: Integer(
@@ -333,8 +341,16 @@ struct outer {
 // EXTRA-NEXT:                                   size: Expression(
 // EXTRA-NEXT:                                       Binary {
 // EXTRA-NEXT:                                           op: Div,
-// EXTRA-NEXT:                                           left: Integer(
-// EXTRA-NEXT:                                               128,
+// EXTRA-NEXT:                                           left: IntegerLiteral(
+// EXTRA-NEXT:                                               IntegerLiteral {
+// EXTRA-NEXT:                                                   value: 128,
+// EXTRA-NEXT:                                                   radix: Decimal,
+// EXTRA-NEXT:                                                   suffix: IntegerSuffix {
+// EXTRA-NEXT:                                                       unsigned: false,
+// EXTRA-NEXT:                                                       size: None,
+// EXTRA-NEXT:                                                   },
+// EXTRA-NEXT:                                                   spelling: "128",
+// EXTRA-NEXT:                                               },
 // EXTRA-NEXT:                                           ),
 // EXTRA-NEXT:                                           right: SizeOfType {
 // EXTRA-NEXT:                                               ty: Integer(

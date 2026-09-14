@@ -19,6 +19,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
             .cloned()
             .collect(),
         flavor: tu.flavor,
+        target: tu.target,
     }
 }
 
@@ -341,14 +342,10 @@ impl<'a> Reachability<'a> {
                 }
             }
             ExprKind::StatementExpression(body) => self.mark_stmts(body),
-            ExprKind::Integer(_)
-            | ExprKind::WideInteger(_)
-            | ExprKind::Float(_)
-            | ExprKind::StringLit(_)
-            | ExprKind::Utf8StringLit(_)
-            | ExprKind::Utf16StringLit(_)
-            | ExprKind::Utf32StringLit(_)
-            | ExprKind::WideStringLit(_)
+            ExprKind::IntegerLiteral(_)
+            | ExprKind::FloatLiteral(_)
+            | ExprKind::CharLiteral(_)
+            | ExprKind::StringLiteral(_)
             | ExprKind::LabelAddress(_) => {}
         }
     }

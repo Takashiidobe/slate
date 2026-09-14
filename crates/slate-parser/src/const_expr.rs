@@ -5,7 +5,7 @@ use crate::ast::{
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
-use num_bigint::BigInt;
+use num_bigint::{BigInt, BigUint};
 use std::collections::HashSet;
 use thiserror::Error;
 
@@ -298,8 +298,86 @@ pub enum ConstExprError {
     StatementExpression(String),
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Radix {
+    Decimal,
+    Hex,
+    Octal,
+    Binary,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IntegerSizeSuffix {
+    None,
+    Long,
+    LongLong,
+    BitInt,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct IntegerSuffix {
+    pub unsigned: bool,
+    pub size: IntegerSizeSuffix,
+}
+
+#[derive(custom_debug::Debug, Clone, PartialEq, Eq)]
+pub struct IntegerLiteral {
+    #[debug(format = "{}")]
+    pub value: BigUint,
+    pub radix: Radix,
+    pub suffix: IntegerSuffix,
+    pub spelling: String,
+}
+
+impl IntegerLiteral {
+    pub fn decimal(value: i64) -> Self {
+        let value = BigUint::try_from(value).unwrap_or_default();
+        Self {
+            spelling: value.to_string(),
+            value,
+            radix: Radix::Decimal,
+            suffix: IntegerSuffix {
+                unsigned: false,
+                size: IntegerSizeSuffix::None,
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatRadix {
+    Decimal,
+    Hex,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatSuffix {
+    None,
+    F,
+    L,
+    F16,
+    F32,
+    F64,
+    F128,
+    F32x,
+    F64x,
+    Q,
+    DecimalF32,
+    DecimalF64,
+    DecimalF128,
+}
+
 #[derive(custom_debug::Debug, Clone, PartialEq)]
 pub struct FloatLiteral {
+    pub spelling: String,
+    pub radix: FloatRadix,
+    pub suffix: FloatSuffix,
+    #[debug(skip_if = crate::ast::is_false)]
+    pub imaginary: bool,
+}
+
+#[derive(custom_debug::Debug, Clone, PartialEq)]
+pub struct ResolvedFloat {
     pub value: FloatValue,
     #[debug(skip_if = crate::ast::is_false)]
     pub imaginary: bool,
@@ -317,36 +395,111 @@ pub enum FloatValue {
     Decimal128(String),
 }
 
-impl FloatLiteral {
-    const SUFFIXES: [&str; 12] = [
-        "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
-    ];
+const FLOAT_SUFFIXES: [&str; 12] = [
+    "f128", "f64x", "f32x", "f16", "f32", "f64", "df", "dd", "dl", "f", "l", "q",
+];
 
-    pub fn parse(spelling: &str) -> Result<Self, ConstExprError> {
-        let invalid = || ConstExprError::InvalidFloatLiteral(spelling.to_string());
-        let lowered = spelling.replace('\'', "").to_ascii_lowercase();
-        let (mut digits, mut imaginary) = strip_imaginary(&lowered);
-        let suffix = Self::SUFFIXES
-            .into_iter()
-            .find(|suffix| digits.ends_with(suffix))
-            .unwrap_or("");
-        digits = &digits[..digits.len() - suffix.len()];
-        if !imaginary {
-            (digits, imaginary) = strip_imaginary(digits);
-        }
-        let token = Token::FloatLit(digits.to_string());
-        let value = match suffix {
-            "" | "f64" | "f32x" => FloatValue::Double(token.float_value_f64().ok_or_else(invalid)?),
-            "f" | "f32" => FloatValue::Single(token.float_value_f32().ok_or_else(invalid)?),
-            "f16" => FloatValue::Half(token.float_value_f16().ok_or_else(invalid)?),
-            "f128" | "q" => FloatValue::Quad(token.float_value_f128().ok_or_else(invalid)?),
-            "l" | "f64x" => FloatValue::LongDouble(token.float_value_f80().ok_or_else(invalid)?),
-            "df" => FloatValue::Decimal32(digits.to_string()),
-            "dd" => FloatValue::Decimal64(digits.to_string()),
-            _ => FloatValue::Decimal128(digits.to_string()),
-        };
-        Ok(Self { value, imaginary })
+fn float_suffix_from_token(suffix: &str) -> FloatSuffix {
+    match suffix {
+        "" => FloatSuffix::None,
+        "f" => FloatSuffix::F,
+        "l" => FloatSuffix::L,
+        "f16" => FloatSuffix::F16,
+        "f32" => FloatSuffix::F32,
+        "f64" => FloatSuffix::F64,
+        "f128" => FloatSuffix::F128,
+        "f32x" => FloatSuffix::F32x,
+        "f64x" => FloatSuffix::F64x,
+        "q" => FloatSuffix::Q,
+        "df" => FloatSuffix::DecimalF32,
+        "dd" => FloatSuffix::DecimalF64,
+        _ => FloatSuffix::DecimalF128,
     }
+}
+
+fn split_float_spelling(spelling: &str) -> (String, &'static str, bool) {
+    let lowered = spelling.replace('\'', "").to_ascii_lowercase();
+    let (digits, imaginary) = strip_imaginary(&lowered);
+    let suffix = FLOAT_SUFFIXES
+        .into_iter()
+        .find(|suffix| digits.ends_with(suffix))
+        .unwrap_or("");
+    let digits = &digits[..digits.len() - suffix.len()];
+    let (digits, imaginary) = if imaginary {
+        (digits.to_string(), imaginary)
+    } else {
+        let (digits, imaginary) = strip_imaginary(digits);
+        (digits.to_string(), imaginary)
+    };
+    (digits, suffix, imaginary)
+}
+
+impl FloatLiteral {
+    pub fn parse_unevaluated(spelling: &str) -> Self {
+        let (digits, suffix, imaginary) = split_float_spelling(spelling);
+        let radix = if digits.starts_with("0x") || digits.starts_with("0X") {
+            FloatRadix::Hex
+        } else {
+            FloatRadix::Decimal
+        };
+        Self {
+            spelling: spelling.to_string(),
+            radix,
+            suffix: float_suffix_from_token(suffix),
+            imaginary,
+        }
+    }
+}
+
+pub fn resolve_float(literal: &FloatLiteral) -> Result<ResolvedFloat, ConstExprError> {
+    let invalid = || ConstExprError::InvalidFloatLiteral(literal.spelling.clone());
+    let (digits, _, _) = split_float_spelling(&literal.spelling);
+    let token = Token::FloatLit(digits.clone());
+    let value = match literal.suffix {
+        FloatSuffix::None | FloatSuffix::F64 | FloatSuffix::F32x => {
+            FloatValue::Double(token.float_value_f64().ok_or_else(invalid)?)
+        }
+        FloatSuffix::F | FloatSuffix::F32 => {
+            FloatValue::Single(token.float_value_f32().ok_or_else(invalid)?)
+        }
+        FloatSuffix::F16 => FloatValue::Half(token.float_value_f16().ok_or_else(invalid)?),
+        FloatSuffix::F128 | FloatSuffix::Q => {
+            FloatValue::Quad(token.float_value_f128().ok_or_else(invalid)?)
+        }
+        FloatSuffix::L | FloatSuffix::F64x => {
+            FloatValue::LongDouble(token.float_value_f80().ok_or_else(invalid)?)
+        }
+        FloatSuffix::DecimalF32 => FloatValue::Decimal32(digits),
+        FloatSuffix::DecimalF64 => FloatValue::Decimal64(digits),
+        FloatSuffix::DecimalF128 => FloatValue::Decimal128(digits),
+    };
+    Ok(ResolvedFloat {
+        value,
+        imaginary: literal.imaginary,
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Encoding {
+    Plain,
+    Utf8,
+    Utf16,
+    Utf32,
+    Wide,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CharLiteral {
+    pub encoding: Encoding,
+    pub code_units: Vec<u32>,
+    pub spelling: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StringLiteral {
+    pub encoding: Encoding,
+    pub code_units: Vec<u32>,
+    pub pieces: Vec<Span<String>>,
 }
 
 fn strip_imaginary(digits: &str) -> (&str, bool) {
@@ -356,29 +509,95 @@ fn strip_imaginary(digits: &str) -> (&str, bool) {
     }
 }
 
-fn parse_wide_integer_literal(spelling: &str) -> WideInt {
-    let digits = Lexer::integer_digits(spelling);
-    let suffix = spelling[digits.len()..].to_ascii_lowercase();
-    let signed = !suffix.contains('u');
-    let cleaned = digits.replace('\'', "");
-    let (radix, digits) = if cleaned.starts_with("0x") || cleaned.starts_with("0X") {
-        (16, &cleaned[2..])
-    } else if cleaned.starts_with("0b") || cleaned.starts_with("0B") {
-        (2, &cleaned[2..])
-    } else if cleaned.len() > 1 && cleaned.starts_with('0') {
-        (8, &cleaned[1..])
+fn integer_literal_wide(literal: &IntegerLiteral) -> WideInt {
+    let signed = !literal.suffix.unsigned;
+    let width = literal.value.bits() as u32 + u32::from(signed);
+    WideInt::wrap(BigInt::from(literal.value.clone()), width.max(2), signed)
+}
+
+fn integer_literal_i64(literal: &IntegerLiteral) -> i64 {
+    if literal.value.bits() > 64 {
+        return integer_literal_wide(literal).truncate_to_i64();
+    }
+    let bytes = literal.value.to_bytes_le();
+    let mut buf = [0u8; 8];
+    buf[..bytes.len()].copy_from_slice(&bytes);
+    i64::from_le_bytes(buf)
+}
+
+fn parse_integer_suffix(spelling: &str, digits_len: usize) -> IntegerSuffix {
+    let suffix = spelling[digits_len..].to_ascii_lowercase();
+    let unsigned = suffix.contains('u');
+    let size = if suffix.contains("wb") {
+        IntegerSizeSuffix::BitInt
     } else {
-        (10, cleaned.as_str())
+        match suffix.matches('l').count() {
+            0 => IntegerSizeSuffix::None,
+            1 => IntegerSizeSuffix::Long,
+            _ => IntegerSizeSuffix::LongLong,
+        }
     };
-    let magnitude =
-        BigInt::parse_bytes(digits.as_bytes(), radix).expect("lexer only emits valid digits");
-    let width = magnitude.bits() as u32 + u32::from(signed);
-    WideInt::wrap(magnitude, width.max(2), signed)
+    IntegerSuffix { unsigned, size }
+}
+
+fn parse_integer_literal(spelling: &str) -> IntegerLiteral {
+    let digits = Lexer::integer_digits(spelling);
+    let suffix = parse_integer_suffix(spelling, digits.len());
+    let cleaned = digits.replace('\'', "");
+    let (radix, radix_num, digits) = if cleaned.starts_with("0x") || cleaned.starts_with("0X") {
+        (Radix::Hex, 16, &cleaned[2..])
+    } else if cleaned.starts_with("0b") || cleaned.starts_with("0B") {
+        (Radix::Binary, 2, &cleaned[2..])
+    } else if cleaned.len() > 1 && cleaned.starts_with('0') {
+        (Radix::Octal, 8, &cleaned[1..])
+    } else {
+        (Radix::Decimal, 10, cleaned.as_str())
+    };
+    let value = if digits.is_empty() {
+        BigUint::default()
+    } else {
+        BigUint::parse_bytes(digits.as_bytes(), radix_num).expect("lexer only emits valid digits")
+    };
+    IntegerLiteral {
+        value,
+        radix,
+        suffix,
+        spelling: spelling.to_string(),
+    }
+}
+
+fn string_literal_encoding(token: &Token) -> Encoding {
+    match token {
+        Token::StringLit(_) => Encoding::Plain,
+        Token::Utf8StringLit(_) => Encoding::Utf8,
+        Token::Utf16StringLit(_) => Encoding::Utf16,
+        Token::Utf32StringLit(_) => Encoding::Utf32,
+        Token::WideStringLit(_) => Encoding::Wide,
+        _ => unreachable!("caller only inspects string literal tokens"),
+    }
+}
+
+fn merge_string_encoding(current: Encoding, next: Encoding) -> Encoding {
+    if current == Encoding::Plain {
+        next
+    } else {
+        current
+    }
+}
+
+fn fold_char_code_units(units: &[u32]) -> i64 {
+    match units {
+        [] => 0,
+        [single] => i64::from(*single),
+        multiple => multiple.iter().fold(0i64, |acc, &codepoint| {
+            (acc << 8) | i64::from(codepoint as u8)
+        }),
+    }
 }
 
 fn contains_wide(expression: &Expr) -> bool {
     match &expression.value {
-        ExprKind::WideInteger(_) => true,
+        ExprKind::IntegerLiteral(literal) => literal.value.bits() > 64,
         ExprKind::Paren(operand) | ExprKind::Unary { operand, .. } => contains_wide(operand),
         ExprKind::Cast { ty, value, .. } => bit_int_width(ty).is_some() || contains_wide(value),
         ExprKind::Binary { left, right, .. } => contains_wide(left) || contains_wide(right),
@@ -399,7 +618,7 @@ fn identifier(expression: &Expr) -> Option<&str> {
     }
 }
 
-impl std::fmt::Display for FloatLiteral {
+impl std::fmt::Display for ResolvedFloat {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.value {
             FloatValue::Half(bits) => write!(formatter, "f16:{bits:#x}")?,
@@ -497,17 +716,13 @@ impl<'a> Parser<'a> {
         is_defined: Option<&dyn Fn(&str) -> bool>,
     ) -> Result<i64, ConstExprError> {
         match &expression.value {
-            ExprKind::Integer(value) => Ok(*value),
-            ExprKind::WideInteger(value) => Ok(value.truncate_to_i64()),
-            ExprKind::StringLit(_)
-            | ExprKind::Utf8StringLit(_)
-            | ExprKind::Utf16StringLit(_)
-            | ExprKind::Utf32StringLit(_)
-            | ExprKind::WideStringLit(_) => Err(ConstExprError::NotConstant("string literal")),
+            ExprKind::IntegerLiteral(literal) => Ok(integer_literal_i64(literal)),
+            ExprKind::CharLiteral(literal) => Ok(fold_char_code_units(&literal.code_units)),
+            ExprKind::StringLiteral(_) => Err(ConstExprError::NotConstant("string literal")),
             ExprKind::Generic { .. } => Err(ConstExprError::RequiresSemanticEvaluation(
                 "generic selection",
             )),
-            ExprKind::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
+            ExprKind::FloatLiteral(_) => Err(ConstExprError::NotConstant("floating literal")),
             ExprKind::Identifier(name) => match is_defined {
                 Some(_) if name == "true" => Ok(1),
                 Some(_) => Ok(0),
@@ -659,7 +874,7 @@ impl<'a> Parser<'a> {
         is_defined: Option<&dyn Fn(&str) -> bool>,
     ) -> Result<WideInt, ConstExprError> {
         match &expression.value {
-            ExprKind::WideInteger(value) => Ok(value.clone()),
+            ExprKind::IntegerLiteral(literal) => Ok(integer_literal_wide(literal)),
             ExprKind::Paren(inner) => Self::evaluate_wide(inner, is_defined),
             ExprKind::Unary {
                 op: op @ (UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not),
@@ -1186,11 +1401,10 @@ impl<'a> Parser<'a> {
             return Ok(self.node(ExprKind::Paren(expression), start));
         }
         let kind = match self.tokens.value_at(self.position.saturating_sub(1)) {
-            Some(Token::IntLit(value)) => match Token::IntLit(value.clone()).integer_value() {
-                Some(value) => ExprKind::Integer(value),
-                None => ExprKind::WideInteger(parse_wide_integer_literal(value)),
-            },
-            Some(Token::FloatLit(value)) => ExprKind::Float(FloatLiteral::parse(value)?),
+            Some(Token::IntLit(value)) => ExprKind::IntegerLiteral(parse_integer_literal(value)),
+            Some(Token::FloatLit(value)) => {
+                ExprKind::FloatLiteral(FloatLiteral::parse_unevaluated(value))
+            }
             Some(
                 token @ (Token::StringLit(_)
                 | Token::Utf8StringLit(_)
@@ -1198,34 +1412,59 @@ impl<'a> Parser<'a> {
                 | Token::Utf32StringLit(_)
                 | Token::WideStringLit(_)),
             ) => {
-                let mut merged = token.clone();
+                let first_index = self.position - 1;
+                let mut encoding = string_literal_encoding(token);
+                let mut pieces = vec![Span::new(
+                    crate::parser::string_literal_content(token)
+                        .unwrap()
+                        .to_string(),
+                    self.tokens[first_index].spelling,
+                    self.tokens[first_index].expansion,
+                )];
                 while let Some(next) = self.peek()
-                    && crate::parser::string_literal_content(next).is_some()
+                    && let Some(content) = crate::parser::string_literal_content(next)
                 {
-                    let content = format!(
-                        "{}{}",
-                        crate::parser::string_literal_content(&merged).unwrap(),
-                        crate::parser::string_literal_content(next).unwrap()
-                    );
-                    merged = crate::parser::concatenated_string_literal(&merged, next, content);
+                    encoding = merge_string_encoding(encoding, string_literal_encoding(next));
+                    let index = self.position;
+                    pieces.push(Span::new(
+                        content.to_string(),
+                        self.tokens[index].spelling,
+                        self.tokens[index].expansion,
+                    ));
                     self.take();
                 }
-                match merged {
-                    Token::StringLit(value) => ExprKind::StringLit(value),
-                    Token::Utf8StringLit(value) => ExprKind::Utf8StringLit(value),
-                    Token::Utf16StringLit(value) => ExprKind::Utf16StringLit(value),
-                    Token::Utf32StringLit(value) => ExprKind::Utf32StringLit(value),
-                    Token::WideStringLit(value) => ExprKind::WideStringLit(value),
-                    _ => unreachable!(),
-                }
+                let chars: Vec<char> = pieces
+                    .iter()
+                    .flat_map(|piece| piece.value.chars())
+                    .collect();
+                let code_units = Lexer::decode_escapes(&chars, 0, chars.len());
+                ExprKind::StringLiteral(StringLiteral {
+                    encoding,
+                    code_units,
+                    pieces,
+                })
             }
             Some(
-                Token::CharLit(_, value)
-                | Token::Utf8CharLit(_, value)
-                | Token::Utf16CharLit(_, value)
-                | Token::Utf32CharLit(_, value)
-                | Token::WideCharLit(_, value),
-            ) => ExprKind::Integer(*value),
+                token @ (Token::CharLit(_, _)
+                | Token::Utf8CharLit(_, _)
+                | Token::Utf16CharLit(_, _)
+                | Token::Utf32CharLit(_, _)
+                | Token::WideCharLit(_, _)),
+            ) => {
+                let (encoding, spelling, code_units) = match token {
+                    Token::CharLit(spelling, units) => (Encoding::Plain, spelling, units),
+                    Token::Utf8CharLit(spelling, units) => (Encoding::Utf8, spelling, units),
+                    Token::Utf16CharLit(spelling, units) => (Encoding::Utf16, spelling, units),
+                    Token::Utf32CharLit(spelling, units) => (Encoding::Utf32, spelling, units),
+                    Token::WideCharLit(spelling, units) => (Encoding::Wide, spelling, units),
+                    _ => unreachable!("matched above"),
+                };
+                ExprKind::CharLiteral(CharLiteral {
+                    encoding,
+                    code_units: code_units.clone(),
+                    spelling: spelling.clone(),
+                })
+            }
             Some(Token::Ident(value)) if value == "defined" => return self.parse_defined(start),
             Some(Token::Ident(value)) if value == "__builtin_offsetof" => {
                 return self.parse_offsetof(start);

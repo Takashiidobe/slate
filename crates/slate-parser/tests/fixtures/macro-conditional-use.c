@@ -44,8 +44,16 @@ int picked(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 2,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "2",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -98,8 +106,16 @@ int picked(void) {
 // DEFAULT-NEXT:           name: "picked",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       4,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 4,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "4",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -132,8 +148,16 @@ int picked(void) {
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   initializer: Some(
 // SELECT-NEXT:                       Expr(
-// SELECT-NEXT:                           Integer(
-// SELECT-NEXT:                               1,
+// SELECT-NEXT:                           IntegerLiteral(
+// SELECT-NEXT:                               IntegerLiteral {
+// SELECT-NEXT:                                   value: 1,
+// SELECT-NEXT:                                   radix: Decimal,
+// SELECT-NEXT:                                   suffix: IntegerSuffix {
+// SELECT-NEXT:                                       unsigned: false,
+// SELECT-NEXT:                                       size: None,
+// SELECT-NEXT:                                   },
+// SELECT-NEXT:                                   spelling: "1",
+// SELECT-NEXT:                               },
 // SELECT-NEXT:                           ),
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
@@ -187,8 +211,16 @@ int picked(void) {
 // SELECT-NEXT:           name: "picked",
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Return(
-// SELECT-NEXT:                   Integer(
-// SELECT-NEXT:                       3,
+// SELECT-NEXT:                   IntegerLiteral(
+// SELECT-NEXT:                       IntegerLiteral {
+// SELECT-NEXT:                           value: 3,
+// SELECT-NEXT:                           radix: Decimal,
+// SELECT-NEXT:                           suffix: IntegerSuffix {
+// SELECT-NEXT:                               unsigned: false,
+// SELECT-NEXT:                               size: None,
+// SELECT-NEXT:                           },
+// SELECT-NEXT:                           spelling: "3",
+// SELECT-NEXT:                       },
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ],

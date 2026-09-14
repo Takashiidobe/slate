@@ -29,8 +29,16 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                           "nested",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -66,11 +74,27 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                           Paren(
 // DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Add,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -107,8 +131,16 @@ int wrapped[WRAP(1)];
 // A-NEXT:                           "nested",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           Integer(
-// A-NEXT:                               2,
+// A-NEXT:                           IntegerLiteral(
+// A-NEXT:                               IntegerLiteral {
+// A-NEXT:                                   value: 2,
+// A-NEXT:                                   radix: Decimal,
+// A-NEXT:                                   suffix: IntegerSuffix {
+// A-NEXT:                                       unsigned: false,
+// A-NEXT:                                       size: None,
+// A-NEXT:                                   },
+// A-NEXT:                                   spelling: "2",
+// A-NEXT:                               },
 // A-NEXT:                           ),
 // A-NEXT:                       ),
 // A-NEXT:                   },
@@ -144,11 +176,27 @@ int wrapped[WRAP(1)];
 // A-NEXT:                           Paren(
 // A-NEXT:                               Binary {
 // A-NEXT:                                   op: Add,
-// A-NEXT:                                   left: Integer(
-// A-NEXT:                                       1,
+// A-NEXT:                                   left: IntegerLiteral(
+// A-NEXT:                                       IntegerLiteral {
+// A-NEXT:                                           value: 1,
+// A-NEXT:                                           radix: Decimal,
+// A-NEXT:                                           suffix: IntegerSuffix {
+// A-NEXT:                                               unsigned: false,
+// A-NEXT:                                               size: None,
+// A-NEXT:                                           },
+// A-NEXT:                                           spelling: "1",
+// A-NEXT:                                       },
 // A-NEXT:                                   ),
-// A-NEXT:                                   right: Integer(
-// A-NEXT:                                       2,
+// A-NEXT:                                   right: IntegerLiteral(
+// A-NEXT:                                       IntegerLiteral {
+// A-NEXT:                                           value: 2,
+// A-NEXT:                                           radix: Decimal,
+// A-NEXT:                                           suffix: IntegerSuffix {
+// A-NEXT:                                               unsigned: false,
+// A-NEXT:                                               size: None,
+// A-NEXT:                                           },
+// A-NEXT:                                           spelling: "2",
+// A-NEXT:                                       },
 // A-NEXT:                                   ),
 // A-NEXT:                               },
 // A-NEXT:                           ),

@@ -36,8 +36,16 @@ int x_missing[4];
 // DEFAULT-NEXT:                           "x_undefined",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 2,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "2",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -70,8 +78,16 @@ int x_missing[4];
 // DEFAULT-NEXT:                           "x_missing",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -106,8 +122,16 @@ int x_missing[4];
 // A-NEXT:                           "x_defined",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           Integer(
-// A-NEXT:                               1,
+// A-NEXT:                           IntegerLiteral(
+// A-NEXT:                               IntegerLiteral {
+// A-NEXT:                                   value: 1,
+// A-NEXT:                                   radix: Decimal,
+// A-NEXT:                                   suffix: IntegerSuffix {
+// A-NEXT:                                       unsigned: false,
+// A-NEXT:                                       size: None,
+// A-NEXT:                                   },
+// A-NEXT:                                   spelling: "1",
+// A-NEXT:                               },
 // A-NEXT:                           ),
 // A-NEXT:                       ),
 // A-NEXT:                   },
@@ -142,8 +166,16 @@ int x_missing[4];
 // FLAG-NEXT:                           "x_undefined",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           Integer(
-// FLAG-NEXT:                               2,
+// FLAG-NEXT:                           IntegerLiteral(
+// FLAG-NEXT:                               IntegerLiteral {
+// FLAG-NEXT:                                   value: 2,
+// FLAG-NEXT:                                   radix: Decimal,
+// FLAG-NEXT:                                   suffix: IntegerSuffix {
+// FLAG-NEXT:                                       unsigned: false,
+// FLAG-NEXT:                                       size: None,
+// FLAG-NEXT:                                   },
+// FLAG-NEXT:                                   spelling: "2",
+// FLAG-NEXT:                               },
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                   },
@@ -176,8 +208,16 @@ int x_missing[4];
 // FLAG-NEXT:                           "flag_without_x",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           Integer(
-// FLAG-NEXT:                               3,
+// FLAG-NEXT:                           IntegerLiteral(
+// FLAG-NEXT:                               IntegerLiteral {
+// FLAG-NEXT:                                   value: 3,
+// FLAG-NEXT:                                   radix: Decimal,
+// FLAG-NEXT:                                   suffix: IntegerSuffix {
+// FLAG-NEXT:                                       unsigned: false,
+// FLAG-NEXT:                                       size: None,
+// FLAG-NEXT:                                   },
+// FLAG-NEXT:                                   spelling: "3",
+// FLAG-NEXT:                               },
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                   },
@@ -210,8 +250,16 @@ int x_missing[4];
 // FLAG-NEXT:                           "x_missing",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           Integer(
-// FLAG-NEXT:                               4,
+// FLAG-NEXT:                           IntegerLiteral(
+// FLAG-NEXT:                               IntegerLiteral {
+// FLAG-NEXT:                                   value: 4,
+// FLAG-NEXT:                                   radix: Decimal,
+// FLAG-NEXT:                                   suffix: IntegerSuffix {
+// FLAG-NEXT:                                       unsigned: false,
+// FLAG-NEXT:                                       size: None,
+// FLAG-NEXT:                                   },
+// FLAG-NEXT:                                   spelling: "4",
+// FLAG-NEXT:                               },
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                   },
@@ -246,8 +294,16 @@ int x_missing[4];
 // X-NEXT:                           "x_defined",
 // X-NEXT:                       ),
 // X-NEXT:                       size: Expression(
-// X-NEXT:                           Integer(
-// X-NEXT:                               1,
+// X-NEXT:                           IntegerLiteral(
+// X-NEXT:                               IntegerLiteral {
+// X-NEXT:                                   value: 1,
+// X-NEXT:                                   radix: Decimal,
+// X-NEXT:                                   suffix: IntegerSuffix {
+// X-NEXT:                                       unsigned: false,
+// X-NEXT:                                       size: None,
+// X-NEXT:                                   },
+// X-NEXT:                                   spelling: "1",
+// X-NEXT:                               },
 // X-NEXT:                           ),
 // X-NEXT:                       ),
 // X-NEXT:                   },

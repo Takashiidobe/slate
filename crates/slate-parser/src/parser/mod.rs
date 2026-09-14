@@ -11,6 +11,7 @@ use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::{Lexer, Token};
 use crate::pp::{DirectiveDiagnostic, MacroEntry, PPNode, PPNodeKind, Preprocessor};
+use crate::target_info::TargetInfo;
 pub(crate) use attributes::apply_vector_attributes;
 pub(crate) use decl::matching_brace;
 pub use declarator::apply_abstract_declarator;
@@ -142,6 +143,7 @@ pub struct Parser {
     defines: Vec<String>,
     biggest_alignment: i64,
     flavor: CompilerFlavor,
+    target: TargetInfo,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
     file_origins: HashMap<FileId, (HeaderKind, Option<FileId>)>,
@@ -168,6 +170,7 @@ impl Parser {
             defines: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             flavor: CompilerFlavor::default(),
+            target: TargetInfo::default(),
             tags: Rc::default(),
             line_starts: HashMap::new(),
             file_origins: HashMap::new(),
@@ -186,6 +189,11 @@ impl Parser {
 
     pub fn flavor(&self) -> CompilerFlavor {
         self.flavor
+    }
+
+    pub fn with_target(mut self, target: TargetInfo) -> Self {
+        self.target = target;
+        self
     }
 
     pub fn directive_diagnostics(&self) -> &[DirectiveDiagnostic] {

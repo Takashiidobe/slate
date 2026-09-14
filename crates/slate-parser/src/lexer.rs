@@ -145,11 +145,11 @@ pub enum Token {
     Ident(String),
     IntLit(String),
     FloatLit(String),
-    CharLit(String, i64),
-    Utf8CharLit(String, i64),
-    Utf16CharLit(String, i64),
-    Utf32CharLit(String, i64),
-    WideCharLit(String, i64),
+    CharLit(String, Vec<u32>),
+    Utf8CharLit(String, Vec<u32>),
+    Utf16CharLit(String, Vec<u32>),
+    Utf32CharLit(String, Vec<u32>),
+    WideCharLit(String, Vec<u32>),
     StringLit(String),
     Utf8StringLit(String),
     Utf16StringLit(String),
@@ -620,7 +620,7 @@ impl Lexer {
             let start = i + prefix_len;
             let literal_close = self.literal_end(start, '\'').min(self.chars.len());
             let value: String = self.chars[start + 1..literal_close].iter().collect();
-            let decoded = self.decode_char_literal(start + 1, literal_close);
+            let decoded = Self::decode_escapes(&self.chars, start + 1, literal_close);
             let token = match prefix_len {
                 0 => Token::CharLit(value, decoded),
                 1 if c == 'u' => Token::Utf16CharLit(value, decoded),
@@ -633,7 +633,7 @@ impl Lexer {
         } else if c == '\'' {
             let literal_close = self.literal_end(i, '\'').min(self.chars.len());
             let value: String = self.chars[i + 1..literal_close].iter().collect();
-            let decoded = self.decode_char_literal(i + 1, literal_close);
+            let decoded = Self::decode_escapes(&self.chars, i + 1, literal_close);
             self.pos = self.past_literal(literal_close);
             self.emit(Token::CharLit(value, decoded));
         } else if c == '"' {
@@ -832,36 +832,30 @@ impl Lexer {
         spelling[..end].to_string()
     }
 
-    fn decode_char_literal(&self, start: usize, end: usize) -> i64 {
+    pub(crate) fn decode_escapes(chars: &[char], start: usize, end: usize) -> Vec<u32> {
         let mut codepoints = Vec::new();
         let mut i = start;
         while i < end {
-            let (codepoint, next) = self.decode_char_escape(i, end);
+            let (codepoint, next) = Self::decode_char_escape(chars, i, end);
             codepoints.push(codepoint);
             i = next;
         }
-        match codepoints.as_slice() {
-            [] => 0,
-            [single] => i64::from(*single),
-            multiple => multiple.iter().fold(0i64, |acc, &codepoint| {
-                (acc << 8) | i64::from(codepoint as u8)
-            }),
-        }
+        codepoints
     }
 
-    fn char_in(&self, i: usize, end: usize) -> Option<char> {
-        (i < end).then(|| self.chars[i])
+    fn char_in(chars: &[char], i: usize, end: usize) -> Option<char> {
+        (i < end).then(|| chars[i])
     }
 
-    fn decode_char_escape(&self, i: usize, end: usize) -> (u32, usize) {
-        if self.chars[i] != '\\' {
-            let value = raw_byte_for_char(self.chars[i])
+    fn decode_char_escape(chars: &[char], i: usize, end: usize) -> (u32, usize) {
+        if chars[i] != '\\' {
+            let value = raw_byte_for_char(chars[i])
                 .map(u32::from)
-                .unwrap_or(self.chars[i] as u32);
+                .unwrap_or(chars[i] as u32);
             return (value, i + 1);
         }
         let j = i + 1;
-        match self.char_in(j, end) {
+        match Self::char_in(chars, j, end) {
             Some('n') => (0x0A, j + 1),
             Some('t') => (0x09, j + 1),
             Some('r') => (0x0D, j + 1),
@@ -874,15 +868,15 @@ impl Lexer {
             Some('\'') => (0x27, j + 1),
             Some('"') => (0x22, j + 1),
             Some('?') => (0x3F, j + 1),
-            Some('x') => self.hex_char_escape(j + 1, end, usize::MAX),
-            Some('u') => self.hex_char_escape(j + 1, end, 4),
-            Some('U') => self.hex_char_escape(j + 1, end, 8),
+            Some('x') => Self::hex_char_escape(chars, j + 1, end, usize::MAX),
+            Some('u') => Self::hex_char_escape(chars, j + 1, end, 4),
+            Some('U') => Self::hex_char_escape(chars, j + 1, end, 8),
             Some(digit) if digit.is_digit(8) => {
                 let mut e = j;
                 let mut value = 0u32;
                 let mut count = 0;
-                while count < 3 && self.char_in(e, end).is_some_and(|c| c.is_digit(8)) {
-                    value = value * 8 + self.chars[e].to_digit(8).unwrap();
+                while count < 3 && Self::char_in(chars, e, end).is_some_and(|c| c.is_digit(8)) {
+                    value = value * 8 + chars[e].to_digit(8).unwrap();
                     e += 1;
                     count += 1;
                 }
@@ -893,12 +887,18 @@ impl Lexer {
         }
     }
 
-    fn hex_char_escape(&self, start: usize, end: usize, max_digits: usize) -> (u32, usize) {
+    fn hex_char_escape(
+        chars: &[char],
+        start: usize,
+        end: usize,
+        max_digits: usize,
+    ) -> (u32, usize) {
         let mut e = start;
         let mut value = 0u32;
-        while e - start < max_digits && self.char_in(e, end).is_some_and(|c| c.is_ascii_hexdigit())
+        while e - start < max_digits
+            && Self::char_in(chars, e, end).is_some_and(|c| c.is_ascii_hexdigit())
         {
-            value = value * 16 + self.chars[e].to_digit(16).unwrap();
+            value = value * 16 + chars[e].to_digit(16).unwrap();
             e += 1;
         }
         (value, e)

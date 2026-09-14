@@ -1449,18 +1449,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                       Integer(
-// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 0,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "0",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 2,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 2,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "2",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
@@ -1517,18 +1541,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                               Integer(
-// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           2,
+// DEFAULT-NEXT:                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 2,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 2,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -1601,8 +1649,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   3,
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 3,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -1714,8 +1770,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                           2,
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 2,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
@@ -1799,18 +1863,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   2,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
@@ -1871,8 +1959,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 1,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -1956,18 +2052,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                   3,
+// DEFAULT-NEXT:                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   2,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -2099,8 +2219,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   37,
+// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 37,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "37",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -2150,13 +2278,29 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               1,
+// DEFAULT-NEXT:                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
@@ -2191,8 +2335,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 0,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -2276,18 +2428,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                   3,
+// DEFAULT-NEXT:                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   2,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -2370,8 +2546,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       3,
+// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 3,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -2444,8 +2628,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       2,
+// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 2,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -2529,18 +2721,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               2,
+// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -2599,8 +2815,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 1,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -2684,18 +2908,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               2,
+// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -2827,8 +3075,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       42,
+// DEFAULT-NEXT:                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 42,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "42",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -2878,13 +3134,29 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -2919,8 +3191,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 0,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -3004,18 +3284,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               2,
+// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -3067,23 +3371,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                       left: Paren(
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                               left: Integer(
-// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 1,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   2,
+// DEFAULT-NEXT:                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 2,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 1,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "1",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 3,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "3",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -3119,8 +3455,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   3,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -3168,18 +3512,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                               0,
+// DEFAULT-NEXT:                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               2,
+// DEFAULT-NEXT:                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
@@ -3244,8 +3612,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           3,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
@@ -3287,23 +3663,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                               Binary {
 // DEFAULT-NEXT:                                                                                   op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               1,
+// DEFAULT-NEXT:                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               3,
+// DEFAULT-NEXT:                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 3,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -3339,8 +3747,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           "BgL_cdrzd21979zd2_953",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
@@ -3388,18 +3804,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                   0,
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   2,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
@@ -3464,8 +3904,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   "BgL_cdrzd21979zd2_953",
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
@@ -3507,23 +3955,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                               left: Paren(
 // DEFAULT-NEXT:                                                                                                   Binary {
 // DEFAULT-NEXT:                                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                       left: Integer(
-// DEFAULT-NEXT:                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                       left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   3,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -3559,8 +4039,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                               "BgL_cdrzd21986zd2_956",
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
@@ -3608,18 +4096,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                       0,
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -3702,8 +4214,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               "BgL_cdrzd21979zd2_953",
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
@@ -3749,8 +4269,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               "BgL_auxz00_4120",
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
@@ -3794,23 +4322,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
@@ -3846,8 +4406,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   "BgL_cdrzd21994zd2_959",
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
@@ -3895,18 +4463,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                                                           0,
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 0,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
@@ -3992,8 +4584,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -4040,23 +4640,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
@@ -4114,18 +4746,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -4198,8 +4854,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -4308,8 +4972,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -4382,8 +5054,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -4467,18 +5147,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -4537,8 +5241,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -4622,18 +5334,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -4692,8 +5428,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               0,
+// DEFAULT-NEXT:                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -4777,18 +5521,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -4860,8 +5628,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
@@ -4945,18 +5721,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -5017,8 +5817,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -5102,18 +5910,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -5208,20 +6040,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           55,
+// DEFAULT-NEXT:                                                                                                                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 55,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "55",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -5254,8 +6110,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               0,
+// DEFAULT-NEXT:                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -5339,18 +6203,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                       declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                           Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
@@ -5433,8 +6321,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -5546,8 +6442,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
@@ -5631,18 +6535,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
@@ -5703,8 +6631,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -5788,18 +6724,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -5894,20 +6854,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               56,
+// DEFAULT-NEXT:                                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 56,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "56",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
@@ -5940,8 +6924,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   0,
+// DEFAULT-NEXT:                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -6025,18 +7017,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -6147,8 +7163,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -6194,8 +7218,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       "BgL_auxz00_4177",
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -6244,23 +7276,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                               left: Paren(
 // DEFAULT-NEXT:                                                                                                                                                                   Binary {
 // DEFAULT-NEXT:                                                                                                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                                       left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                                       left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
@@ -6383,8 +7447,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                           "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
@@ -6430,8 +7502,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                           "BgL_auxz00_4184",
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
@@ -6479,8 +7559,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                   "BgL_auxz00_4183",
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -6529,23 +7617,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                                                                                                                               Binary {
 // DEFAULT-NEXT:                                                                                                                                                                                   op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
@@ -6650,8 +7770,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -6698,23 +7826,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                                                                                               Binary {
 // DEFAULT-NEXT:                                                                                                                                                   op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
@@ -6819,8 +7979,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
@@ -6866,8 +8034,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               "BgL_auxz00_4195",
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
@@ -6916,23 +8092,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       left: Paren(
 // DEFAULT-NEXT:                                                                                                                                                           Binary {
 // DEFAULT-NEXT:                                                                                                                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                               left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
@@ -7055,8 +8263,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                   "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -7102,8 +8318,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                   "BgL_auxz00_4202",
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
@@ -7151,8 +8375,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           "BgL_auxz00_4201",
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -7201,23 +8433,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                                                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -7278,18 +8542,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -7362,8 +8650,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -7475,8 +8771,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
@@ -7560,18 +8864,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
@@ -7632,8 +8960,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -7717,18 +9053,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
@@ -7823,20 +9183,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               50,
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 50,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "50",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -7869,8 +9253,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   0,
+// DEFAULT-NEXT:                                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
@@ -7954,18 +9346,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
@@ -8048,8 +9464,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -8122,8 +9546,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -8207,18 +9639,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
@@ -8277,8 +9733,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -8362,18 +9826,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
@@ -8468,20 +9956,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   54,
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       value: 54,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                       spelling: "54",
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
@@ -8514,8 +10026,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       0,
+// DEFAULT-NEXT:                                                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
@@ -8599,18 +10119,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
@@ -8718,8 +10262,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                       "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
@@ -8766,23 +10318,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                       left: Paren(
 // DEFAULT-NEXT:                                                                                                                           Binary {
 // DEFAULT-NEXT:                                                                                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                               left: Integer(
-// DEFAULT-NEXT:                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
@@ -8869,8 +10453,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   "BgL_cdrzd21979zd2_953",
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
@@ -8917,23 +10509,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -8994,18 +10618,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
@@ -9078,8 +10726,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
@@ -9191,8 +10847,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
@@ -9276,18 +10940,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
@@ -9348,8 +11036,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
@@ -9433,18 +11129,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -9539,20 +11259,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               49,
+// DEFAULT-NEXT:                                                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 49,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "49",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -9585,8 +11329,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   0,
+// DEFAULT-NEXT:                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
@@ -9670,18 +11422,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
@@ -9764,8 +11540,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -9838,8 +11622,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -9923,18 +11715,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
@@ -9993,8 +11809,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -10078,18 +11902,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
@@ -10184,20 +12032,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   53,
+// DEFAULT-NEXT:                                                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 53,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "53",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
@@ -10230,8 +12102,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       0,
+// DEFAULT-NEXT:                                                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
@@ -10315,18 +12195,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
@@ -10431,8 +12335,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   "BgL_formalsz00_39",
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               3,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 3,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "3",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
@@ -10479,23 +12391,55 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       3,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -10556,18 +12500,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
@@ -10640,8 +12608,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
@@ -10753,8 +12729,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
@@ -10838,18 +12822,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
@@ -10910,8 +12918,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                   1,
+// DEFAULT-NEXT:                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
@@ -10995,18 +13011,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
@@ -11101,20 +13141,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                                                               48,
+// DEFAULT-NEXT:                                                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 48,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "48",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -11147,8 +13211,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                   0,
+// DEFAULT-NEXT:                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
@@ -11232,18 +13304,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
@@ -11326,8 +13422,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -11400,8 +13504,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -11485,18 +13597,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
@@ -11555,8 +13691,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -11640,18 +13784,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
@@ -11746,20 +13914,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   52,
+// DEFAULT-NEXT:                                                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 52,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "52",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
@@ -11792,8 +13984,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                                       0,
+// DEFAULT-NEXT:                                                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
@@ -11877,18 +14077,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
@@ -11964,18 +14188,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   2,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -12048,8 +14296,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   3,
+// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -12161,8 +14417,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                                           2,
+// DEFAULT-NEXT:                                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
@@ -12246,18 +14510,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                       Integer(
-// DEFAULT-NEXT:                                                                                                                           3,
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 3,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "3",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
@@ -12318,8 +14606,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -12403,18 +14699,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   2,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
@@ -12509,20 +14829,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                                               47,
+// DEFAULT-NEXT:                                                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 47,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "47",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               2,
+// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -12555,8 +14899,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   0,
+// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 0,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -12640,18 +14992,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                               Integer(
-// DEFAULT-NEXT:                                                                                                                   3,
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 3,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "3",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           2,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 2,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "2",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   2,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
@@ -12734,8 +15110,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       3,
+// DEFAULT-NEXT:                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -12808,8 +15192,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       2,
+// DEFAULT-NEXT:                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -12893,18 +15285,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
@@ -12963,8 +15379,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -13048,18 +15472,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
@@ -13154,20 +15602,44 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                                                   51,
+// DEFAULT-NEXT:                                                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 51,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "51",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   2,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           1,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
@@ -13200,8 +15672,16 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       0,
+// DEFAULT-NEXT:                                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -13285,18 +15765,42 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                   Integer(
-// DEFAULT-NEXT:                                                                                                                       3,
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 3,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               2,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 2,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "2",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       2,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 2,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "2",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),

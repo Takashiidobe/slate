@@ -66,8 +66,16 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "x",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -158,8 +166,16 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                                   left: Identifier(
 // DOUBLED-NEXT:                                       "x",
 // DOUBLED-NEXT:                                   ),
-// DOUBLED-NEXT:                                   right: Integer(
-// DOUBLED-NEXT:                                       2,
+// DOUBLED-NEXT:                                   right: IntegerLiteral(
+// DOUBLED-NEXT:                                       IntegerLiteral {
+// DOUBLED-NEXT:                                           value: 2,
+// DOUBLED-NEXT:                                           radix: Decimal,
+// DOUBLED-NEXT:                                           suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                               unsigned: false,
+// DOUBLED-NEXT:                                               size: None,
+// DOUBLED-NEXT:                                           },
+// DOUBLED-NEXT:                                           spelling: "2",
+// DOUBLED-NEXT:                                       },
 // DOUBLED-NEXT:                                   ),
 // DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),

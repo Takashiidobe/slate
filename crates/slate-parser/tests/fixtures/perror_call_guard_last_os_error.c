@@ -149,8 +149,50 @@ int main(void) {
 // DEFAULT-NEXT:                                               "remove",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               StringLit(
-// DEFAULT-NEXT:                                                   "slate_perror_call_guard_missing.tmp",
+// DEFAULT-NEXT:                                               StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                           108,
+// DEFAULT-NEXT:                                                           97,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           112,
+// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           111,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           99,
+// DEFAULT-NEXT:                                                           97,
+// DEFAULT-NEXT:                                                           108,
+// DEFAULT-NEXT:                                                           108,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           103,
+// DEFAULT-NEXT:                                                           117,
+// DEFAULT-NEXT:                                                           97,
+// DEFAULT-NEXT:                                                           114,
+// DEFAULT-NEXT:                                                           100,
+// DEFAULT-NEXT:                                                           95,
+// DEFAULT-NEXT:                                                           109,
+// DEFAULT-NEXT:                                                           105,
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                           105,
+// DEFAULT-NEXT:                                                           110,
+// DEFAULT-NEXT:                                                           103,
+// DEFAULT-NEXT:                                                           46,
+// DEFAULT-NEXT:                                                           116,
+// DEFAULT-NEXT:                                                           109,
+// DEFAULT-NEXT:                                                           112,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "slate_perror_call_guard_missing.tmp",
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -166,8 +208,16 @@ int main(void) {
 // DEFAULT-NEXT:                       left: Identifier(
 // DEFAULT-NEXT:                           "rc",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Integer(
-// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       right: IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 0,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "0",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
@@ -177,23 +227,59 @@ int main(void) {
 // DEFAULT-NEXT:                                   "perror",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLit(
-// DEFAULT-NEXT:                                       "remove failed",
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               109,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               118,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               102,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "remove failed",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

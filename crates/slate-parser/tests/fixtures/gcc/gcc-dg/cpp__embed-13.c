@@ -134,1024 +134,2048 @@ int main() {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           47,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 47,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "47",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           42,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 42,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "42",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           123,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 123,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "123",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           103,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 103,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "103",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 45,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "45",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           111,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 111,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "111",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           114,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 114,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "114",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           125,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 125,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "125",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           42,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 42,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "42",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           47,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 47,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "47",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           47,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 47,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "47",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           42,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 42,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "42",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           123,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 123,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "123",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           103,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 103,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "103",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 45,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "45",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           111,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 111,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "111",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           112,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 112,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "112",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           116,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 116,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "116",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           105,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 105,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "105",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           111,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 111,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "111",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           34,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 34,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "34",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 45,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "45",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           116,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 116,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "116",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           61,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 61,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "61",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           99,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 99,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "99",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           50,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 50,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "50",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 51,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "51",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 45,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "45",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           87,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 87,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "87",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 45,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "45",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           118,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 118,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "118",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           97,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 97,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "97",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           108,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 108,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "108",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           34,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 34,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "34",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           125,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 125,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "125",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           42,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 42,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "42",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           47,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 47,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "47",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           35,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 35,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "35",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           105,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 105,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "105",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           99,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 99,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "99",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           108,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 108,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "108",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           60,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 60,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "60",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           116,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 116,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "116",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           97,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 97,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "97",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           114,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 114,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "114",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           103,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 103,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "103",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           46,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 46,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "46",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           104,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 104,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "104",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           62,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 62,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "62",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           99,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 99,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "99",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           111,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 111,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "111",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           116,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 116,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "116",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           117,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 117,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "117",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           115,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 115,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "115",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           105,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 105,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "105",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           103,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 103,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "103",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           110,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 110,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "110",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           99,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 99,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "99",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           104,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 104,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "104",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           97,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 97,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "97",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           114,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 114,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "114",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           97,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 97,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "97",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           91,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 91,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "91",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           93,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 93,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "93",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           61,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 61,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "61",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           123,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 123,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "123",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 10,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "10",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           35,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 35,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "35",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           109,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 109,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "109",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           98,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 98,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "98",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 101,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "101",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           100,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 100,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "100",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 32,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "32",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           95,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 95,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "95",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           95,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 95,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "95",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           70,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 70,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "70",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           73,
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 73,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "73",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -1228,8 +2252,16 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 0,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "0",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -1244,8 +2276,16 @@ int main() {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               128,
+// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 128,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "128",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -1296,8 +2336,16 @@ int main() {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Return(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
@@ -1318,8 +2366,16 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1381,389 +2437,1413 @@ int main() {
 // DEFAULT-NEXT:                           "foo",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               47,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               42,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               123,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               103,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               45,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               111,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               114,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               125,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               42,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               47,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               47,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               42,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               123,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               103,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               45,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               111,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               112,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               116,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               105,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               111,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               34,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               45,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               116,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               61,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               99,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               50,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               51,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               45,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               87,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               45,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               118,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               97,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               108,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               34,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               125,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               42,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               47,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               35,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               105,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               99,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               108,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               60,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               116,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               97,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               114,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               103,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               46,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               104,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               62,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               99,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               111,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               116,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               117,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               115,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               105,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               103,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               110,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               99,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               104,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               97,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               114,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               97,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               91,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               93,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               61,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               123,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               10,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               35,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               109,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               98,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               101,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               100,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               95,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               95,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               70,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               73,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 47,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "47",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 42,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "42",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 123,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "123",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 103,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "103",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 45,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "45",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 111,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "111",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 114,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "114",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 125,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "125",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 42,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "42",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 47,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "47",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 47,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "47",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 42,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "42",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 123,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "123",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 103,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "103",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 45,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "45",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 111,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "111",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 112,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "112",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 116,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "116",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 105,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "105",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 111,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "111",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 34,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "34",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 45,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "45",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 116,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "116",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 61,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "61",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 99,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "99",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 50,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "50",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 51,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "51",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 45,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "45",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 87,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "87",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 45,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "45",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 118,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "118",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 97,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "97",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 108,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "108",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 34,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "34",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 125,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "125",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 42,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "42",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 47,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "47",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 35,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "35",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 105,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "105",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 99,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "99",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 108,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "108",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 60,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "60",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 116,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "116",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 97,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "97",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 114,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "114",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 103,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "103",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 46,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "46",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 104,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "104",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 62,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "62",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 99,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "99",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 111,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "111",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 116,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "116",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 117,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "117",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 115,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "115",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 105,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "105",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 103,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "103",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 110,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "110",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 99,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "99",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 104,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "104",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 97,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "97",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 114,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "114",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 97,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "97",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 91,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "91",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 93,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "93",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 61,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "61",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 123,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "123",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 10,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 35,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "35",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 109,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "109",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 98,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "98",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 101,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "101",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 100,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "100",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 32,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 95,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "95",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 95,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "95",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 70,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "70",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 73,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "73",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
@@ -1920,525 +4000,1565 @@ int main() {
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: Binary {
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               op: Mul,
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               left: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 2,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "2",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "47",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "42",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   123,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 123,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "123",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       103,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 103,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "103",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "45",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "111",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   114,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 114,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "114",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   125,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 125,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "125",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "42",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "47",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "10",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "47",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "42",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   123,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 123,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "123",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       103,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 103,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "103",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "45",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "111",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           112,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               value: 112,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "112",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           value: 116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "116",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   105,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       value: 105,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "105",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   value: 111,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "111",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           value: 115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               34,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   value: 34,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "34",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               value: 45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               spelling: "45",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           value: 115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       value: 116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       spelling: "116",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           61,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               value: 61,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               spelling: "61",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       99,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           value: 99,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           spelling: "99",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   50,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       value: 50,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       spelling: "50",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               51,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   value: 51,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   spelling: "51",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           value: 45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           spelling: "45",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   87,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       value: 87,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       spelling: "87",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       value: 115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   value: 101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   spelling: "101",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           value: 45,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           spelling: "45",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   118,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       value: 118,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       spelling: "118",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               97,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   value: 97,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   spelling: "97",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           108,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               value: 108,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               spelling: "108",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       value: 101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       spelling: "101",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               34,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   value: 34,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   spelling: "34",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       125,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           value: 125,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           spelling: "125",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   value: 42,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   spelling: "42",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               value: 47,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               spelling: "47",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           value: 10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           spelling: "10",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       value: 10,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       spelling: "10",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               35,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   value: 35,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   spelling: "35",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           105,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               value: 105,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               spelling: "105",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   99,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       value: 99,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       spelling: "99",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                               108,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   value: 108,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   spelling: "108",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                           117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                       100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                                   101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       value: 101,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       spelling: "101",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                           60,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               value: 60,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               spelling: "60",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                       115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           value: 115,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                                   116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       value: 116,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       spelling: "116",
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                               100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   value: 100,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                           97,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               value: 97,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                                               spelling: "97",
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                       114,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           value: 114,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                                           spelling: "114",
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                                   103,
+// DEFAULT-NEXT:                                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       value: 103,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                                       spelling: "103",
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                               46,
+// DEFAULT-NEXT:                                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   value: 46,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                                   spelling: "46",
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                           104,
+// DEFAULT-NEXT:                                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                               value: 104,
+// DEFAULT-NEXT:                                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                                               spelling: "104",
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                       62,
+// DEFAULT-NEXT:                                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                           value: 62,
+// DEFAULT-NEXT:                                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                                           spelling: "62",
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                                   10,
+// DEFAULT-NEXT:                                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                       value: 10,
+// DEFAULT-NEXT:                                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                                       spelling: "10",
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                               10,
+// DEFAULT-NEXT:                                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                                   value: 10,
+// DEFAULT-NEXT:                                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                                   spelling: "10",
+// DEFAULT-NEXT:                                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                           99,
+// DEFAULT-NEXT:                                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                               value: 99,
+// DEFAULT-NEXT:                                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                                               spelling: "99",
+// DEFAULT-NEXT:                                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                       111,
+// DEFAULT-NEXT:                                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                           value: 111,
+// DEFAULT-NEXT:                                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                                           spelling: "111",
+// DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                                   110,
+// DEFAULT-NEXT:                                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                       value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                               115,
+// DEFAULT-NEXT:                                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                                   value: 115,
+// DEFAULT-NEXT:                                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                                   spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                           116,
+// DEFAULT-NEXT:                                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                               value: 116,
+// DEFAULT-NEXT:                                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               spelling: "116",
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                                   117,
+// DEFAULT-NEXT:                                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                       value: 117,
+// DEFAULT-NEXT:                                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       spelling: "117",
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                               110,
+// DEFAULT-NEXT:                                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                                   value: 110,
+// DEFAULT-NEXT:                                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                                   spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                           115,
+// DEFAULT-NEXT:                                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                               value: 115,
+// DEFAULT-NEXT:                                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               spelling: "115",
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                       105,
+// DEFAULT-NEXT:                                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                           value: 105,
+// DEFAULT-NEXT:                                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                                           spelling: "105",
+// DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                                   103,
+// DEFAULT-NEXT:                                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                       value: 103,
+// DEFAULT-NEXT:                                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       spelling: "103",
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                                               110,
+// DEFAULT-NEXT:                                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                                   value: 110,
+// DEFAULT-NEXT:                                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                                   spelling: "110",
+// DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                                           101,
+// DEFAULT-NEXT:                                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                               value: 101,
+// DEFAULT-NEXT:                                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               spelling: "101",
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                                       100,
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 100,
+// DEFAULT-NEXT:                                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "100",
+// DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                                   32,
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 32,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "32",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                                               99,
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 99,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "99",
+// DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                                           104,
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 104,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "104",
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                                       97,
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 97,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "97",
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                                   114,
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 114,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "114",
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           97,
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 97,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "97",
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       91,
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 91,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "91",
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   93,
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 93,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "93",
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               32,
+// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   spelling: "32",
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           61,
+// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                               value: 61,
+// DEFAULT-NEXT:                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               spelling: "61",
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       32,
+// DEFAULT-NEXT:                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "32",
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   123,
+// DEFAULT-NEXT:                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 123,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "123",
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               10,
+// DEFAULT-NEXT:                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 10,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "10",
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           35,
+// DEFAULT-NEXT:                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 35,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "35",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       101,
+// DEFAULT-NEXT:                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 101,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "101",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   109,
+// DEFAULT-NEXT:                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 109,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "109",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               98,
+// DEFAULT-NEXT:                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 98,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "98",
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           101,
+// DEFAULT-NEXT:                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 101,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "101",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       100,
+// DEFAULT-NEXT:                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 100,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "100",
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 32,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "32",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               95,
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 95,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "95",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           95,
+// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 95,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "95",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       70,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 70,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "70",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Add,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       73,
+// DEFAULT-NEXT:                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 73,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "73",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       6,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 6,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "6",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -2459,12 +5579,28 @@ int main() {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "a",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       127,
+// DEFAULT-NEXT:                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 127,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "127",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   6,
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 6,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "6",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
@@ -2475,15 +5611,31 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 2,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "2",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               right: Index {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "a",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },

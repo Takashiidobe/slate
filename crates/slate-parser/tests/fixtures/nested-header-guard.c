@@ -51,8 +51,16 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -85,8 +93,16 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 2,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "2",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -119,8 +135,16 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 3,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "3",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -155,8 +179,16 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Integer(
-// FEATURE-NEXT:                               1,
+// FEATURE-NEXT:                           IntegerLiteral(
+// FEATURE-NEXT:                               IntegerLiteral {
+// FEATURE-NEXT:                                   value: 1,
+// FEATURE-NEXT:                                   radix: Decimal,
+// FEATURE-NEXT:                                   suffix: IntegerSuffix {
+// FEATURE-NEXT:                                       unsigned: false,
+// FEATURE-NEXT:                                       size: None,
+// FEATURE-NEXT:                                   },
+// FEATURE-NEXT:                                   spelling: "1",
+// FEATURE-NEXT:                               },
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
@@ -189,8 +221,16 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Integer(
-// FEATURE-NEXT:                               1,
+// FEATURE-NEXT:                           IntegerLiteral(
+// FEATURE-NEXT:                               IntegerLiteral {
+// FEATURE-NEXT:                                   value: 1,
+// FEATURE-NEXT:                                   radix: Decimal,
+// FEATURE-NEXT:                                   suffix: IntegerSuffix {
+// FEATURE-NEXT:                                       unsigned: false,
+// FEATURE-NEXT:                                       size: None,
+// FEATURE-NEXT:                                   },
+// FEATURE-NEXT:                                   spelling: "1",
+// FEATURE-NEXT:                               },
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
@@ -223,8 +263,16 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Integer(
-// FEATURE-NEXT:                               3,
+// FEATURE-NEXT:                           IntegerLiteral(
+// FEATURE-NEXT:                               IntegerLiteral {
+// FEATURE-NEXT:                                   value: 3,
+// FEATURE-NEXT:                                   radix: Decimal,
+// FEATURE-NEXT:                                   suffix: IntegerSuffix {
+// FEATURE-NEXT:                                       unsigned: false,
+// FEATURE-NEXT:                                       size: None,
+// FEATURE-NEXT:                                   },
+// FEATURE-NEXT:                                   spelling: "3",
+// FEATURE-NEXT:                               },
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),

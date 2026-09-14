@@ -137,8 +137,14 @@ void foo (int x, int y)
 // DEFAULT-NEXT:                           "printk",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           LabelAddress(
 // DEFAULT-NEXT:                               "here",

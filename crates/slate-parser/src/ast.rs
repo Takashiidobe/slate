@@ -1,8 +1,22 @@
-use crate::const_expr::{AssignOp, BinaryOp, FloatLiteral, PostfixOp, UnaryOp, WideInt};
+use crate::const_expr::{
+    AssignOp, BinaryOp, CharLiteral, FloatLiteral, IntegerLiteral, PostfixOp, StringLiteral,
+    UnaryOp,
+};
 use custom_debug::Debug as CustomDebug;
 
 pub(crate) fn is_false(value: &bool) -> bool {
     !*value
+}
+
+fn encoding_prefix(encoding: crate::const_expr::Encoding, string: bool) -> &'static str {
+    use crate::const_expr::Encoding;
+    match (encoding, string) {
+        (Encoding::Plain, _) => "",
+        (Encoding::Utf8, _) => "u8",
+        (Encoding::Utf16, _) => "u",
+        (Encoding::Utf32, _) => "U",
+        (Encoding::Wide, _) => "L",
+    }
 }
 
 pub type Expr = Box<Span<ExprKind>>;
@@ -13,14 +27,10 @@ pub type SpannedDecl = Span<Decl>;
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ExprKind {
     Identifier(String),
-    Integer(i64),
-    WideInteger(WideInt),
-    Float(FloatLiteral),
-    StringLit(String),
-    Utf8StringLit(String),
-    Utf16StringLit(String),
-    Utf32StringLit(String),
-    WideStringLit(String),
+    IntegerLiteral(IntegerLiteral),
+    FloatLiteral(FloatLiteral),
+    CharLiteral(CharLiteral),
+    StringLiteral(StringLiteral),
     Paren(Expr),
     Unary {
         op: UnaryOp,
@@ -135,14 +145,21 @@ impl std::fmt::Display for ExprKind {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Identifier(value) => formatter.write_str(value),
-            Self::Integer(value) => write!(formatter, "{value}"),
-            Self::WideInteger(value) => write!(formatter, "{value}"),
-            Self::Float(value) => write!(formatter, "{value}"),
-            Self::StringLit(value) => write!(formatter, "\"{value}\""),
-            Self::Utf8StringLit(value) => write!(formatter, "u8\"{value}\""),
-            Self::Utf16StringLit(value) => write!(formatter, "u\"{value}\""),
-            Self::Utf32StringLit(value) => write!(formatter, "U\"{value}\""),
-            Self::WideStringLit(value) => write!(formatter, "L\"{value}\""),
+            Self::IntegerLiteral(value) => formatter.write_str(&value.spelling),
+            Self::FloatLiteral(value) => formatter.write_str(&value.spelling),
+            Self::CharLiteral(value) => write!(
+                formatter,
+                "{}'{}'",
+                encoding_prefix(value.encoding, false),
+                value.spelling
+            ),
+            Self::StringLiteral(value) => {
+                write!(formatter, "{}\"", encoding_prefix(value.encoding, true))?;
+                for piece in &value.pieces {
+                    formatter.write_str(&piece.value)?;
+                }
+                formatter.write_str("\"")
+            }
             Self::Paren(value) => write!(formatter, "({value})"),
             Self::Unary { op, operand } => write!(formatter, "{}{operand}", <&str>::from(*op)),
             Self::Postfix { op, operand } => write!(formatter, "{operand}{}", <&str>::from(*op)),
@@ -1006,6 +1023,7 @@ pub struct TranslationUnit {
     pub decls: Vec<SpannedDecl>,
     pub tags: Vec<Span<TagDefinition>>,
     pub flavor: crate::compiler_args::CompilerFlavor,
+    pub target: crate::target_info::TargetInfo,
 }
 
 impl TranslationUnit {

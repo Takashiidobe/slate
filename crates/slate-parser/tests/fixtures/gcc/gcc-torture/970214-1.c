@@ -59,11 +59,23 @@ int main(void) { exit(L'1' != L'1'); }
 // DEFAULT-NEXT:                       arguments: [
 // DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   49,
+// DEFAULT-NEXT:                               left: CharLiteral(
+// DEFAULT-NEXT:                                   CharLiteral {
+// DEFAULT-NEXT:                                       encoding: Wide,
+// DEFAULT-NEXT:                                       code_units: [
+// DEFAULT-NEXT:                                           49,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       spelling: "1",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   49,
+// DEFAULT-NEXT:                               right: CharLiteral(
+// DEFAULT-NEXT:                                   CharLiteral {
+// DEFAULT-NEXT:                                       encoding: Wide,
+// DEFAULT-NEXT:                                       code_units: [
+// DEFAULT-NEXT:                                           49,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       spelling: "1",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],

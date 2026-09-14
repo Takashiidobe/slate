@@ -15,8 +15,17 @@ char *make_greeting(void) { return "hi"; }
 // DEFAULT-NEXT:           name: "make_greeting",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   StringLit(
-// DEFAULT-NEXT:                       "hi",
+// DEFAULT-NEXT:                   StringLiteral(
+// DEFAULT-NEXT:                       StringLiteral {
+// DEFAULT-NEXT:                           encoding: Plain,
+// DEFAULT-NEXT:                           code_units: [
+// DEFAULT-NEXT:                               104,
+// DEFAULT-NEXT:                               105,
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           pieces: [
+// DEFAULT-NEXT:                               "hi",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

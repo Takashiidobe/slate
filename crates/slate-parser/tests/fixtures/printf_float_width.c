@@ -94,11 +94,11 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Float(
+// DEFAULT-NEXT:                                       FloatLiteral(
 // DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: Double(
-// DEFAULT-NEXT:                                                   3.14159,
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               spelling: "3.14159",
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: None,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -123,11 +123,11 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Unary {
 // DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           operand: Float(
+// DEFAULT-NEXT:                                           operand: FloatLiteral(
 // DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Double(
-// DEFAULT-NEXT:                                                       3.14159,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   spelling: "3.14159",
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: None,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -143,8 +143,48 @@ int main(void) {
 // DEFAULT-NEXT:                           "printf",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           StringLit(
-// DEFAULT-NEXT:                               "%8.2f|%+8.2f|%08.2f|%-8.2f|%+.2f\\n",
+// DEFAULT-NEXT:                           StringLiteral(
+// DEFAULT-NEXT:                               StringLiteral {
+// DEFAULT-NEXT:                                   encoding: Plain,
+// DEFAULT-NEXT:                                   code_units: [
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       56,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       50,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       124,
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       43,
+// DEFAULT-NEXT:                                       56,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       50,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       124,
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       48,
+// DEFAULT-NEXT:                                       56,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       50,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       124,
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       45,
+// DEFAULT-NEXT:                                       56,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       50,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       124,
+// DEFAULT-NEXT:                                       37,
+// DEFAULT-NEXT:                                       43,
+// DEFAULT-NEXT:                                       46,
+// DEFAULT-NEXT:                                       50,
+// DEFAULT-NEXT:                                       102,
+// DEFAULT-NEXT:                                       10,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   pieces: [
+// DEFAULT-NEXT:                                       "%8.2f|%+8.2f|%08.2f|%-8.2f|%+.2f\\n",
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "a",
@@ -165,8 +205,16 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 0,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "0",
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

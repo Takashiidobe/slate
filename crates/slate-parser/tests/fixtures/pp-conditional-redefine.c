@@ -35,8 +35,16 @@ int nested[X];
 // DEFAULT-NEXT:                           "redefined",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -69,8 +77,16 @@ int nested[X];
 // DEFAULT-NEXT:                           "nested",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -105,8 +121,16 @@ int nested[X];
 // A-NEXT:                           "redefined",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           Integer(
-// A-NEXT:                               2,
+// A-NEXT:                           IntegerLiteral(
+// A-NEXT:                               IntegerLiteral {
+// A-NEXT:                                   value: 2,
+// A-NEXT:                                   radix: Decimal,
+// A-NEXT:                                   suffix: IntegerSuffix {
+// A-NEXT:                                       unsigned: false,
+// A-NEXT:                                       size: None,
+// A-NEXT:                                   },
+// A-NEXT:                                   spelling: "2",
+// A-NEXT:                               },
 // A-NEXT:                           ),
 // A-NEXT:                       ),
 // A-NEXT:                   },
@@ -139,8 +163,16 @@ int nested[X];
 // A-NEXT:                           "nested",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           Integer(
-// A-NEXT:                               2,
+// A-NEXT:                           IntegerLiteral(
+// A-NEXT:                               IntegerLiteral {
+// A-NEXT:                                   value: 2,
+// A-NEXT:                                   radix: Decimal,
+// A-NEXT:                                   suffix: IntegerSuffix {
+// A-NEXT:                                       unsigned: false,
+// A-NEXT:                                       size: None,
+// A-NEXT:                                   },
+// A-NEXT:                                   spelling: "2",
+// A-NEXT:                               },
 // A-NEXT:                           ),
 // A-NEXT:                       ),
 // A-NEXT:                   },
@@ -175,8 +207,16 @@ int nested[X];
 // B-NEXT:                           "redefined",
 // B-NEXT:                       ),
 // B-NEXT:                       size: Expression(
-// B-NEXT:                           Integer(
-// B-NEXT:                               1,
+// B-NEXT:                           IntegerLiteral(
+// B-NEXT:                               IntegerLiteral {
+// B-NEXT:                                   value: 1,
+// B-NEXT:                                   radix: Decimal,
+// B-NEXT:                                   suffix: IntegerSuffix {
+// B-NEXT:                                       unsigned: false,
+// B-NEXT:                                       size: None,
+// B-NEXT:                                   },
+// B-NEXT:                                   spelling: "1",
+// B-NEXT:                               },
 // B-NEXT:                           ),
 // B-NEXT:                       ),
 // B-NEXT:                   },
@@ -209,8 +249,16 @@ int nested[X];
 // B-NEXT:                           "nested",
 // B-NEXT:                       ),
 // B-NEXT:                       size: Expression(
-// B-NEXT:                           Integer(
-// B-NEXT:                               1,
+// B-NEXT:                           IntegerLiteral(
+// B-NEXT:                               IntegerLiteral {
+// B-NEXT:                                   value: 1,
+// B-NEXT:                                   radix: Decimal,
+// B-NEXT:                                   suffix: IntegerSuffix {
+// B-NEXT:                                       unsigned: false,
+// B-NEXT:                                       size: None,
+// B-NEXT:                                   },
+// B-NEXT:                                   spelling: "1",
+// B-NEXT:                               },
 // B-NEXT:                           ),
 // B-NEXT:                       ),
 // B-NEXT:                   },
@@ -245,8 +293,16 @@ int nested[X];
 // AB-NEXT:                           "redefined",
 // AB-NEXT:                       ),
 // AB-NEXT:                       size: Expression(
-// AB-NEXT:                           Integer(
-// AB-NEXT:                               2,
+// AB-NEXT:                           IntegerLiteral(
+// AB-NEXT:                               IntegerLiteral {
+// AB-NEXT:                                   value: 2,
+// AB-NEXT:                                   radix: Decimal,
+// AB-NEXT:                                   suffix: IntegerSuffix {
+// AB-NEXT:                                       unsigned: false,
+// AB-NEXT:                                       size: None,
+// AB-NEXT:                                   },
+// AB-NEXT:                                   spelling: "2",
+// AB-NEXT:                               },
 // AB-NEXT:                           ),
 // AB-NEXT:                       ),
 // AB-NEXT:                   },
@@ -279,8 +335,16 @@ int nested[X];
 // AB-NEXT:                           "nested",
 // AB-NEXT:                       ),
 // AB-NEXT:                       size: Expression(
-// AB-NEXT:                           Integer(
-// AB-NEXT:                               5,
+// AB-NEXT:                           IntegerLiteral(
+// AB-NEXT:                               IntegerLiteral {
+// AB-NEXT:                                   value: 5,
+// AB-NEXT:                                   radix: Decimal,
+// AB-NEXT:                                   suffix: IntegerSuffix {
+// AB-NEXT:                                       unsigned: false,
+// AB-NEXT:                                       size: None,
+// AB-NEXT:                                   },
+// AB-NEXT:                                   spelling: "5",
+// AB-NEXT:                               },
 // AB-NEXT:                           ),
 // AB-NEXT:                       ),
 // AB-NEXT:                   },

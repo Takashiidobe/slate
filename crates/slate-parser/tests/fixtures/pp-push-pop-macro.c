@@ -42,8 +42,16 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "inner",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               8,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 8,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "8",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -76,8 +84,16 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "outer",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -110,8 +126,16 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "unmatched_pop",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -144,8 +168,16 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "after",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 4,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "4",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -180,8 +212,16 @@ int after[WIDTH];
 // WIDE-NEXT:                           "inner",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           Integer(
-// WIDE-NEXT:                               8,
+// WIDE-NEXT:                           IntegerLiteral(
+// WIDE-NEXT:                               IntegerLiteral {
+// WIDE-NEXT:                                   value: 8,
+// WIDE-NEXT:                                   radix: Decimal,
+// WIDE-NEXT:                                   suffix: IntegerSuffix {
+// WIDE-NEXT:                                       unsigned: false,
+// WIDE-NEXT:                                       size: None,
+// WIDE-NEXT:                                   },
+// WIDE-NEXT:                                   spelling: "8",
+// WIDE-NEXT:                               },
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                   },
@@ -214,8 +254,16 @@ int after[WIDTH];
 // WIDE-NEXT:                           "outer",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           Integer(
-// WIDE-NEXT:                               4,
+// WIDE-NEXT:                           IntegerLiteral(
+// WIDE-NEXT:                               IntegerLiteral {
+// WIDE-NEXT:                                   value: 4,
+// WIDE-NEXT:                                   radix: Decimal,
+// WIDE-NEXT:                                   suffix: IntegerSuffix {
+// WIDE-NEXT:                                       unsigned: false,
+// WIDE-NEXT:                                       size: None,
+// WIDE-NEXT:                                   },
+// WIDE-NEXT:                                   spelling: "4",
+// WIDE-NEXT:                               },
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                   },
@@ -248,8 +296,16 @@ int after[WIDTH];
 // WIDE-NEXT:                           "unmatched_pop",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           Integer(
-// WIDE-NEXT:                               4,
+// WIDE-NEXT:                           IntegerLiteral(
+// WIDE-NEXT:                               IntegerLiteral {
+// WIDE-NEXT:                                   value: 4,
+// WIDE-NEXT:                                   radix: Decimal,
+// WIDE-NEXT:                                   suffix: IntegerSuffix {
+// WIDE-NEXT:                                       unsigned: false,
+// WIDE-NEXT:                                       size: None,
+// WIDE-NEXT:                                   },
+// WIDE-NEXT:                                   spelling: "4",
+// WIDE-NEXT:                               },
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                   },
@@ -282,8 +338,16 @@ int after[WIDTH];
 // WIDE-NEXT:                           "wide",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           Integer(
-// WIDE-NEXT:                               16,
+// WIDE-NEXT:                           IntegerLiteral(
+// WIDE-NEXT:                               IntegerLiteral {
+// WIDE-NEXT:                                   value: 16,
+// WIDE-NEXT:                                   radix: Decimal,
+// WIDE-NEXT:                                   suffix: IntegerSuffix {
+// WIDE-NEXT:                                       unsigned: false,
+// WIDE-NEXT:                                       size: None,
+// WIDE-NEXT:                                   },
+// WIDE-NEXT:                                   spelling: "16",
+// WIDE-NEXT:                               },
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                   },
@@ -316,8 +380,16 @@ int after[WIDTH];
 // WIDE-NEXT:                           "after",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           Integer(
-// WIDE-NEXT:                               4,
+// WIDE-NEXT:                           IntegerLiteral(
+// WIDE-NEXT:                               IntegerLiteral {
+// WIDE-NEXT:                                   value: 4,
+// WIDE-NEXT:                                   radix: Decimal,
+// WIDE-NEXT:                                   suffix: IntegerSuffix {
+// WIDE-NEXT:                                       unsigned: false,
+// WIDE-NEXT:                                       size: None,
+// WIDE-NEXT:                                   },
+// WIDE-NEXT:                                   spelling: "4",
+// WIDE-NEXT:                               },
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                   },
