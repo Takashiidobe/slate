@@ -15,9 +15,6 @@ fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
     eprintln!("  emit-cir    print ClangIR (generic form)");
     eprintln!(
-        "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
-    );
-    eprintln!(
         "  translate   [--targets=<t1>,<t2>,...] [clang args...] <file.c>  C -> Rust (auto-expands target/arch #if regions into cfg items; --targets diffs and splices target/libc-only divergence with no #if required)"
     );
     eprintln!(
@@ -37,7 +34,6 @@ fn main() -> ExitCode {
             Some(path) => run(emit_cir(Path::new(path))),
             None => usage(),
         },
-        Some("fixup-debug") => run(fixup_debug(&args[2..])),
         Some("translate") => match args[2..].split_last() {
             Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
             None => usage(),
@@ -168,74 +164,6 @@ fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), String> {
 
 fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
     cli_report(api::reject_active_unsupported(pp, context))
-}
-
-fn fixup_debug(args: &[String]) -> Result<String, String> {
-    let (path, options) = parse_fixup_debug_args(args)?;
-    let (_, program) = lowered_program(path)?;
-    backend::format_rust(&backend::debug_with(program, options))
-}
-
-fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, backend::DebugOptions), String> {
-    let mut path = None;
-    let mut options = backend::DebugOptions::default();
-    let mut i = 0;
-    while i < args.len() {
-        match args[i].as_str() {
-            "--up-to-pass" => {
-                i += 1;
-                let Some(name) = args.get(i) else {
-                    return Err("--up-to-pass requires a pass name".into());
-                };
-                options.up_to_pass = Some(parse_debug_pass("--up-to-pass", name)?);
-            }
-            "--only-pass" => {
-                i += 1;
-                let Some(name) = args.get(i) else {
-                    return Err("--only-pass requires a pass name".into());
-                };
-                options.only_pass = Some(parse_debug_pass("--only-pass", name)?);
-            }
-            "--debug-only-pass" => {
-                i += 1;
-                let Some(name) = args.get(i) else {
-                    return Err("--debug-only-pass requires a pass name".into());
-                };
-                options.debug_only_pass = Some(parse_debug_pass("--debug-only-pass", name)?);
-            }
-            flag if flag.starts_with('-') => {
-                return Err(format!("unknown fixup-debug option: {flag}"));
-            }
-            file => {
-                if path.replace(Path::new(file)).is_some() {
-                    return Err("fixup-debug accepts exactly one input file".into());
-                }
-            }
-        }
-        i += 1;
-    }
-    let selected_mode_count = [
-        options.up_to_pass.is_some(),
-        options.only_pass.is_some(),
-        options.debug_only_pass.is_some(),
-    ]
-    .into_iter()
-    .filter(|selected| *selected)
-    .count();
-    if selected_mode_count > 1 {
-        return Err("--up-to-pass, --only-pass, and --debug-only-pass cannot be combined".into());
-    }
-    path.map(|path| (path, options))
-        .ok_or_else(|| "fixup-debug requires an input file".into())
-}
-
-fn parse_debug_pass(flag: &str, name: &str) -> Result<backend::Pass, String> {
-    backend::Pass::parse(name).ok_or_else(|| {
-        format!(
-            "unknown pass for {flag}: {name}\nvalid passes: {}",
-            backend::valid_pass_names()
-        )
-    })
 }
 
 fn rust_ident(name: &str) -> String {
@@ -981,7 +909,6 @@ fn lower_macro_forked_program(
     command: &compile_commands::CompileCommand,
     project_dir: &Path,
     project: &frontend::ProjectInfo,
-    fixup_skip: &backend::SkipSet,
 ) -> Result<Option<rust_ast::Program>, String> {
     let (source, _raw) = preprocess::read_source(&variant.path)
         .map_err(|error| format!("read {}: {error}", variant.path.display()))?;
@@ -1011,7 +938,7 @@ fn lower_macro_forked_program(
                 variant.path.display()
             ));
         }
-        branch_programs.push((branch.cfg, backend::apply_with(program, fixup_skip)));
+        branch_programs.push((branch.cfg, backend::apply(program)));
     }
     Ok(Some(merge_target_programs(&branch_programs)))
 }
@@ -1209,12 +1136,6 @@ fn translate_project_with_compile_commands(
     let shared_long_double = frontend::shared_types_use_long_double(
         &shared_records.values().cloned().collect::<Vec<_>>(),
     );
-    let has_setlocale = facts.values().any(|facts| facts.has_setlocale);
-    let fixup_skip = if has_setlocale {
-        backend::SkipSet::skip(backend::Pass::CTypeLibc)
-    } else {
-        backend::SkipSet::none()
-    };
     let crate_features: BTreeSet<_> = facts
         .values()
         .flat_map(|facts| facts.crate_features.iter().copied())
@@ -1305,13 +1226,12 @@ fn translate_project_with_compile_commands(
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", variant.path.display()));
             }
-            let program = backend::apply_with(program, &fixup_skip);
+            let program = backend::apply(program);
             let command = command_map
                 .get(&(variant.path.clone(), variant.cfg.clone()))
                 .expect("loaded variant has a compile command");
-            let program =
-                lower_macro_forked_program(variant, command, project_dir, &project, &fixup_skip)?
-                    .unwrap_or(program);
+            let program = lower_macro_forked_program(variant, command, project_dir, &project)?
+                .unwrap_or(program);
             programs.push((cfg.clone(), program));
         }
         let mut program = merge_target_programs(&programs);

@@ -1,3 +1,5 @@
+//! Function identities and declaration provenance used to recognize libc calls.
+
 use std::collections::BTreeSet;
 
 macro_rules! known_function_catalog {
@@ -54,22 +56,26 @@ macro_rules! define_known {
         /// This enum is a list of function calls we know come from libc.
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub enum Known {
-            $($variant,)*
+            $(#[doc = concat!("The libc function [`", $symbol, "`](https://pubs.opengroup.org/onlinepubs/9699919799/functions/", $symbol, ".html).")]
+            $variant,)*
         }
 
         impl Known {
+            /// Returns the C symbol name for this function.
             pub fn symbol(self) -> &'static str {
                 match self {
                     $(Self::$variant => $symbol,)*
                 }
             }
 
+            /// Returns the standard header associated with this function.
             pub fn header(self) -> &'static str {
                 match self {
                     $(Self::$variant => $header,)*
                 }
             }
 
+            /// Finds a known function by its C symbol name.
             pub fn from_symbol(symbol: &str) -> Option<Self> {
                 match symbol {
                     $($symbol => Some(Self::$variant),)*
@@ -99,33 +105,48 @@ macro_rules! define_known {
 known_function_catalog!(define_known);
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// The recognized identity of a called function.
 pub enum FunctionIdentity {
+    /// A function recognized from the known libc catalog.
     Known(Known),
     #[default]
+    /// A function whose identity could not be established.
     Unknown,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// The provenance of a function declaration.
 pub enum Provenance {
+    /// The declaration came from a trusted system header.
     TrustedHeader,
     #[default]
+    /// The declaration has no trusted provenance.
     Unknown,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// How a call expression is bound to a function declaration.
 pub enum CallBinding {
+    /// A direct call with declaration and identity metadata.
     Direct {
+        /// The recognized identity of the called function.
         identity: FunctionIdentity,
+        /// The canonical Clang AST function type emitted by the macro-dump plugin, when available.
         canonical_type: Option<String>,
+        /// The trusted declaration spelling, when available.
         trusted_declaration: Option<String>,
+        /// Headers that establish trusted provenance for the declaration.
         trusted_headers: BTreeSet<String>,
     },
+    /// An indirect call whose target is not statically known.
     Indirect,
     #[default]
+    /// A call generated internally by the translator.
     Generated,
 }
 
 impl CallBinding {
+    /// Creates a direct binding with unknown identity and no provenance.
     pub fn unknown() -> Self {
         Self::Direct {
             identity: FunctionIdentity::Unknown,
@@ -135,6 +156,7 @@ impl CallBinding {
         }
     }
 
+    /// Returns the known libc identity, if this binding has one.
     pub fn known(&self) -> Option<Known> {
         match self {
             Self::Direct {
@@ -145,6 +167,7 @@ impl CallBinding {
         }
     }
 
+    /// Returns the trusted declaration spelling, if this is a direct call.
     pub fn trusted_declaration(&self) -> Option<&str> {
         match self {
             Self::Direct {
@@ -155,6 +178,7 @@ impl CallBinding {
         }
     }
 
+    /// Iterates over headers that establish trusted declaration provenance.
     pub fn trusted_headers(&self) -> Box<dyn Iterator<Item = &str> + '_> {
         match self {
             Self::Direct {
@@ -165,6 +189,21 @@ impl CallBinding {
     }
 }
 
+/// Classifies a function using its name, Clang AST declaration type, headers, and provenance.
+///
+/// `canonical_type` is the type string emitted by the macro-dump plugin from Clang's AST.
+///
+/// ```
+/// use slate::function_identity::{classify_function, FunctionIdentity, Known, Provenance};
+///
+/// let identity = classify_function(
+///     "malloc",
+///     ["stdlib.h"],
+///     "void *(unsigned long)",
+///     Provenance::TrustedHeader,
+/// );
+/// assert_eq!(identity, FunctionIdentity::Known(Known::Malloc));
+/// ```
 pub fn classify_function<'a>(
     name: &str,
     headers: impl IntoIterator<Item = &'a str>,
