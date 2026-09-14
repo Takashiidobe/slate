@@ -3,6 +3,7 @@ use crate::const_expr::{
     UnaryOp,
 };
 use custom_debug::Debug as CustomDebug;
+use std::rc::Rc;
 
 pub(crate) fn is_false(value: &bool) -> bool {
     !*value
@@ -334,6 +335,7 @@ pub struct Span<T> {
     pub value: T,
     pub spelling: Loc,
     pub expansion: Loc,
+    pub macro_origin: Option<Rc<MacroOrigin>>,
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
@@ -348,7 +350,13 @@ impl<T> Span<T> {
             value,
             spelling,
             expansion,
+            macro_origin: None,
         }
+    }
+
+    pub fn with_macro_origin(mut self, macro_origin: Option<Rc<MacroOrigin>>) -> Self {
+        self.macro_origin = macro_origin;
+        self
     }
 }
 
@@ -368,11 +376,12 @@ impl<T: std::fmt::Display> std::fmt::Display for Span<T> {
 
 impl<T> Span<T> {
     pub fn with_value<U>(self, value: U) -> Span<U> {
-        Span::new(value, self.spelling, self.expansion)
+        Span::new(value, self.spelling, self.expansion).with_macro_origin(self.macro_origin)
     }
 
     pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Span<U> {
-        Span::new(f(self.value), self.spelling, self.expansion)
+        let macro_origin = self.macro_origin.clone();
+        Span::new(f(self.value), self.spelling, self.expansion).with_macro_origin(macro_origin)
     }
 
     pub fn cover<U>(value: T, spans: &[Span<U>]) -> Self {
@@ -381,11 +390,17 @@ impl<T> Span<T> {
             return Self::new(value, loc, loc);
         };
         let last = spans.last().unwrap();
+        let macro_origin = spans
+            .iter()
+            .all(|span| span.macro_origin == first.macro_origin)
+            .then(|| first.macro_origin.clone())
+            .flatten();
         Self::new(
             value,
             first.spelling.through(last.spelling),
             first.expansion.through(last.expansion),
         )
+        .with_macro_origin(macro_origin)
     }
 }
 
@@ -410,6 +425,28 @@ impl Default for Provenance {
             kind: HeaderKind::System,
             line: 0,
             header: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MacroOrigin {
+    pub name: String,
+    pub definition: Provenance,
+    pub parent: Option<Rc<MacroOrigin>>,
+}
+
+impl MacroOrigin {
+    pub fn append(&self, link: MacroOrigin) -> MacroOrigin {
+        match &self.parent {
+            Some(parent) => MacroOrigin {
+                parent: Some(Rc::new(parent.append(link))),
+                ..self.clone()
+            },
+            None => MacroOrigin {
+                parent: Some(Rc::new(link)),
+                ..self.clone()
+            },
         }
     }
 }

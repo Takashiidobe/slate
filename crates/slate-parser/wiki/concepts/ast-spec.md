@@ -51,17 +51,27 @@ that a program is semantically valid.
 ## Locations and provenance
 
 - `Loc { file, offset, length }`: byte range.
-- `Span<T> { value, spelling, expansion }`: `spelling` is where the tokens are
-  written (possibly inside a macro definition). `expansion` is where they
-  appear in the including file. **Every** declaration, declarator, statement
-  and expression node is spanned.
+- `Span<T> { value, spelling, expansion, macro_origin }`: `spelling` is where
+  the tokens are written (possibly inside a macro definition). `expansion` is
+  where they appear in the including file. **Every** declaration, declarator,
+  statement and expression node is spanned.
 - `Provenance { file, kind: System | User, line, header }`: `header` is the
   outermost header the main file directly included (`None` for the main
   file). `line` is 0-based. Carried by every declaration-level node
   (`Declaration`, `InitDeclarator`, `FunctionDefinition`, `TagDefinition`,
   `FieldDeclaration`, `Enumerator`, `ParameterDeclaration`, `CommentGroup`).
-- Macro-expansion identity (which macro produced a token) is not in `Span`
-  yet; tracked by `slate-parser-lh7.1.9`.
+- `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition:
+  Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
+  produced a token, e.g. `int m = INT_MAX;` gives the folded literal's `Span`
+  a `macro_origin` of `{ name: "INT_MAX", definition: <limits.h provenance> }`
+  so Slate can pattern-match macro name + header. `name`/`definition` are the
+  outermost macro invoked at the use site; `parent` chains through whatever
+  further macros its replacement expanded through (e.g. `INT_MAX` expanding
+  through `__INT_MAX__`), innermost last. Set in `pp/expand.rs::expand_macros`
+  on every replacement token, then flows into AST `Span`s for free because
+  `Span::cover` propagates `macro_origin` when every covered token agrees on
+  it (`None` on a node built from tokens with mixed origins). Not yet
+  surfaced by any renderer/dump mode.
 
 ## Translation unit
 

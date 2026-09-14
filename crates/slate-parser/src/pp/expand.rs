@@ -1,7 +1,24 @@
 use super::{MacroDef, Preprocessor, lex, tokens_source};
-use crate::ast::{FileId, Loc, Span};
+use crate::ast::{FileId, Loc, MacroOrigin, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
+use std::rc::Rc;
+
+fn origin_for_expansion(
+    name: &str,
+    provenance: crate::ast::Provenance,
+    token: &Span<Token>,
+) -> Rc<MacroOrigin> {
+    let link = MacroOrigin {
+        name: name.to_string(),
+        definition: provenance,
+        parent: None,
+    };
+    Rc::new(match &token.macro_origin {
+        Some(existing) => existing.append(link),
+        None => link,
+    })
+}
 
 impl Preprocessor<'_> {
     pub(super) fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
@@ -135,24 +152,26 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             }
-            let Some(macro_def) = self.macros.get(name).map(|entry| entry.definition.clone())
-            else {
+            let Some(macro_entry) = self.macros.get(name).cloned() else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
             };
+            let macro_def = macro_entry.definition;
             if disabled.contains(name) {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
             }
             let Some(parameters) = macro_def.parameters.clone() else {
+                let origin = origin_for_expansion(name, macro_entry.provenance, token);
                 let replacement = macro_def
                     .replacement
                     .iter()
                     .cloned()
                     .map(|mut replacement| {
                         replacement.expansion = token.expansion;
+                        replacement.macro_origin = Some(origin.clone());
                         replacement
                     })
                     .collect::<Vec<_>>();
@@ -182,8 +201,10 @@ impl Preprocessor<'_> {
                 .map(|argument| self.expand_macros(argument, disabled))
                 .collect::<Vec<_>>();
             let mut macro_def = macro_def;
+            let origin = origin_for_expansion(name, macro_entry.provenance, token);
             for replacement in &mut macro_def.replacement {
                 replacement.expansion = token.expansion;
+                replacement.macro_origin = Some(origin.clone());
             }
             let name = name.clone();
             disabled.insert(name.clone());
