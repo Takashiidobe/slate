@@ -2,6 +2,7 @@ use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
 use slate_parser::compiler_args::CompilerFlavor;
+use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::{Parser, apply_abstract_declarator};
 use std::path::{Path, PathBuf};
@@ -864,10 +865,9 @@ fn array_size(size: &ArraySize) -> String {
     match size {
         ArraySize::Unspecified => "".into(),
         ArraySize::Star => "*".into(),
-        ArraySize::Expression(expression) => match &expression.value {
-            ExprKind::Integer(value) => value.to_string(),
-            _ => panic!("array bound was not an integer"),
-        },
+        ArraySize::Expression(expression) => ConstExprParser::evaluate_ast(expression)
+            .unwrap_or_else(|error| panic!("array bound was not constant: {error}"))
+            .to_string(),
     }
 }
 

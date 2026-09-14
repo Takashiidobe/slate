@@ -63,8 +63,16 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                           "wrapped",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -133,8 +141,16 @@ int wrapped[WRAP(1)];
 // A-NEXT:                           "wrapped",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           Integer(
-// A-NEXT:                               3,
+// A-NEXT:                           Paren(
+// A-NEXT:                               Binary {
+// A-NEXT:                                   op: Add,
+// A-NEXT:                                   left: Integer(
+// A-NEXT:                                       1,
+// A-NEXT:                                   ),
+// A-NEXT:                                   right: Integer(
+// A-NEXT:                                       2,
+// A-NEXT:                                   ),
+// A-NEXT:                               },
 // A-NEXT:                           ),
 // A-NEXT:                       ),
 // A-NEXT:                   },

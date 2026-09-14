@@ -114,9 +114,21 @@ struct outer {
 // DEFAULT-NEXT:                                       "bits",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           16,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Div,
+// DEFAULT-NEXT:                                           left: Integer(
+// DEFAULT-NEXT:                                               128,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: SizeOfType {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Long,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -319,9 +331,21 @@ struct outer {
 // EXTRA-NEXT:                                       "bits",
 // EXTRA-NEXT:                                   ),
 // EXTRA-NEXT:                                   size: Expression(
-// EXTRA-NEXT:                                       Integer(
-// EXTRA-NEXT:                                           16,
-// EXTRA-NEXT:                                       ),
+// EXTRA-NEXT:                                       Binary {
+// EXTRA-NEXT:                                           op: Div,
+// EXTRA-NEXT:                                           left: Integer(
+// EXTRA-NEXT:                                               128,
+// EXTRA-NEXT:                                           ),
+// EXTRA-NEXT:                                           right: SizeOfType {
+// EXTRA-NEXT:                                               ty: Integer(
+// EXTRA-NEXT:                                                   Ranked {
+// EXTRA-NEXT:                                                       rank: Long,
+// EXTRA-NEXT:                                                       signed: false,
+// EXTRA-NEXT:                                                   },
+// EXTRA-NEXT:                                               ),
+// EXTRA-NEXT:                                               declarator: Abstract,
+// EXTRA-NEXT:                                           },
+// EXTRA-NEXT:                                       },
 // EXTRA-NEXT:                                   ),
 // EXTRA-NEXT:                               },
 // EXTRA-NEXT:                           },

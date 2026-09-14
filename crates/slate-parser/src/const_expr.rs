@@ -469,6 +469,10 @@ impl<'a> Parser<'a> {
         Self::evaluate_expr(&Self::parse(tokens)?, None)
     }
 
+    pub fn evaluate_ast(expression: &Expr) -> Result<i64, ConstExprError> {
+        Self::evaluate_expr(expression, None)
+    }
+
     pub fn evaluate_with_defined(
         tokens: &[Span<Token>],
         is_defined: &dyn Fn(&str) -> bool,
@@ -1468,10 +1472,7 @@ fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExpr
         Declarator::Array { inner, size } => {
             let element = declarator_size(ty, inner)?;
             let count = match size {
-                ArraySize::Expression(expr) => match &expr.value {
-                    ExprKind::Integer(value) => *value as u64,
-                    _ => return Err(ConstExprError::UnsupportedTypeSize),
-                },
+                ArraySize::Expression(expr) => Parser::evaluate_expr(expr, None)? as u64,
                 ArraySize::Unspecified | ArraySize::Star => {
                     return Err(ConstExprError::UnsupportedTypeSize);
                 }
@@ -1524,10 +1525,7 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
         CType::Array { element, size } => {
             let element_size = ctype_size(element)?;
             let count = match size {
-                ArraySize::Expression(expr) => match &expr.value {
-                    ExprKind::Integer(value) => *value as u64,
-                    _ => return Err(ConstExprError::UnsupportedTypeSize),
-                },
+                ArraySize::Expression(expr) => Parser::evaluate_expr(expr, None)? as u64,
                 ArraySize::Unspecified | ArraySize::Star => {
                     return Err(ConstExprError::UnsupportedTypeSize);
                 }

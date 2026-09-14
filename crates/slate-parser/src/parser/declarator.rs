@@ -857,17 +857,12 @@ impl<'a> DeclaratorParser<'a> {
                             self.pos += 1;
                         }
                         let bound_tokens = &self.tokens[start..self.pos];
-                        let size = match const_expr::Parser::evaluate(bound_tokens) {
-                            Ok(value) => {
-                                Box::new(span_tokens(ExprKind::Integer(value), bound_tokens))
-                            }
-                            Err(_) => const_expr::Parser::parse_expression(
-                                bound_tokens,
-                                self.typedef_names,
-                                self.statements,
-                            )
-                            .unwrap_or_else(|error| panic!("invalid array bound: {error}")),
-                        };
+                        let size = const_expr::Parser::parse_expression(
+                            bound_tokens,
+                            self.typedef_names,
+                            self.statements,
+                        )
+                        .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
                         ArraySize::Expression(size)
                     };
                     assert!(
