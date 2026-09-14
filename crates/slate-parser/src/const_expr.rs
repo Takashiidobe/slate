@@ -145,6 +145,8 @@ pub enum UnaryOp {
     Deref,
     PreIncrement,
     PreDecrement,
+    Real,
+    Imag,
 }
 
 impl From<UnaryOp> for &'static str {
@@ -158,6 +160,8 @@ impl From<UnaryOp> for &'static str {
             UnaryOp::Deref => "*",
             UnaryOp::PreIncrement => "++",
             UnaryOp::PreDecrement => "--",
+            UnaryOp::Real => "__real__ ",
+            UnaryOp::Imag => "__imag__ ",
         }
     }
 }
@@ -769,6 +773,10 @@ impl<'a> Parser<'a> {
                 op: UnaryOp::Deref, ..
             } => Err(ConstExprError::NotConstant("dereference")),
             ExprKind::Unary {
+                op: UnaryOp::Real | UnaryOp::Imag,
+                ..
+            } => Err(ConstExprError::NotConstant("complex real/imag")),
+            ExprKind::Unary {
                 op: UnaryOp::PreIncrement,
                 ..
             }
@@ -798,7 +806,9 @@ impl<'a> Parser<'a> {
                     UnaryOp::AddrOf
                     | UnaryOp::Deref
                     | UnaryOp::PreIncrement
-                    | UnaryOp::PreDecrement => unreachable!("rejected above"),
+                    | UnaryOp::PreDecrement
+                    | UnaryOp::Real
+                    | UnaryOp::Imag => unreachable!("rejected above"),
                 }
             }
             ExprKind::Binary { op, left, right } => {
@@ -1278,17 +1288,14 @@ impl<'a> Parser<'a> {
         if let Some(Token::Ident(name)) = self.peek()
             && matches!(name.as_str(), "__real__" | "__imag__" | "__real" | "__imag")
         {
-            let name = name.clone();
+            let op = if name.starts_with("__real") {
+                UnaryOp::Real
+            } else {
+                UnaryOp::Imag
+            };
             self.take();
-            let callee = self.node(ExprKind::Identifier(name), start);
-            let argument = self.parse_unary()?;
-            return Ok(self.node(
-                ExprKind::Call {
-                    callee,
-                    arguments: vec![argument],
-                },
-                start,
-            ));
+            let operand = self.parse_unary()?;
+            return Ok(self.node(ExprKind::Unary { op, operand }, start));
         }
         let op = match self.peek() {
             Some(Token::Plus) => UnaryOp::Plus,

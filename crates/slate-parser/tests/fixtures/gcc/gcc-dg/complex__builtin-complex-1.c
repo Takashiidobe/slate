@@ -1054,15 +1054,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "comparef",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__real__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Real,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "r",
@@ -1076,15 +1072,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "comparef",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__imag__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Imag,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "i",
@@ -1148,15 +1140,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "compare",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__real__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Real,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "r",
@@ -1170,15 +1158,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "compare",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__imag__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Imag,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "i",
@@ -1242,15 +1226,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "comparel",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__real__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Real,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "r",
@@ -1264,15 +1244,11 @@ int main(void) {
 // DEFAULT-NEXT:                           "comparel",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__imag__",
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Imag,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "i",

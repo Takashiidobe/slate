@@ -750,18 +750,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   op: Or,
 // DEFAULT-NEXT:                                                                   left: Binary {
 // DEFAULT-NEXT:                                                                       op: NotEqual,
-// DEFAULT-NEXT:                                                                       left: Call {
-// DEFAULT-NEXT:                                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                                               "__real__",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           arguments: [
-// DEFAULT-NEXT:                                                                               Member {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "fields",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   field: "c8",
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                           op: Real,
+// DEFAULT-NEXT:                                                                           operand: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "fields",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "c8",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       right: IntegerLiteral(
 // DEFAULT-NEXT:                                                                           IntegerLiteral {
@@ -777,18 +773,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Binary {
 // DEFAULT-NEXT:                                                                       op: NotEqual,
-// DEFAULT-NEXT:                                                                       left: Call {
-// DEFAULT-NEXT:                                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                                               "__imag__",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           arguments: [
-// DEFAULT-NEXT:                                                                               Member {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "fields",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   field: "c8",
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                           op: Imag,
+// DEFAULT-NEXT:                                                                           operand: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "fields",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "c8",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       right: IntegerLiteral(
 // DEFAULT-NEXT:                                                                           IntegerLiteral {
@@ -805,18 +797,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: Binary {
 // DEFAULT-NEXT:                                                                   op: NotEqual,
-// DEFAULT-NEXT:                                                                   left: Call {
-// DEFAULT-NEXT:                                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                                           "__real__",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       arguments: [
-// DEFAULT-NEXT:                                                                           Member {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "fields",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "u16",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   left: Unary {
+// DEFAULT-NEXT:                                                                       op: Real,
+// DEFAULT-NEXT:                                                                       operand: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "fields",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "u16",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: IntegerLiteral(
 // DEFAULT-NEXT:                                                                       IntegerLiteral {
@@ -833,18 +821,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           right: Binary {
 // DEFAULT-NEXT:                                                               op: NotEqual,
-// DEFAULT-NEXT:                                                               left: Call {
-// DEFAULT-NEXT:                                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                                       "__imag__",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   arguments: [
-// DEFAULT-NEXT:                                                                       Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "fields",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "u16",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               left: Unary {
+// DEFAULT-NEXT:                                                                   op: Imag,
+// DEFAULT-NEXT:                                                                   operand: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "fields",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "u16",
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: IntegerLiteral(
 // DEFAULT-NEXT:                                                                   IntegerLiteral {
@@ -861,18 +845,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: Binary {
 // DEFAULT-NEXT:                                                           op: NotEqual,
-// DEFAULT-NEXT:                                                           left: Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__real__",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "fields",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "f32",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           left: Unary {
+// DEFAULT-NEXT:                                                               op: Real,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "fields",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "f32",
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           right: FloatLiteral(
 // DEFAULT-NEXT:                                                               FloatLiteral {
@@ -885,18 +865,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Binary {
 // DEFAULT-NEXT:                                                       op: NotEqual,
-// DEFAULT-NEXT:                                                       left: Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "__imag__",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               Member {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "fields",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "f32",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                       left: Unary {
+// DEFAULT-NEXT:                                                           op: Imag,
+// DEFAULT-NEXT:                                                           operand: Member {
+// DEFAULT-NEXT:                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                   "fields",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "f32",
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: FloatLiteral(
 // DEFAULT-NEXT:                                                           FloatLiteral {
@@ -909,18 +885,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: Binary {
 // DEFAULT-NEXT:                                                   op: NotEqual,
-// DEFAULT-NEXT:                                                   left: Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__real__",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "overlay",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "value",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   left: Unary {
+// DEFAULT-NEXT:                                                       op: Real,
+// DEFAULT-NEXT:                                                       operand: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "overlay",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "value",
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: FloatLiteral(
 // DEFAULT-NEXT:                                                       FloatLiteral {
@@ -933,18 +905,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: Binary {
 // DEFAULT-NEXT:                                               op: NotEqual,
-// DEFAULT-NEXT:                                               left: Call {
-// DEFAULT-NEXT:                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                       "__imag__",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   arguments: [
-// DEFAULT-NEXT:                                                       Member {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "overlay",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "value",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Imag,
+// DEFAULT-NEXT:                                                   operand: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "overlay",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "value",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: FloatLiteral(
 // DEFAULT-NEXT:                                                   FloatLiteral {
