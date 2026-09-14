@@ -359,9 +359,7 @@ impl Parser {
         if let PPNodeKind::Code { .. } = &nodes[0].value {
             let tokens = self.node_tokens(&nodes[0]);
             let top_level_items = split_top_level_items(&tokens);
-            if top_level_items.len() > 1
-                && tokens.iter().any(|token| token.spelling != token.expansion)
-            {
+            if top_level_items.len() > 1 {
                 let provenance = self.node_provenance(&nodes[0]);
                 let mut declarations = Vec::new();
                 for item in top_level_items {
@@ -1229,16 +1227,19 @@ pub(super) fn split_top_level_items(tokens: &[Span<Token>]) -> Vec<Vec<Span<Toke
     let mut start = 0;
     let mut depth = 0i32;
     let mut function_body = false;
+    let mut has_assignment = false;
     for (index, token) in tokens.iter().enumerate() {
         match token.value {
             Token::LParen | Token::LBracket => depth += 1,
             Token::LBrace => {
                 function_body = depth == 0
                     && index > start
+                    && !has_assignment
                     && tokens.value_at(index - 1) == Some(&Token::RParen);
                 depth += 1;
             }
             Token::RParen | Token::RBracket | Token::RBrace => depth -= 1,
+            Token::Equal if depth == 0 => has_assignment = true,
             _ => {}
         }
         let is_function_end = function_body && depth == 0 && token.value == Token::RBrace;
@@ -1246,6 +1247,7 @@ pub(super) fn split_top_level_items(tokens: &[Span<Token>]) -> Vec<Vec<Span<Toke
             items.push(tokens[start..=index].to_vec());
             start = index + 1;
             function_body = false;
+            has_assignment = false;
         }
     }
     if start < tokens.len() {
