@@ -267,6 +267,7 @@ int main() {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "abort",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -291,16 +292,18 @@ int main() {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       parameters: Prototype {
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -392,39 +395,48 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[5]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "num_positive",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "cpp_num",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "num",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "num_positive",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "cpp_num",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "num",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "precision",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "precision",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
@@ -630,40 +642,48 @@ int main() {
 // DEFAULT-NEXT:               line: 17,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[6]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Named(
-// DEFAULT-NEXT:               "cpp_num",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "num_trim",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "cpp_num",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "num",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "cpp_num",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "num_trim",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "cpp_num",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "num",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "precision",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "precision",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
@@ -933,53 +953,61 @@ int main() {
 // DEFAULT-NEXT:               line: 26,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[7]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Named(
-// DEFAULT-NEXT:               "cpp_num",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "num_rshift",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "cpp_num",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "num",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "cpp_num",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "num_rshift",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "cpp_num",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "num",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "precision",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "precision",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "n",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -1598,53 +1626,60 @@ int main() {
 // DEFAULT-NEXT:               line: 41,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[8]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Named(
-// DEFAULT-NEXT:               "cpp_num",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "num_lshift",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "cpp_num",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "num",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Named(
+// DEFAULT-NEXT:                   "cpp_num",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "num_lshift",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Named(
+// DEFAULT-NEXT:                               "cpp_num",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "num",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "precision",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: false,
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "precision",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "n",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
@@ -2336,14 +2371,21 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[12]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {

@@ -53,6 +53,7 @@ void bar(void) {}
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "abort",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -77,16 +78,18 @@ void bar(void) {}
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "exit",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       parameters: Prototype {
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -178,38 +181,48 @@ void bar(void) {}
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "doit",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Void,
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Pointer {
-// DEFAULT-NEXT:                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                           inner: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Name(
-// DEFAULT-NEXT:                                   "pptr",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:               is_inline: true,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "doit",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Void,
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "pptr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "cond",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "cond",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Identifier(
@@ -245,29 +258,39 @@ void bar(void) {}
 // DEFAULT-NEXT:               line: 12,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
-// DEFAULT-NEXT:           is_inline: true,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[5]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "f",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   NoInline,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "f",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "cond",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "cond",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -296,31 +319,39 @@ void bar(void) {}
 // DEFAULT-NEXT:               line: 19,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoInline,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[6]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "g",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:               storage: Static,
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   NoInline,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "g",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "cond",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "cond",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -349,10 +380,6 @@ void bar(void) {}
 // DEFAULT-NEXT:               line: 21,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           storage: Static,
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               NoInline,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[7]: Declaration {
@@ -370,6 +397,7 @@ void bar(void) {}
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "bar",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -384,14 +412,21 @@ void bar(void) {}
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -457,9 +492,16 @@ void bar(void) {}
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[9]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "bar",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "bar",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Void,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
 // DEFAULT-NEXT:                   3,

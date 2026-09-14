@@ -38,6 +38,7 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "abort",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -64,13 +65,15 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "sin",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Floating(
-// DEFAULT-NEXT:                                   Double,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       parameters: Prototype {
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Floating(
+// DEFAULT-NEXT:                                       Double,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -97,13 +100,15 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "floor",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Floating(
-// DEFAULT-NEXT:                                   Double,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       parameters: Prototype {
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Floating(
+// DEFAULT-NEXT:                                       Double,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -118,23 +123,31 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Float,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "t",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Float,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "t",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Call {
@@ -160,23 +173,31 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[4]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Float,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "q",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Float,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "q",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Call {
@@ -202,23 +223,31 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[5]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Double,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "q1",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Float,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Double,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "q1",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Call {
@@ -244,14 +273,21 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[6]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Void,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -278,23 +314,34 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[7]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Double,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "floor",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Double,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Double,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Weak,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "floor",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Double,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -313,29 +360,37 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:               line: 20,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Weak,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[8]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Float,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "floorf",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Float,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Weak,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "floorf",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Identifier(
@@ -351,29 +406,37 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:               line: 21,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Weak,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[9]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Double,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "sin",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Double,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Double,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Weak,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "sin",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Double,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Identifier(
@@ -389,29 +452,37 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:               line: 22,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Weak,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[10]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Floating(
-// DEFAULT-NEXT:               Float,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "sinf",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Floating(
-// DEFAULT-NEXT:                       Float,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Floating(
+// DEFAULT-NEXT:                   Float,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               attributes: [
+// DEFAULT-NEXT:                   Weak,
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "sinf",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Floating(
+// DEFAULT-NEXT:                               Float,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -430,9 +501,6 @@ __attribute__((weak)) float  sinf(float a) { abort(); }
 // DEFAULT-NEXT:               line: 23,
 // DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           attributes: [
-// DEFAULT-NEXT:               Weak,
-// DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

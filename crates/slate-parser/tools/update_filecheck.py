@@ -4,6 +4,7 @@ import difflib
 import os
 import re
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -304,14 +305,23 @@ def update(repo: Path, fixture: Path) -> tuple[str, str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--in-place", action="store_true")
+    parser.add_argument("--no-fail-fast", action="store_true")
     parser.add_argument("fixtures", nargs="*", type=Path)
     args = parser.parse_args()
     repo = Path(__file__).resolve().parent.parent
     fixtures = args.fixtures or sorted((repo / "tests/fixtures").rglob("*.c"))
     changed = False
+    failures = []
     for fixture_arg in fixtures:
         fixture = (Path.cwd() / fixture_arg).resolve() if not fixture_arg.is_absolute() else fixture_arg
-        source, updated = update(repo, fixture)
+        try:
+            source, updated = update(repo, fixture)
+        except Exception as error:
+            if not args.no_fail_fast:
+                raise
+            failures.append(fixture)
+            print(f"FAIL {fixture}\n{error}", file=sys.stderr)
+            continue
         if source == updated:
             continue
         changed = True
@@ -324,6 +334,11 @@ def main() -> int:
                 fromfile=str(fixture),
                 tofile=str(fixture),
             )), end="")
+    if failures:
+        print(f"\n{len(failures)} fixture(s) failed:", file=sys.stderr)
+        for fixture in failures:
+            print(f"  {fixture}", file=sys.stderr)
+        return 1
     return 1 if changed and not args.in_place else 0
 
 

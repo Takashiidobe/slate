@@ -288,7 +288,7 @@ pub enum Stmt {
     Asm(GnuAsm),
     Goto(Span<String>),
     ComputedGoto(Expr),
-    NestedFunction(Box<FunctionDecl>),
+    NestedFunction(Box<FunctionDefinition>),
     Break,
     Continue,
 }
@@ -693,26 +693,14 @@ pub enum Attribute {
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct FunctionDecl {
-    pub ret_type: Type,
-    pub name: String,
+pub struct FunctionDefinition {
+    pub specifiers: DeclarationSpecifiers,
+    pub declarator: Declarator,
     #[debug(skip_if = Vec::is_empty)]
-    pub parameters: Vec<Parameter>,
-    #[debug(skip_if = is_false)]
-    pub variadic: bool,
+    pub attributes: Vec<Attribute>,
     #[debug(skip_if = Vec::is_empty)]
     pub body: Vec<SpannedStmt>,
     pub provenance: Provenance,
-    #[debug(skip_if = Qualifiers::is_default)]
-    pub qualifiers: Qualifiers,
-    #[debug(skip_if = StorageClass::is_none)]
-    pub storage: StorageClass,
-    #[debug(skip_if = is_false)]
-    pub is_inline: bool,
-    #[debug(skip_if = is_false)]
-    pub is_noreturn: bool,
-    #[debug(skip_if = Vec::is_empty)]
-    pub attributes: Vec<Attribute>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -747,10 +735,7 @@ pub enum CType {
     },
     Function {
         return_type: Box<CType>,
-        #[debug(skip_if = Vec::is_empty)]
-        parameters: Vec<Parameter>,
-        #[debug(skip_if = is_false)]
-        variadic: bool,
+        parameters: ParameterList,
     },
 }
 
@@ -915,6 +900,8 @@ pub enum Declarator {
     },
     Pointer {
         qualifiers: Qualifiers,
+        #[debug(skip_if = Vec::is_empty)]
+        attributes: Vec<Attribute>,
         inner: Box<Declarator>,
     },
     Array {
@@ -927,11 +914,15 @@ pub enum Declarator {
     },
     Function {
         inner: Box<Declarator>,
-        #[debug(skip_if = Vec::is_empty)]
-        parameters: Vec<Parameter>,
-        #[debug(skip_if = is_false)]
-        variadic: bool,
+        parameters: ParameterList,
     },
+}
+
+#[derive(Clone, Copy)]
+struct Derivation {
+    depth: usize,
+    grouped: bool,
+    suffix: bool,
 }
 
 impl Declarator {
@@ -945,6 +936,101 @@ impl Declarator {
             | Self::Array { inner, .. }
             | Self::Function { inner, .. } => inner.name(),
         }
+    }
+
+    pub fn function_parameters(&self) -> Option<&ParameterList> {
+        let mut layer = self;
+        for _ in 0..self.outermost_derivation()?.depth {
+            layer = layer.inner()?;
+        }
+        match layer {
+            Self::Function { parameters, .. } => Some(parameters),
+            _ => None,
+        }
+    }
+
+    pub fn function_parameters_mut(&mut self) -> Option<&mut ParameterList> {
+        let depth = self.outermost_derivation()?.depth;
+        let mut layer = self;
+        for _ in 0..depth {
+            layer = match layer {
+                Self::Grouped(inner)
+                | Self::Attributed { inner, .. }
+                | Self::Pointer { inner, .. }
+                | Self::Array { inner, .. }
+                | Self::Function { inner, .. } => &mut **inner,
+                Self::Name(_) | Self::Abstract => return None,
+            };
+        }
+        match layer {
+            Self::Function { parameters, .. } => Some(parameters),
+            _ => None,
+        }
+    }
+
+    fn inner(&self) -> Option<&Declarator> {
+        match self {
+            Self::Name(_) | Self::Abstract => None,
+            Self::Grouped(inner)
+            | Self::Attributed { inner, .. }
+            | Self::Pointer { inner, .. }
+            | Self::Array { inner, .. }
+            | Self::Function { inner, .. } => Some(inner),
+        }
+    }
+
+    fn outermost_derivation(&self) -> Option<Derivation> {
+        let deeper = |inner: &Declarator, grouped: bool| {
+            inner.outermost_derivation().map(|derivation| Derivation {
+                depth: derivation.depth + 1,
+                grouped: grouped || derivation.grouped,
+                suffix: derivation.suffix,
+            })
+        };
+        let this = |suffix| Derivation {
+            depth: 0,
+            grouped: false,
+            suffix,
+        };
+        match self {
+            Self::Name(_) | Self::Abstract => None,
+            Self::Attributed { inner, .. } => deeper(inner, false),
+            Self::Grouped(inner) => deeper(inner, true),
+            Self::Pointer { inner, .. } => match deeper(inner, false) {
+                Some(derivation) if derivation.grouped => Some(derivation),
+                _ => Some(this(false)),
+            },
+            Self::Array { inner, .. } | Self::Function { inner, .. } => {
+                match deeper(inner, false) {
+                    Some(derivation) if derivation.grouped || derivation.suffix => Some(derivation),
+                    _ => Some(this(true)),
+                }
+            }
+        }
+    }
+}
+
+#[derive(CustomDebug, Clone, PartialEq)]
+pub enum ParameterList {
+    Prototype {
+        parameters: Vec<Parameter>,
+        #[debug(skip_if = is_false)]
+        variadic: bool,
+    },
+    Void,
+    Empty,
+}
+
+impl ParameterList {
+    pub fn parameters(&self) -> &[Parameter] {
+        match self {
+            Self::Prototype { parameters, .. } => parameters,
+            Self::Void | Self::Empty => &[],
+        }
+    }
+
+    pub fn is_variadic(&self) -> bool {
+        matches!(self, Self::Prototype { variadic: true, .. })
     }
 }
 
@@ -1088,7 +1174,7 @@ pub struct Enumerator {
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum Decl {
     Comment(CommentGroup),
-    Function(FunctionDecl),
+    Function(FunctionDefinition),
     Declaration {
         declaration: Declaration,
         provenance: Provenance,
@@ -1107,7 +1193,7 @@ impl Decl {
     pub fn names(&self) -> Vec<&str> {
         match self {
             Self::Comment(_) | Self::StaticAssert { .. } | Self::Asm { .. } => Vec::new(),
-            Self::Function(function) => vec![&function.name],
+            Self::Function(function) => function.declarator.name().into_iter().collect(),
             Self::Declaration { declaration, .. } => declaration.names().collect(),
         }
     }

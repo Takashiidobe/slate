@@ -1,8 +1,8 @@
 use super::decl::{
-    bare_identifier_names, join_node_text, matching_brace, matching_paren, signature_node_span,
-    split_top_level, top_level_semi,
+    join_node_text, matching_brace, matching_paren, signature_node_span, split_top_level,
+    top_level_semi,
 };
-use super::declarator::DeclaratorParser;
+use super::declarator::IdentifierList;
 use super::{
     Cursor, Fragment, Loc, Parser, coalesce_string_literals, lex, span_tokens, synthetic,
     synthetic_span,
@@ -18,7 +18,7 @@ impl Parser {
     pub(super) fn parse_function(
         &self,
         nodes: &[PPNode],
-    ) -> Result<(FunctionDecl, usize), ParseError> {
+    ) -> Result<(FunctionDefinition, usize), ParseError> {
         let provenance = self.node_provenance(&nodes[0]);
         let sig_node_count = signature_node_span(nodes, &self.typedef_names);
         let joined_code;
@@ -29,156 +29,34 @@ impl Parser {
             &joined_code
         };
         let sig_tokens = self.nodes_tokens(&nodes[..sig_node_count]);
-        let mut leading = 0;
-        while sig_tokens.value_at(leading) == Some(&Token::Ident("__extension__".to_string())) {
-            leading += 1;
+        let mut parser = self.declarator_parser(&sig_tokens, 0);
+        parser.identifier_list = IdentifierList::Accepted;
+        let specifiers = self.parse_declaration_specifiers(&mut parser, true)?;
+        let mut declarator = parser
+            .parse_declarator(false)
+            .map_err(|error| self.error_at_tokens(&sig_tokens, parser.pos, error.to_string()))?;
+        if declarator.function_parameters().is_none() {
+            return Err(self.error_at_tokens(
+                &sig_tokens,
+                parser.pos,
+                "expected function declarator",
+            ));
         }
-        let (mut attributes, mut index) = self
-            .parse_attribute_groups(&sig_tokens, leading)
-            .map_err(|error| self.error_at(Loc::whole(code), error))?;
-        let mut qualifiers = Qualifiers::default();
-        let mut storage = StorageClass::None;
-        let mut is_inline = false;
-        let mut is_noreturn = false;
-        loop {
-            match sig_tokens.value_at(index) {
-                Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
-                Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
-                Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
-                Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
-                Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
-                Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
-                Some(Token::Keyword(keyword)) => {
-                    let next_storage = match keyword {
-                        Keyword::Extern => StorageClass::Extern,
-                        Keyword::Static => StorageClass::Static,
-                        _ => break,
-                    };
-                    if storage != StorageClass::None {
-                        return Err(self.error_at(Loc::whole(code), "multiple storage classes"));
-                    }
-                    storage = next_storage;
-                }
-                _ => break,
-            }
-            index += 1;
-            let (more_attributes, position) = self
-                .parse_attribute_groups(&sig_tokens, index)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?;
-            attributes.extend(more_attributes);
-            index = position;
-        }
-        let implicit_int = matches!(
-            (sig_tokens.value_at(index), sig_tokens.value_at(index + 1)),
-            (Some(Token::Ident(candidate)), Some(Token::LParen))
-                if !self.typedef_names.contains(candidate)
-        );
-        let (ret_type, name, name_index) = if implicit_int {
-            let Some(Token::Ident(name)) = sig_tokens.value_at(index) else {
-                unreachable!()
-            };
-            (
-                CType::Integer(IntegerType::Ranked {
-                    rank: IntegerRank::Int,
-                    signed: true,
-                }),
-                name.clone(),
-                index,
-            )
-        } else {
-            let mut return_type_parser = DeclaratorParser {
-                tokens: &sig_tokens,
-                pos: index,
-                typedef_names: &self.typedef_names,
-                biggest_alignment: self.biggest_alignment,
-                statements: Some(self),
-            };
-            let mut ret_type = return_type_parser
-                .parse_base_type()
-                .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
-            while return_type_parser.matches(Token::Star) {
-                let qualifiers = return_type_parser.take_qualifiers();
-                ret_type = CType::Pointer {
-                    qualifiers,
-                    pointee: Box::new(ret_type),
+        let (mut attributes, body_index) = if let IdentifierList::Parsed(names) =
+            std::mem::replace(&mut parser.identifier_list, IdentifierList::Rejected)
+        {
+            let (parameters, body_index) =
+                self.parse_kr_parameter_declarations(code, &sig_tokens, parser.pos, &names)?;
+            if let Some(list) = declarator.function_parameters_mut() {
+                *list = ParameterList::Prototype {
+                    parameters,
+                    variadic: false,
                 };
             }
-            loop {
-                match sig_tokens.value_at(return_type_parser.pos) {
-                    Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
-                    Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
-                    Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
-                    Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
-                    Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
-                    Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
-                    Some(Token::Keyword(keyword)) => {
-                        let next_storage = match keyword {
-                            Keyword::Extern => StorageClass::Extern,
-                            Keyword::Static => StorageClass::Static,
-                            _ => break,
-                        };
-                        if storage != StorageClass::None {
-                            return Err(self.error_at(Loc::whole(code), "multiple storage classes"));
-                        }
-                        storage = next_storage;
-                    }
-                    _ => break,
-                }
-                return_type_parser.pos += 1;
-                let (more_attributes, position) = self
-                    .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
-                    .map_err(|error| self.error_at(Loc::whole(code), error))?;
-                attributes.extend(more_attributes);
-                return_type_parser.pos = position;
-            }
-            let (mid_attributes, name_index) = self
-                .parse_attribute_groups(&sig_tokens, return_type_parser.pos)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?;
-            attributes.extend(mid_attributes);
-            let name = match sig_tokens.value_at(name_index) {
-                Some(Token::Ident(n)) => n.clone(),
-                _ => return Err(self.error_at(Loc::whole(code), "expected function name")),
-            };
-            (ret_type, name, name_index)
-        };
-        if sig_tokens.value_at(name_index + 1) != Some(&Token::LParen) {
-            return Err(self.error_at(
-                Loc::at(code, code.len().saturating_sub(1), 1),
-                "expected `(`",
-            ));
-        }
-        let Some(close_paren) = matching_paren(&sig_tokens, name_index + 1) else {
-            return Err(self.error_at(
-                Loc::at(code, code.find('{').unwrap_or(0), 1),
-                "expected `)`",
-            ));
-        };
-        let kr_names = bare_identifier_names(
-            sig_tokens[name_index + 2..close_paren]
-                .iter()
-                .map(|t| &t.value),
-            &self.typedef_names,
-        );
-        let (parameters, variadic, body_index) = if let Some(names) = kr_names {
-            let (parameters, body_index) =
-                self.parse_kr_parameter_declarations(code, &sig_tokens, close_paren + 1, &names)?;
-            (parameters, false, body_index)
+            (Vec::new(), body_index)
         } else {
-            let mut declarator_parser = DeclaratorParser {
-                tokens: &sig_tokens,
-                pos: name_index + 1,
-                typedef_names: &self.typedef_names,
-                biggest_alignment: self.biggest_alignment,
-                statements: Some(self),
-            };
-            let (parameters, variadic) = declarator_parser
-                .parse_parameters()
-                .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
-            let (signature_attributes, body_index) = self
-                .parse_attribute_groups(&sig_tokens, declarator_parser.pos)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?;
-            attributes.extend(signature_attributes);
-            (parameters, variadic, body_index)
+            self.parse_attribute_groups(&sig_tokens, parser.pos)
+                .map_err(|error| self.error_at(Loc::whole(code), error))?
         };
         if sig_tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Err(self.error_at(
@@ -191,18 +69,12 @@ impl Parser {
             let body =
                 self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
             return Ok((
-                FunctionDecl {
-                    ret_type,
-                    name,
-                    parameters,
-                    variadic,
+                FunctionDefinition {
+                    specifiers,
+                    declarator,
+                    attributes,
                     body,
                     provenance,
-                    qualifiers,
-                    storage,
-                    is_inline,
-                    is_noreturn,
-                    attributes,
                 },
                 sig_node_count,
             ));
@@ -245,18 +117,12 @@ impl Parser {
 
         let body = self.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
         Ok((
-            FunctionDecl {
-                ret_type,
-                name,
-                parameters,
-                variadic,
+            FunctionDefinition {
+                specifiers,
+                declarator,
+                attributes,
                 body,
                 provenance,
-                qualifiers,
-                storage,
-                is_inline,
-                is_noreturn,
-                attributes,
             },
             close_idx + 1,
         ))
@@ -271,13 +137,7 @@ impl Parser {
     ) -> Result<(Vec<Parameter>, usize), ParseError> {
         let mut declared: HashMap<String, (CType, Declarator)> = HashMap::new();
         while tokens.value_at(pos) != Some(&Token::LBrace) {
-            let mut parser = DeclaratorParser {
-                tokens,
-                pos,
-                typedef_names: &self.typedef_names,
-                biggest_alignment: self.biggest_alignment,
-                statements: Some(self),
-            };
+            let mut parser = self.declarator_parser(tokens, pos);
             parser.matches(Token::Keyword(Keyword::Register));
             let base_ty = parser
                 .parse_base_type()
@@ -462,97 +322,40 @@ impl Parser {
         code: &str,
         tokens: &[Span<Token>],
         start: usize,
-    ) -> Result<Option<(FunctionDecl, usize)>, ParseError> {
+    ) -> Result<Option<(FunctionDefinition, usize)>, ParseError> {
         let fragment = Fragment::new(self, code, tokens, start);
-        let (mut attributes, mut index) = self
-            .parse_attribute_groups(tokens, start)
-            .map_err(|error| fragment.error(error))?;
-        let mut qualifiers = Qualifiers::default();
-        let mut storage = StorageClass::None;
-        let mut is_inline = false;
-        let mut is_noreturn = false;
-        loop {
-            match tokens.value_at(index) {
-                Some(Token::Keyword(Keyword::Const)) => qualifiers.is_const = true,
-                Some(Token::Keyword(Keyword::Volatile)) => qualifiers.is_volatile = true,
-                Some(Token::Keyword(Keyword::Restrict)) => qualifiers.is_restrict = true,
-                Some(Token::Keyword(Keyword::Atomic)) => qualifiers.is_atomic = true,
-                Some(Token::Keyword(Keyword::Inline)) => is_inline = true,
-                Some(Token::Keyword(Keyword::Noreturn)) => is_noreturn = true,
-                Some(Token::Keyword(keyword)) => {
-                    let next_storage = match keyword {
-                        Keyword::Extern => StorageClass::Extern,
-                        Keyword::Static => StorageClass::Static,
-                        Keyword::Auto => StorageClass::Auto,
-                        Keyword::Register => StorageClass::Register,
-                        _ => break,
-                    };
-                    if storage != StorageClass::None {
-                        return Ok(None);
-                    }
-                    storage = next_storage;
-                }
-                _ => break,
-            }
-            index += 1;
-        }
-        let mut return_type_parser = DeclaratorParser::with_biggest_alignment(
-            tokens,
-            index,
-            &self.typedef_names,
-            self.biggest_alignment,
-        )
-        .with_statements(Some(self));
-        let Ok(mut ret_type) = return_type_parser.parse_base_type() else {
+        let mut parser = self.declarator_parser(tokens, start);
+        let Ok(specifiers) = self.parse_declaration_specifiers(&mut parser, false) else {
             return Ok(None);
         };
-        while return_type_parser.matches(Token::Star) {
-            let pointer_qualifiers = return_type_parser.take_qualifiers();
-            ret_type = CType::Pointer {
-                qualifiers: pointer_qualifiers,
-                pointee: Box::new(ret_type),
-            };
-        }
-        let name_index = return_type_parser.position();
-        let Some(Token::Ident(name)) = tokens.value_at(name_index) else {
-            return Ok(None);
-        };
-        if tokens.value_at(name_index + 1) != Some(&Token::LParen) {
+        if !matches!(
+            parser.peek(),
+            Some(Token::Ident(_) | Token::LParen | Token::Star)
+        ) {
             return Ok(None);
         }
-        let mut declarator_parser = DeclaratorParser::with_biggest_alignment(
-            tokens,
-            name_index + 1,
-            &self.typedef_names,
-            self.biggest_alignment,
-        )
-        .with_statements(Some(self));
-        let Ok((parameters, variadic)) = declarator_parser.parse_parameters() else {
+        let Ok(declarator) = parser.parse_declarator(false) else {
             return Ok(None);
         };
-        let (signature_attributes, body_index) = self
-            .parse_attribute_groups(tokens, declarator_parser.position())
+        if declarator.function_parameters().is_none() {
+            return Ok(None);
+        }
+        let (attributes, body_index) = self
+            .parse_attribute_groups(tokens, parser.pos)
             .map_err(|error| fragment.error(error))?;
         if tokens.value_at(body_index) != Some(&Token::LBrace) {
             return Ok(None);
         }
-        attributes.extend(signature_attributes);
         let close =
             matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
         let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
         Ok(Some((
-            FunctionDecl {
-                ret_type,
-                name: name.clone(),
-                parameters,
-                variadic,
+            FunctionDefinition {
+                specifiers,
+                declarator,
+                attributes,
                 body,
                 provenance: Provenance::default(),
-                qualifiers,
-                storage,
-                is_inline,
-                is_noreturn,
-                attributes,
             },
             close + 1,
         )))

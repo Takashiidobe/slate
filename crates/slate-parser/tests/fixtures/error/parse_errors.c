@@ -5,12 +5,12 @@ int main( {
 // SLATE-FILECHECK-ERROR DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × expected `)`
-// DEFAULT: ╰─▶ expected `)`
-// DEFAULT: ╭─[tests/fixtures/error/parse_errors.c:1:12]
+// DEFAULT: Error:   × expected declaration type, found LBrace
+// DEFAULT: ╰─▶ expected declaration type, found LBrace
+// DEFAULT: ╭─[tests/fixtures/error/parse_errors.c:2:3]
 // DEFAULT: 1 │ int main( {
-// DEFAULT: ·            ─
 // DEFAULT: 2 │   return 3;
+// DEFAULT: ·   ──────
 // DEFAULT: 3 │ }
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

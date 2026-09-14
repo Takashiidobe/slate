@@ -29,6 +29,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "cold_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -63,6 +64,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "hot_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -100,6 +102,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "optimized_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -132,6 +135,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "split_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -164,6 +168,7 @@ __attribute__((returns_twice)) int returns_twice_function(void);
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "returns_twice_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

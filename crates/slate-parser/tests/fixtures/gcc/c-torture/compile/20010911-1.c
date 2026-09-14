@@ -17,6 +17,7 @@ void __attribute__(()) foo();
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "foo",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Empty,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

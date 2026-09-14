@@ -17,14 +17,21 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -53,14 +60,21 @@ int main() {
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INNER
 // INNER: decl[0]: Function(
-// INNER-NEXT:       FunctionDecl {
-// INNER-NEXT:           ret_type: Integer(
-// INNER-NEXT:               Ranked {
-// INNER-NEXT:                   rank: Int,
-// INNER-NEXT:                   signed: true,
-// INNER-NEXT:               },
-// INNER-NEXT:           ),
-// INNER-NEXT:           name: "main",
+// INNER-NEXT:       FunctionDefinition {
+// INNER-NEXT:           specifiers: DeclarationSpecifiers {
+// INNER-NEXT:               ty: Integer(
+// INNER-NEXT:                   Ranked {
+// INNER-NEXT:                       rank: Int,
+// INNER-NEXT:                       signed: true,
+// INNER-NEXT:                   },
+// INNER-NEXT:               ),
+// INNER-NEXT:           },
+// INNER-NEXT:           declarator: Function {
+// INNER-NEXT:               inner: Name(
+// INNER-NEXT:                   "main",
+// INNER-NEXT:               ),
+// INNER-NEXT:               parameters: Empty,
+// INNER-NEXT:           },
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Return(
 // INNER-NEXT:                   IntegerLiteral(

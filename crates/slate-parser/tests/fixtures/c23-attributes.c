@@ -61,6 +61,7 @@
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "status",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

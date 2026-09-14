@@ -16,49 +16,65 @@ void nested_outer(int n) {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Void,
-// DEFAULT-NEXT:           name: "nested_outer",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Void,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "nested_outer",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "n",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               NestedFunction(
-// DEFAULT-NEXT:                   FunctionDecl {
-// DEFAULT-NEXT:                       ret_type: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       name: "inner",
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                   FunctionDefinition {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarator: Function {
+// DEFAULT-NEXT:                           inner: Name(
+// DEFAULT-NEXT:                               "inner",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           parameters: Prototype {
+// DEFAULT-NEXT:                               parameters: [
+// DEFAULT-NEXT:                                   Parameter {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Some(
+// DEFAULT-NEXT:                                           Name(
+// DEFAULT-NEXT:                                               "x",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Some(
-// DEFAULT-NEXT:                                   Name(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       body: [
 // DEFAULT-NEXT:                           Return(
 // DEFAULT-NEXT:                               Binary {
@@ -116,49 +132,65 @@ void nested_outer(int n) {
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN DOUBLED
 // DOUBLED: decl[0]: Function(
-// DOUBLED-NEXT:       FunctionDecl {
-// DOUBLED-NEXT:           ret_type: Void,
-// DOUBLED-NEXT:           name: "nested_outer",
-// DOUBLED-NEXT:           parameters: [
-// DOUBLED-NEXT:               Parameter {
-// DOUBLED-NEXT:                   ty: Integer(
-// DOUBLED-NEXT:                       Ranked {
-// DOUBLED-NEXT:                           rank: Int,
-// DOUBLED-NEXT:                           signed: true,
+// DOUBLED-NEXT:       FunctionDefinition {
+// DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
+// DOUBLED-NEXT:               ty: Void,
+// DOUBLED-NEXT:           },
+// DOUBLED-NEXT:           declarator: Function {
+// DOUBLED-NEXT:               inner: Name(
+// DOUBLED-NEXT:                   "nested_outer",
+// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:               parameters: Prototype {
+// DOUBLED-NEXT:                   parameters: [
+// DOUBLED-NEXT:                       Parameter {
+// DOUBLED-NEXT:                           ty: Integer(
+// DOUBLED-NEXT:                               Ranked {
+// DOUBLED-NEXT:                                   rank: Int,
+// DOUBLED-NEXT:                                   signed: true,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           declarator: Some(
+// DOUBLED-NEXT:                               Name(
+// DOUBLED-NEXT:                                   "n",
+// DOUBLED-NEXT:                               ),
+// DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:                   declarator: Some(
-// DOUBLED-NEXT:                       Name(
-// DOUBLED-NEXT:                           "n",
-// DOUBLED-NEXT:                       ),
-// DOUBLED-NEXT:                   ),
+// DOUBLED-NEXT:                   ],
 // DOUBLED-NEXT:               },
-// DOUBLED-NEXT:           ],
+// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:           body: [
 // DOUBLED-NEXT:               NestedFunction(
-// DOUBLED-NEXT:                   FunctionDecl {
-// DOUBLED-NEXT:                       ret_type: Integer(
-// DOUBLED-NEXT:                           Ranked {
-// DOUBLED-NEXT:                               rank: Int,
-// DOUBLED-NEXT:                               signed: true,
-// DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                       ),
-// DOUBLED-NEXT:                       name: "inner",
-// DOUBLED-NEXT:                       parameters: [
-// DOUBLED-NEXT:                           Parameter {
-// DOUBLED-NEXT:                               ty: Integer(
-// DOUBLED-NEXT:                                   Ranked {
-// DOUBLED-NEXT:                                       rank: Int,
-// DOUBLED-NEXT:                                       signed: true,
+// DOUBLED-NEXT:                   FunctionDefinition {
+// DOUBLED-NEXT:                       specifiers: DeclarationSpecifiers {
+// DOUBLED-NEXT:                           ty: Integer(
+// DOUBLED-NEXT:                               Ranked {
+// DOUBLED-NEXT:                                   rank: Int,
+// DOUBLED-NEXT:                                   signed: true,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                       declarator: Function {
+// DOUBLED-NEXT:                           inner: Name(
+// DOUBLED-NEXT:                               "inner",
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           parameters: Prototype {
+// DOUBLED-NEXT:                               parameters: [
+// DOUBLED-NEXT:                                   Parameter {
+// DOUBLED-NEXT:                                       ty: Integer(
+// DOUBLED-NEXT:                                           Ranked {
+// DOUBLED-NEXT:                                               rank: Int,
+// DOUBLED-NEXT:                                               signed: true,
+// DOUBLED-NEXT:                                           },
+// DOUBLED-NEXT:                                       ),
+// DOUBLED-NEXT:                                       declarator: Some(
+// DOUBLED-NEXT:                                           Name(
+// DOUBLED-NEXT:                                               "x",
+// DOUBLED-NEXT:                                           ),
+// DOUBLED-NEXT:                                       ),
 // DOUBLED-NEXT:                                   },
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                               declarator: Some(
-// DOUBLED-NEXT:                                   Name(
-// DOUBLED-NEXT:                                       "x",
-// DOUBLED-NEXT:                                   ),
-// DOUBLED-NEXT:                               ),
+// DOUBLED-NEXT:                               ],
 // DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                       ],
+// DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                       body: [
 // DOUBLED-NEXT:                           Return(
 // DOUBLED-NEXT:                               Binary {

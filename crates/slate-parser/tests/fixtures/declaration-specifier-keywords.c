@@ -142,6 +142,7 @@ _Atomic(unsigned long) atomic_unsigned_long_value;
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "noreturn_function",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       parameters: Void,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

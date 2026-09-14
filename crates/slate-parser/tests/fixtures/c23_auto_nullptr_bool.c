@@ -16,9 +16,16 @@ void f(void) {
 
 // SLATE-FILECHECK-BEGIN C17
 // C17: decl[0]: Function(
-// C17-NEXT:       FunctionDecl {
-// C17-NEXT:           ret_type: Void,
-// C17-NEXT:           name: "f",
+// C17-NEXT:       FunctionDefinition {
+// C17-NEXT:           specifiers: DeclarationSpecifiers {
+// C17-NEXT:               ty: Void,
+// C17-NEXT:           },
+// C17-NEXT:           declarator: Function {
+// C17-NEXT:               inner: Name(
+// C17-NEXT:                   "f",
+// C17-NEXT:               ),
+// C17-NEXT:               parameters: Void,
+// C17-NEXT:           },
 // C17-NEXT:           body: [
 // C17-NEXT:               Decl(
 // C17-NEXT:                   Declaration {
@@ -140,9 +147,16 @@ void f(void) {
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
 // C23: decl[0]: Function(
-// C23-NEXT:       FunctionDecl {
-// C23-NEXT:           ret_type: Void,
-// C23-NEXT:           name: "f",
+// C23-NEXT:       FunctionDefinition {
+// C23-NEXT:           specifiers: DeclarationSpecifiers {
+// C23-NEXT:               ty: Void,
+// C23-NEXT:           },
+// C23-NEXT:           declarator: Function {
+// C23-NEXT:               inner: Name(
+// C23-NEXT:                   "f",
+// C23-NEXT:               ),
+// C23-NEXT:               parameters: Void,
+// C23-NEXT:           },
 // C23-NEXT:           body: [
 // C23-NEXT:               Decl(
 // C23-NEXT:                   Declaration {

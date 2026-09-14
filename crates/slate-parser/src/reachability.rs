@@ -120,11 +120,9 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_function(&mut self, function: &FunctionDecl) {
-        self.mark_type(&function.ret_type);
-        for parameter in &function.parameters {
-            self.mark_parameter(parameter);
-        }
+    fn mark_function(&mut self, function: &FunctionDefinition) {
+        self.mark_type(&function.specifiers.ty);
+        self.mark_declarator(&function.declarator);
         self.mark_stmts(&function.body);
     }
 
@@ -389,7 +387,7 @@ impl<'a> Reachability<'a> {
                 ..
             } => {
                 self.mark_type(return_type);
-                for parameter in parameters {
+                for parameter in parameters.parameters() {
                     self.mark_type(&parameter.ty);
                 }
             }
@@ -421,7 +419,7 @@ impl<'a> Reachability<'a> {
                 inner, parameters, ..
             } => {
                 self.mark_declarator(inner);
-                for parameter in parameters {
+                for parameter in parameters.parameters() {
                     self.mark_parameter(parameter);
                 }
             }

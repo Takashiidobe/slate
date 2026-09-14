@@ -96,14 +96,21 @@ int picked(void) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "picked",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "picked",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Void,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -201,14 +208,21 @@ int picked(void) {
 // SELECT-NEXT:       },
 // SELECT-NEXT:   }
 // SELECT-NEXT: decl[2]: Function(
-// SELECT-NEXT:       FunctionDecl {
-// SELECT-NEXT:           ret_type: Integer(
-// SELECT-NEXT:               Ranked {
-// SELECT-NEXT:                   rank: Int,
-// SELECT-NEXT:                   signed: true,
-// SELECT-NEXT:               },
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           name: "picked",
+// SELECT-NEXT:       FunctionDefinition {
+// SELECT-NEXT:           specifiers: DeclarationSpecifiers {
+// SELECT-NEXT:               ty: Integer(
+// SELECT-NEXT:                   Ranked {
+// SELECT-NEXT:                       rank: Int,
+// SELECT-NEXT:                       signed: true,
+// SELECT-NEXT:                   },
+// SELECT-NEXT:               ),
+// SELECT-NEXT:           },
+// SELECT-NEXT:           declarator: Function {
+// SELECT-NEXT:               inner: Name(
+// SELECT-NEXT:                   "picked",
+// SELECT-NEXT:               ),
+// SELECT-NEXT:               parameters: Void,
+// SELECT-NEXT:           },
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Return(
 // SELECT-NEXT:                   IntegerLiteral(

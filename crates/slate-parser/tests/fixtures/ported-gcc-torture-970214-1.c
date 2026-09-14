@@ -17,16 +17,18 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:                       inner: Name(
 // GCC-NEXT:                           "exit",
 // GCC-NEXT:                       ),
-// GCC-NEXT:                       parameters: [
-// GCC-NEXT:                           Parameter {
-// GCC-NEXT:                               ty: Integer(
-// GCC-NEXT:                                   Ranked {
-// GCC-NEXT:                                       rank: Int,
-// GCC-NEXT:                                       signed: true,
-// GCC-NEXT:                                   },
-// GCC-NEXT:                               ),
-// GCC-NEXT:                           },
-// GCC-NEXT:                       ],
+// GCC-NEXT:                       parameters: Prototype {
+// GCC-NEXT:                           parameters: [
+// GCC-NEXT:                               Parameter {
+// GCC-NEXT:                                   ty: Integer(
+// GCC-NEXT:                                       Ranked {
+// GCC-NEXT:                                           rank: Int,
+// GCC-NEXT:                                           signed: true,
+// GCC-NEXT:                                       },
+// GCC-NEXT:                                   ),
+// GCC-NEXT:                               },
+// GCC-NEXT:                           ],
+// GCC-NEXT:                       },
 // GCC-NEXT:                   },
 // GCC-NEXT:               },
 // GCC-NEXT:           ],
@@ -41,14 +43,21 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:       },
 // GCC-NEXT:   }
 // GCC-NEXT: decl[1]: Function(
-// GCC-NEXT:       FunctionDecl {
-// GCC-NEXT:           ret_type: Integer(
-// GCC-NEXT:               Ranked {
-// GCC-NEXT:                   rank: Int,
-// GCC-NEXT:                   signed: true,
-// GCC-NEXT:               },
-// GCC-NEXT:           ),
-// GCC-NEXT:           name: "main",
+// GCC-NEXT:       FunctionDefinition {
+// GCC-NEXT:           specifiers: DeclarationSpecifiers {
+// GCC-NEXT:               ty: Integer(
+// GCC-NEXT:                   Ranked {
+// GCC-NEXT:                       rank: Int,
+// GCC-NEXT:                       signed: true,
+// GCC-NEXT:                   },
+// GCC-NEXT:               ),
+// GCC-NEXT:           },
+// GCC-NEXT:           declarator: Function {
+// GCC-NEXT:               inner: Name(
+// GCC-NEXT:                   "main",
+// GCC-NEXT:               ),
+// GCC-NEXT:               parameters: Void,
+// GCC-NEXT:           },
 // GCC-NEXT:           body: [
 // GCC-NEXT:               Expr(
 // GCC-NEXT:                   Call {

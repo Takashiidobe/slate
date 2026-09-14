@@ -507,7 +507,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
     match decl {
         Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => Vec::new(),
         Decl::Function(function) => vec![DeclSummary::Function {
-            name: function.name.clone(),
+            name: declarator_identifier(&function.declarator),
             returns: function
                 .body
                 .iter()
@@ -772,14 +772,11 @@ fn type_spelling(ty: &CType) -> String {
 }
 
 fn function_facts(base: &CType, declarator: &Declarator) -> String {
-    let Declarator::Function {
-        inner,
-        parameters,
-        variadic,
-    } = declarator
-    else {
+    let Declarator::Function { inner, parameters } = declarator else {
         panic!("expected function declarator")
     };
+    let variadic = parameters.is_variadic();
+    let parameters = parameters.parameters();
     let pointer_to_function = matches!(inner.as_ref(), Declarator::Grouped(_));
     let return_pointer =
         !pointer_to_function && matches!(inner.as_ref(), Declarator::Pointer { .. });

@@ -585,14 +585,21 @@ int main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -1183,14 +1190,21 @@ int main() {
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[7]: Function(
-// ENABLED-NEXT:       FunctionDecl {
-// ENABLED-NEXT:           ret_type: Integer(
-// ENABLED-NEXT:               Ranked {
-// ENABLED-NEXT:                   rank: Int,
-// ENABLED-NEXT:                   signed: true,
-// ENABLED-NEXT:               },
-// ENABLED-NEXT:           ),
-// ENABLED-NEXT:           name: "main",
+// ENABLED-NEXT:       FunctionDefinition {
+// ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:               ty: Integer(
+// ENABLED-NEXT:                   Ranked {
+// ENABLED-NEXT:                       rank: Int,
+// ENABLED-NEXT:                       signed: true,
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:               ),
+// ENABLED-NEXT:           },
+// ENABLED-NEXT:           declarator: Function {
+// ENABLED-NEXT:               inner: Name(
+// ENABLED-NEXT:                   "main",
+// ENABLED-NEXT:               ),
+// ENABLED-NEXT:               parameters: Empty,
+// ENABLED-NEXT:           },
 // ENABLED-NEXT:           body: [
 // ENABLED-NEXT:               Return(
 // ENABLED-NEXT:                   IntegerLiteral(

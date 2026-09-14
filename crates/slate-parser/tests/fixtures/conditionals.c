@@ -19,14 +19,21 @@ typedef int Socket;
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -111,14 +118,21 @@ typedef int Socket;
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIN32
 // WIN32: decl[0]: Function(
-// WIN32-NEXT:       FunctionDecl {
-// WIN32-NEXT:           ret_type: Integer(
-// WIN32-NEXT:               Ranked {
-// WIN32-NEXT:                   rank: Int,
-// WIN32-NEXT:                   signed: true,
-// WIN32-NEXT:               },
-// WIN32-NEXT:           ),
-// WIN32-NEXT:           name: "main",
+// WIN32-NEXT:       FunctionDefinition {
+// WIN32-NEXT:           specifiers: DeclarationSpecifiers {
+// WIN32-NEXT:               ty: Integer(
+// WIN32-NEXT:                   Ranked {
+// WIN32-NEXT:                       rank: Int,
+// WIN32-NEXT:                       signed: true,
+// WIN32-NEXT:                   },
+// WIN32-NEXT:               ),
+// WIN32-NEXT:           },
+// WIN32-NEXT:           declarator: Function {
+// WIN32-NEXT:               inner: Name(
+// WIN32-NEXT:                   "main",
+// WIN32-NEXT:               ),
+// WIN32-NEXT:               parameters: Empty,
+// WIN32-NEXT:           },
 // WIN32-NEXT:           body: [
 // WIN32-NEXT:               Return(
 // WIN32-NEXT:                   IntegerLiteral(

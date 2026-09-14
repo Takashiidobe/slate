@@ -1,5 +1,5 @@
 use crate::ast::{
-    Decl, EnumItem, FieldItem, FunctionDecl, SpannedStmt, Stmt, TagBody, TagDefinition,
+    Decl, EnumItem, FieldItem, FunctionDefinition, SpannedStmt, Stmt, TagBody, TagDefinition,
     TranslationUnit,
 };
 use std::fmt::Debug;
@@ -97,7 +97,7 @@ fn strip_decl_comments(decl: &mut Decl) {
     }
 }
 
-fn strip_function_comments(function: &mut FunctionDecl) {
+fn strip_function_comments(function: &mut FunctionDefinition) {
     strip_stmt_comments(&mut function.body);
 }
 

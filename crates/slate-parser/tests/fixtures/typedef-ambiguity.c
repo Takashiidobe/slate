@@ -60,21 +60,23 @@ int call_main() {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "A",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       parameters: [
-// DEFAULT-NEXT:                           Parameter {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Some(
-// DEFAULT-NEXT:                                   Name(
-// DEFAULT-NEXT:                                       "value",
+// DEFAULT-NEXT:                       parameters: Prototype {
+// DEFAULT-NEXT:                           parameters: [
+// DEFAULT-NEXT:                               Parameter {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                                   declarator: Some(
+// DEFAULT-NEXT:                                       Name(
+// DEFAULT-NEXT:                                           "value",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -89,14 +91,21 @@ int call_main() {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "call_main",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "call_main",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Empty,
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -194,14 +203,21 @@ int call_main() {
 // CAST-NEXT:       },
 // CAST-NEXT:   }
 // CAST-NEXT: decl[2]: Function(
-// CAST-NEXT:       FunctionDecl {
-// CAST-NEXT:           ret_type: Integer(
-// CAST-NEXT:               Ranked {
-// CAST-NEXT:                   rank: Int,
-// CAST-NEXT:                   signed: true,
-// CAST-NEXT:               },
-// CAST-NEXT:           ),
-// CAST-NEXT:           name: "cast_main",
+// CAST-NEXT:       FunctionDefinition {
+// CAST-NEXT:           specifiers: DeclarationSpecifiers {
+// CAST-NEXT:               ty: Integer(
+// CAST-NEXT:                   Ranked {
+// CAST-NEXT:                       rank: Int,
+// CAST-NEXT:                       signed: true,
+// CAST-NEXT:                   },
+// CAST-NEXT:               ),
+// CAST-NEXT:           },
+// CAST-NEXT:           declarator: Function {
+// CAST-NEXT:               inner: Name(
+// CAST-NEXT:                   "cast_main",
+// CAST-NEXT:               ),
+// CAST-NEXT:               parameters: Empty,
+// CAST-NEXT:           },
 // CAST-NEXT:           body: [
 // CAST-NEXT:               Expr(
 // CAST-NEXT:                   Cast {

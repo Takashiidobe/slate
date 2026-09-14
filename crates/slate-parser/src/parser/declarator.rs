@@ -1,5 +1,5 @@
 use super::attributes::{apply_vector_attributes, parse_attribute_groups};
-use super::decl::specifiers_with_type;
+use super::decl::{bare_identifier_names, matching_paren, set_qualifier, specifiers_with_type};
 use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, coalesce_string_literals, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
@@ -46,6 +46,14 @@ pub(crate) struct DeclaratorParser<'a> {
     pub(super) typedef_names: &'a HashSet<String>,
     pub(super) biggest_alignment: i64,
     pub(super) statements: Option<&'a Parser>,
+    pub(super) identifier_list: IdentifierList,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum IdentifierList {
+    Rejected,
+    Accepted,
+    Parsed(Vec<String>),
 }
 
 impl<'a> DeclaratorParser<'a> {
@@ -69,6 +77,7 @@ impl<'a> DeclaratorParser<'a> {
             typedef_names,
             biggest_alignment,
             statements: None,
+            identifier_list: IdentifierList::Rejected,
         }
     }
 
@@ -800,9 +809,9 @@ impl<'a> DeclaratorParser<'a> {
         &mut self,
         allow_abstract: bool,
     ) -> Result<Declarator, DeclaratorError> {
-        let mut pointer_qualifiers = Vec::new();
+        let mut pointers = Vec::new();
         while self.matches(Token::Star) {
-            pointer_qualifiers.push(self.take_qualifiers());
+            pointers.push(self.parse_pointer_qualifiers()?);
         }
         let mut declarator = match self.peek().cloned() {
             Some(Token::Ident(name)) => {
@@ -834,9 +843,10 @@ impl<'a> DeclaratorParser<'a> {
             _ => return Err(DeclaratorError::ExpectedDeclarator),
         };
 
-        for qualifiers in pointer_qualifiers {
+        for (qualifiers, attributes) in pointers {
             declarator = Declarator::Pointer {
                 qualifiers,
+                attributes,
                 inner: Box::new(declarator),
             };
         }
@@ -889,18 +899,31 @@ impl<'a> DeclaratorParser<'a> {
                         is_static,
                     }
                 }
-                Some(Token::LParen) => {
-                    let (parameters, variadic) = self.parse_parameters()?;
-                    Declarator::Function {
-                        inner: Box::new(declarator),
-                        parameters,
-                        variadic,
-                    }
-                }
+                Some(Token::LParen) => Declarator::Function {
+                    inner: Box::new(declarator),
+                    parameters: self.parse_parameters()?,
+                },
                 _ => break,
             };
         }
         Ok(declarator)
+    }
+
+    fn parse_pointer_qualifiers(
+        &mut self,
+    ) -> Result<(Qualifiers, Vec<Attribute>), DeclaratorError> {
+        let mut qualifiers = Qualifiers::default();
+        let mut attributes = Vec::new();
+        loop {
+            let start = self.pos;
+            while let Some(qualifier) = self.take_qualifier() {
+                set_qualifier(&mut qualifiers, qualifier);
+            }
+            attributes.extend(self.parse_attributes()?);
+            if self.pos == start {
+                return Ok((qualifiers, attributes));
+            }
+        }
     }
 
     fn opens_parameter_list(&self, pos: usize) -> bool {
@@ -952,19 +975,37 @@ impl<'a> DeclaratorParser<'a> {
         Some(keyword)
     }
 
-    pub(super) fn parse_parameters(&mut self) -> Result<(Vec<Parameter>, bool), DeclaratorError> {
+    pub(super) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
+        let open = self.pos;
         self.expect(
             Token::LParen,
             DeclaratorError::ExpectedToken(Token::LParen, "in function declarator"),
         )?;
+        let accepts_identifier_list = self.identifier_list == IdentifierList::Accepted;
+        if accepts_identifier_list {
+            self.identifier_list = IdentifierList::Rejected;
+        }
         if self.matches(Token::RParen) {
-            return Ok((vec![], false));
+            return Ok(ParameterList::Empty);
         }
         if self.peek() == Some(&Token::Keyword(Keyword::Void))
             && self.tokens.value_at(self.pos + 1) == Some(&Token::RParen)
         {
             self.pos += 2;
-            return Ok((vec![], false));
+            return Ok(ParameterList::Void);
+        }
+        if accepts_identifier_list
+            && let Some(close) = matching_paren(self.tokens, open)
+            && let Some(names) = bare_identifier_names(
+                self.tokens[open + 1..close]
+                    .iter()
+                    .map(|token| &token.value),
+                self.typedef_names,
+            )
+        {
+            self.pos = close + 1;
+            self.identifier_list = IdentifierList::Parsed(names);
+            return Ok(ParameterList::Empty);
         }
 
         let mut parameters = Vec::new();
@@ -1017,7 +1058,10 @@ impl<'a> DeclaratorParser<'a> {
                 DeclaratorError::ExpectedToken(Token::Comma, "between parameters"),
             )?;
         }
-        Ok((parameters, variadic))
+        Ok(ParameterList::Prototype {
+            parameters,
+            variadic,
+        })
     }
 
     pub(super) fn expect(
@@ -1038,7 +1082,9 @@ pub fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
         Declarator::Abstract | Declarator::Name(_) => ty,
         Declarator::Grouped(inner) => apply_abstract_declarator(ty, *inner),
         Declarator::Attributed { inner, .. } => apply_abstract_declarator(ty, *inner),
-        Declarator::Pointer { qualifiers, inner } => CType::Pointer {
+        Declarator::Pointer {
+            qualifiers, inner, ..
+        } => CType::Pointer {
             qualifiers,
             pointee: Box::new(apply_abstract_declarator(ty, *inner)),
         },
@@ -1055,23 +1101,17 @@ pub fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
                 size,
             },
         },
-        Declarator::Function {
-            inner,
-            parameters,
-            variadic,
-        } => match *inner {
+        Declarator::Function { inner, parameters } => match *inner {
             Declarator::Grouped(grouped) => apply_abstract_declarator(
                 CType::Function {
                     return_type: Box::new(ty),
                     parameters,
-                    variadic,
                 },
                 *grouped,
             ),
             inner => CType::Function {
                 return_type: Box::new(apply_abstract_declarator(ty, inner)),
                 parameters,
-                variadic,
             },
         },
     }

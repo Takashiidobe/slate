@@ -61,8 +61,12 @@ impl TranslationUnit {
         for decl in &self.decls {
             match &decl.value {
                 Decl::Function(function) => {
-                    collect_tag_names(&function.ret_type, &mut tags);
-                    for parameter in &function.parameters {
+                    collect_tag_names(&function.specifiers.ty, &mut tags);
+                    for parameter in function
+                        .declarator
+                        .function_parameters()
+                        .map_or(&[][..], ParameterList::parameters)
+                    {
                         collect_tag_names(&parameter.ty, &mut tags);
                     }
                 }
@@ -79,13 +83,19 @@ impl TranslationUnit {
                 Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
                 Decl::Function(function) => {
                     check_attributes(
+                        &function.specifiers.attributes,
+                        function.provenance,
+                        decl.expansion,
+                        &mut errors,
+                    );
+                    check_attributes(
                         &function.attributes,
                         function.provenance,
                         decl.expansion,
                         &mut errors,
                     );
                     check_type(
-                        &function.ret_type,
+                        &function.specifiers.ty,
                         &typedefs,
                         &tags,
                         function.provenance,
@@ -223,7 +233,7 @@ fn check_declarator(
             parameters, inner, ..
         } => {
             check_declarator(inner, typedefs, tags, provenance, loc, errors);
-            for parameter in parameters {
+            for parameter in parameters.parameters() {
                 check_type(&parameter.ty, typedefs, tags, provenance, loc, errors);
                 check_attributes(&parameter.attributes, provenance, loc, errors);
                 if let Some(declarator) = &parameter.declarator {
@@ -235,9 +245,13 @@ fn check_declarator(
             check_attributes(attributes, provenance, loc, errors);
             check_declarator(inner, typedefs, tags, provenance, loc, errors);
         }
-        Declarator::Grouped(inner)
-        | Declarator::Pointer { inner, .. }
-        | Declarator::Array { inner, .. } => {
+        Declarator::Pointer {
+            inner, attributes, ..
+        } => {
+            check_attributes(attributes, provenance, loc, errors);
+            check_declarator(inner, typedefs, tags, provenance, loc, errors);
+        }
+        Declarator::Grouped(inner) | Declarator::Array { inner, .. } => {
             check_declarator(inner, typedefs, tags, provenance, loc, errors)
         }
         Declarator::Abstract | Declarator::Name(_) => {}
@@ -399,7 +413,7 @@ fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
             ..
         } => {
             collect_tag_names(return_type, tags);
-            for parameter in parameters {
+            for parameter in parameters.parameters() {
                 collect_tag_names(&parameter.ty, tags);
             }
         }
@@ -453,7 +467,7 @@ fn check_type(
             ..
         } => {
             check_type(return_type, typedefs, tags, provenance, loc, errors);
-            for parameter in parameters {
+            for parameter in parameters.parameters() {
                 check_type(&parameter.ty, typedefs, tags, provenance, loc, errors);
             }
         }
@@ -758,7 +772,7 @@ fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
     }
 }
 
-fn check_literals(function: &FunctionDecl, target: &TargetInfo, errors: &mut Vec<SemaError>) {
+fn check_literals(function: &FunctionDefinition, target: &TargetInfo, errors: &mut Vec<SemaError>) {
     walk_stmts(&function.body, &mut |node| {
         let BodyNode::Expr(expr) = node else {
             return;
@@ -792,7 +806,7 @@ fn check_declaration_literals(
 
 fn check_function_asm(
     unit: &TranslationUnit,
-    function: &FunctionDecl,
+    function: &FunctionDefinition,
     errors: &mut Vec<SemaError>,
 ) {
     let mut labels = HashMap::new();

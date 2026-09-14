@@ -26,29 +26,37 @@ int vla_sum(int n, int arr[n]) {
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[0]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "computed_goto",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "computed_goto",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "n",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -151,49 +159,57 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
-// DEFAULT-NEXT:       FunctionDecl {
-// DEFAULT-NEXT:           ret_type: Integer(
-// DEFAULT-NEXT:               Ranked {
-// DEFAULT-NEXT:                   rank: Int,
-// DEFAULT-NEXT:                   signed: true,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           name: "vla_sum",
-// DEFAULT-NEXT:           parameters: [
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Name(
-// DEFAULT-NEXT:                           "n",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Parameter {
-// DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: Int,
-// DEFAULT-NEXT:                           signed: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   declarator: Some(
-// DEFAULT-NEXT:                       Array {
-// DEFAULT-NEXT:                           inner: Name(
-// DEFAULT-NEXT:                               "arr",
+// DEFAULT-NEXT:       FunctionDefinition {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Integer(
+// DEFAULT-NEXT:                   Ranked {
+// DEFAULT-NEXT:                       rank: Int,
+// DEFAULT-NEXT:                       signed: true,
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:           declarator: Function {
+// DEFAULT-NEXT:               inner: Name(
+// DEFAULT-NEXT:                   "vla_sum",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               parameters: Prototype {
+// DEFAULT-NEXT:                   parameters: [
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Name(
 // DEFAULT-NEXT:                                   "n",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       Parameter {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Some(
+// DEFAULT-NEXT:                               Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "arr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   size: Expression(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "n",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -272,29 +288,37 @@ int vla_sum(int n, int arr[n]) {
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN COMPUTED
 // COMPUTED: decl[0]: Function(
-// COMPUTED-NEXT:       FunctionDecl {
-// COMPUTED-NEXT:           ret_type: Integer(
-// COMPUTED-NEXT:               Ranked {
-// COMPUTED-NEXT:                   rank: Int,
-// COMPUTED-NEXT:                   signed: true,
-// COMPUTED-NEXT:               },
-// COMPUTED-NEXT:           ),
-// COMPUTED-NEXT:           name: "computed_goto",
-// COMPUTED-NEXT:           parameters: [
-// COMPUTED-NEXT:               Parameter {
-// COMPUTED-NEXT:                   ty: Integer(
-// COMPUTED-NEXT:                       Ranked {
-// COMPUTED-NEXT:                           rank: Int,
-// COMPUTED-NEXT:                           signed: true,
+// COMPUTED-NEXT:       FunctionDefinition {
+// COMPUTED-NEXT:           specifiers: DeclarationSpecifiers {
+// COMPUTED-NEXT:               ty: Integer(
+// COMPUTED-NEXT:                   Ranked {
+// COMPUTED-NEXT:                       rank: Int,
+// COMPUTED-NEXT:                       signed: true,
+// COMPUTED-NEXT:                   },
+// COMPUTED-NEXT:               ),
+// COMPUTED-NEXT:           },
+// COMPUTED-NEXT:           declarator: Function {
+// COMPUTED-NEXT:               inner: Name(
+// COMPUTED-NEXT:                   "computed_goto",
+// COMPUTED-NEXT:               ),
+// COMPUTED-NEXT:               parameters: Prototype {
+// COMPUTED-NEXT:                   parameters: [
+// COMPUTED-NEXT:                       Parameter {
+// COMPUTED-NEXT:                           ty: Integer(
+// COMPUTED-NEXT:                               Ranked {
+// COMPUTED-NEXT:                                   rank: Int,
+// COMPUTED-NEXT:                                   signed: true,
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                           declarator: Some(
+// COMPUTED-NEXT:                               Name(
+// COMPUTED-NEXT:                                   "n",
+// COMPUTED-NEXT:                               ),
+// COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:                   declarator: Some(
-// COMPUTED-NEXT:                       Name(
-// COMPUTED-NEXT:                           "n",
-// COMPUTED-NEXT:                       ),
-// COMPUTED-NEXT:                   ),
+// COMPUTED-NEXT:                   ],
 // COMPUTED-NEXT:               },
-// COMPUTED-NEXT:           ],
+// COMPUTED-NEXT:           },
 // COMPUTED-NEXT:           body: [
 // COMPUTED-NEXT:               Decl(
 // COMPUTED-NEXT:                   Declaration {
@@ -404,49 +428,57 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
 // COMPUTED-NEXT: decl[1]: Function(
-// COMPUTED-NEXT:       FunctionDecl {
-// COMPUTED-NEXT:           ret_type: Integer(
-// COMPUTED-NEXT:               Ranked {
-// COMPUTED-NEXT:                   rank: Int,
-// COMPUTED-NEXT:                   signed: true,
-// COMPUTED-NEXT:               },
-// COMPUTED-NEXT:           ),
-// COMPUTED-NEXT:           name: "vla_sum",
-// COMPUTED-NEXT:           parameters: [
-// COMPUTED-NEXT:               Parameter {
-// COMPUTED-NEXT:                   ty: Integer(
-// COMPUTED-NEXT:                       Ranked {
-// COMPUTED-NEXT:                           rank: Int,
-// COMPUTED-NEXT:                           signed: true,
-// COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:                   declarator: Some(
-// COMPUTED-NEXT:                       Name(
-// COMPUTED-NEXT:                           "n",
-// COMPUTED-NEXT:                       ),
-// COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:               },
-// COMPUTED-NEXT:               Parameter {
-// COMPUTED-NEXT:                   ty: Integer(
-// COMPUTED-NEXT:                       Ranked {
-// COMPUTED-NEXT:                           rank: Int,
-// COMPUTED-NEXT:                           signed: true,
-// COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:                   declarator: Some(
-// COMPUTED-NEXT:                       Array {
-// COMPUTED-NEXT:                           inner: Name(
-// COMPUTED-NEXT:                               "arr",
+// COMPUTED-NEXT:       FunctionDefinition {
+// COMPUTED-NEXT:           specifiers: DeclarationSpecifiers {
+// COMPUTED-NEXT:               ty: Integer(
+// COMPUTED-NEXT:                   Ranked {
+// COMPUTED-NEXT:                       rank: Int,
+// COMPUTED-NEXT:                       signed: true,
+// COMPUTED-NEXT:                   },
+// COMPUTED-NEXT:               ),
+// COMPUTED-NEXT:           },
+// COMPUTED-NEXT:           declarator: Function {
+// COMPUTED-NEXT:               inner: Name(
+// COMPUTED-NEXT:                   "vla_sum",
+// COMPUTED-NEXT:               ),
+// COMPUTED-NEXT:               parameters: Prototype {
+// COMPUTED-NEXT:                   parameters: [
+// COMPUTED-NEXT:                       Parameter {
+// COMPUTED-NEXT:                           ty: Integer(
+// COMPUTED-NEXT:                               Ranked {
+// COMPUTED-NEXT:                                   rank: Int,
+// COMPUTED-NEXT:                                   signed: true,
+// COMPUTED-NEXT:                               },
 // COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                           size: Expression(
-// COMPUTED-NEXT:                               Identifier(
+// COMPUTED-NEXT:                           declarator: Some(
+// COMPUTED-NEXT:                               Name(
 // COMPUTED-NEXT:                                   "n",
 // COMPUTED-NEXT:                               ),
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
+// COMPUTED-NEXT:                       Parameter {
+// COMPUTED-NEXT:                           ty: Integer(
+// COMPUTED-NEXT:                               Ranked {
+// COMPUTED-NEXT:                                   rank: Int,
+// COMPUTED-NEXT:                                   signed: true,
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                           declarator: Some(
+// COMPUTED-NEXT:                               Array {
+// COMPUTED-NEXT:                                   inner: Name(
+// COMPUTED-NEXT:                                       "arr",
+// COMPUTED-NEXT:                                   ),
+// COMPUTED-NEXT:                                   size: Expression(
+// COMPUTED-NEXT:                                       Identifier(
+// COMPUTED-NEXT:                                           "n",
+// COMPUTED-NEXT:                                       ),
+// COMPUTED-NEXT:                                   ),
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                       },
+// COMPUTED-NEXT:                   ],
 // COMPUTED-NEXT:               },
-// COMPUTED-NEXT:           ],
+// COMPUTED-NEXT:           },
 // COMPUTED-NEXT:           body: [
 // COMPUTED-NEXT:               Decl(
 // COMPUTED-NEXT:                   Declaration {
@@ -525,29 +557,37 @@ int vla_sum(int n, int arr[n]) {
 // SLATE-FILECHECK-END COMPUTED
 // SLATE-FILECHECK-BEGIN DOUBLED
 // DOUBLED: decl[0]: Function(
-// DOUBLED-NEXT:       FunctionDecl {
-// DOUBLED-NEXT:           ret_type: Integer(
-// DOUBLED-NEXT:               Ranked {
-// DOUBLED-NEXT:                   rank: Int,
-// DOUBLED-NEXT:                   signed: true,
-// DOUBLED-NEXT:               },
-// DOUBLED-NEXT:           ),
-// DOUBLED-NEXT:           name: "computed_goto",
-// DOUBLED-NEXT:           parameters: [
-// DOUBLED-NEXT:               Parameter {
-// DOUBLED-NEXT:                   ty: Integer(
-// DOUBLED-NEXT:                       Ranked {
-// DOUBLED-NEXT:                           rank: Int,
-// DOUBLED-NEXT:                           signed: true,
+// DOUBLED-NEXT:       FunctionDefinition {
+// DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
+// DOUBLED-NEXT:               ty: Integer(
+// DOUBLED-NEXT:                   Ranked {
+// DOUBLED-NEXT:                       rank: Int,
+// DOUBLED-NEXT:                       signed: true,
+// DOUBLED-NEXT:                   },
+// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:           },
+// DOUBLED-NEXT:           declarator: Function {
+// DOUBLED-NEXT:               inner: Name(
+// DOUBLED-NEXT:                   "computed_goto",
+// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:               parameters: Prototype {
+// DOUBLED-NEXT:                   parameters: [
+// DOUBLED-NEXT:                       Parameter {
+// DOUBLED-NEXT:                           ty: Integer(
+// DOUBLED-NEXT:                               Ranked {
+// DOUBLED-NEXT:                                   rank: Int,
+// DOUBLED-NEXT:                                   signed: true,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           declarator: Some(
+// DOUBLED-NEXT:                               Name(
+// DOUBLED-NEXT:                                   "n",
+// DOUBLED-NEXT:                               ),
+// DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:                   declarator: Some(
-// DOUBLED-NEXT:                       Name(
-// DOUBLED-NEXT:                           "n",
-// DOUBLED-NEXT:                       ),
-// DOUBLED-NEXT:                   ),
+// DOUBLED-NEXT:                   ],
 // DOUBLED-NEXT:               },
-// DOUBLED-NEXT:           ],
+// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:           body: [
 // DOUBLED-NEXT:               Decl(
 // DOUBLED-NEXT:                   Declaration {
@@ -650,49 +690,57 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
 // DOUBLED-NEXT: decl[1]: Function(
-// DOUBLED-NEXT:       FunctionDecl {
-// DOUBLED-NEXT:           ret_type: Integer(
-// DOUBLED-NEXT:               Ranked {
-// DOUBLED-NEXT:                   rank: Int,
-// DOUBLED-NEXT:                   signed: true,
-// DOUBLED-NEXT:               },
-// DOUBLED-NEXT:           ),
-// DOUBLED-NEXT:           name: "vla_sum",
-// DOUBLED-NEXT:           parameters: [
-// DOUBLED-NEXT:               Parameter {
-// DOUBLED-NEXT:                   ty: Integer(
-// DOUBLED-NEXT:                       Ranked {
-// DOUBLED-NEXT:                           rank: Int,
-// DOUBLED-NEXT:                           signed: true,
-// DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:                   declarator: Some(
-// DOUBLED-NEXT:                       Name(
-// DOUBLED-NEXT:                           "n",
-// DOUBLED-NEXT:                       ),
-// DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:               },
-// DOUBLED-NEXT:               Parameter {
-// DOUBLED-NEXT:                   ty: Integer(
-// DOUBLED-NEXT:                       Ranked {
-// DOUBLED-NEXT:                           rank: Int,
-// DOUBLED-NEXT:                           signed: true,
-// DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:                   declarator: Some(
-// DOUBLED-NEXT:                       Array {
-// DOUBLED-NEXT:                           inner: Name(
-// DOUBLED-NEXT:                               "arr",
+// DOUBLED-NEXT:       FunctionDefinition {
+// DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
+// DOUBLED-NEXT:               ty: Integer(
+// DOUBLED-NEXT:                   Ranked {
+// DOUBLED-NEXT:                       rank: Int,
+// DOUBLED-NEXT:                       signed: true,
+// DOUBLED-NEXT:                   },
+// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:           },
+// DOUBLED-NEXT:           declarator: Function {
+// DOUBLED-NEXT:               inner: Name(
+// DOUBLED-NEXT:                   "vla_sum",
+// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:               parameters: Prototype {
+// DOUBLED-NEXT:                   parameters: [
+// DOUBLED-NEXT:                       Parameter {
+// DOUBLED-NEXT:                           ty: Integer(
+// DOUBLED-NEXT:                               Ranked {
+// DOUBLED-NEXT:                                   rank: Int,
+// DOUBLED-NEXT:                                   signed: true,
+// DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           size: Expression(
-// DOUBLED-NEXT:                               Identifier(
+// DOUBLED-NEXT:                           declarator: Some(
+// DOUBLED-NEXT:                               Name(
 // DOUBLED-NEXT:                                   "n",
 // DOUBLED-NEXT:                               ),
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
+// DOUBLED-NEXT:                       Parameter {
+// DOUBLED-NEXT:                           ty: Integer(
+// DOUBLED-NEXT:                               Ranked {
+// DOUBLED-NEXT:                                   rank: Int,
+// DOUBLED-NEXT:                                   signed: true,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           declarator: Some(
+// DOUBLED-NEXT:                               Array {
+// DOUBLED-NEXT:                                   inner: Name(
+// DOUBLED-NEXT:                                       "arr",
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                                   size: Expression(
+// DOUBLED-NEXT:                                       Identifier(
+// DOUBLED-NEXT:                                           "n",
+// DOUBLED-NEXT:                                       ),
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                   ],
 // DOUBLED-NEXT:               },
-// DOUBLED-NEXT:           ],
+// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:           body: [
 // DOUBLED-NEXT:               Decl(
 // DOUBLED-NEXT:                   Declaration {

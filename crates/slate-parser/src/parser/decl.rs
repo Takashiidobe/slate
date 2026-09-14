@@ -1,6 +1,6 @@
 use super::asm::is_asm_keyword;
 use super::attributes::apply_vector_attributes;
-use super::declarator::DeclaratorParser;
+use super::declarator::{DeclaratorParser, IdentifierList};
 use super::{Loc, Parser, lex, span_decl_result, span_pp_nodes, span_tokens, synthetic};
 use crate::ast::*;
 use crate::const_expr;
@@ -16,7 +16,7 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
-        let mut specifiers = self.parse_declaration_specifiers(&mut parser)?;
+        let mut specifiers = self.parse_declaration_specifiers(&mut parser, false)?;
         let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
         Ok(Declaration {
             specifiers,
@@ -32,7 +32,7 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<(DeclarationSpecifiers, Vec<FieldDeclarator>), ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
-        let mut specifiers = self.parse_declaration_specifiers(&mut parser)?;
+        let mut specifiers = self.parse_declaration_specifiers(&mut parser, false)?;
         let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, true)?;
         Ok((
             specifiers,
@@ -47,7 +47,7 @@ impl Parser {
         ))
     }
 
-    fn declarator_parser<'a>(
+    pub(super) fn declarator_parser<'a>(
         &'a self,
         tokens: &'a [Span<Token>],
         pos: usize,
@@ -58,6 +58,7 @@ impl Parser {
             typedef_names: &self.typedef_names,
             biggest_alignment: self.biggest_alignment,
             statements: Some(self),
+            identifier_list: IdentifierList::Rejected,
         }
     }
 
@@ -125,9 +126,10 @@ impl Parser {
         }
     }
 
-    fn parse_declaration_specifiers(
+    pub(super) fn parse_declaration_specifiers(
         &self,
         parser: &mut DeclaratorParser,
+        implicit_int_function: bool,
     ) -> Result<DeclarationSpecifiers, ParseError> {
         let tokens = parser.tokens;
         let mut specifiers = specifiers_with_type(CType::Void);
@@ -147,21 +149,24 @@ impl Parser {
         if c23_auto_inference {
             specifiers.storage = StorageClass::None;
         }
+        let implicit_int = implicit_int_function
+            && matches!(
+                (parser.peek(), tokens.value_at(parser.pos + 1)),
+                (Some(Token::Ident(name)), Some(Token::LParen)) if !self.typedef_names.contains(name)
+            );
         specifiers.ty = if gnu_auto_type || c23_auto_inference {
             CType::TargetBuiltin("__auto_type".into())
+        } else if implicit_int {
+            CType::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int,
+                signed: true,
+            })
         } else {
             parser
                 .parse_base_type()
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
         };
-        while let Some(qualifier) = parser.take_qualifier() {
-            set_qualifier(&mut specifiers.qualifiers, qualifier);
-        }
-        let (attributes, position) = self
-            .parse_attribute_groups(tokens, parser.pos)
-            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
-        parser.pos = position;
-        specifiers.attributes.extend(attributes);
+        self.parse_specifier_keywords(parser, &mut specifiers)?;
         Ok(specifiers)
     }
 
@@ -1017,7 +1022,7 @@ pub(super) fn specifiers_with_type(ty: CType) -> DeclarationSpecifiers {
     }
 }
 
-fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
+pub(super) fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
     match qualifier {
         Keyword::Const => qualifiers.is_const = true,
         Keyword::Volatile => qualifiers.is_volatile = true,
