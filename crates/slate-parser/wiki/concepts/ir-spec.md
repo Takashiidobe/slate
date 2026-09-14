@@ -5,6 +5,8 @@ _created 2026-09-13 — living design doc, decisions marked **Decided** / **Open
 Pipeline: C → AST (target-independent) → **IR (targeted)** → Rust → rewritten
 Rust (Slate). This page covers the IR only. Epic: `slate-parser-lh7`.
 
+For proposed node fields and information ownership, see [IR Shape](ir-shape.md).
+
 The IR is not Clang IR and does not aim for CIR compatibility. It exists for
 translation to Rust, not optimization. Slate's current CIR consumer will be
 refactored on top of this; there is no backwards-compatibility constraint.
