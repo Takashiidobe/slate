@@ -277,10 +277,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   attributes: [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "__nothrow__",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       NoThrow,
 // DEFAULT-NEXT:                       NonNull(
 // DEFAULT-NEXT:                           [
 // DEFAULT-NEXT:                               1,
@@ -330,10 +327,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   attributes: [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "__nothrow__",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       NoThrow,
 // DEFAULT-NEXT:                       Pure,
 // DEFAULT-NEXT:                       NonNull(
 // DEFAULT-NEXT:                           [

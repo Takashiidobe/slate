@@ -335,10 +335,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   attributes: [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "__nothrow__",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       NoThrow,
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -704,10 +701,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   attributes: [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "__nothrow__",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       NoThrow,
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -2318,10 +2312,7 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   attributes: [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "__nothrow__",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       NoThrow,
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
