@@ -10,8 +10,8 @@ open until agreed. Decided sections record the agreed shape choices.
 The reference will cover numeric types, enums, structs, unions, functions
 (attributes, parameters, return type, body), and statements including
 switch, for, while, and do/while. This first discussion defines numeric
-types and their immediate supporting information. Other node shapes are
-not specified yet.
+types, typed constants and bindings, and string literal objects. Other node
+shapes are not specified yet.
 
 ## Information ownership
 
@@ -265,6 +265,91 @@ overflow behavior. A conversion carries its actual conversion semantics;
 why C inserted it is optional origin information. A proof that a particular
 addition cannot overflow belongs to analysis facts keyed by its node ID.
 It does not change the integer type shared by every other expression.
+
+## String literal objects
+
+**Decided:** retain both the string and its exact bytes so Rust lowering
+can select the useful view directly. A string literal represents an array
+object with static storage; an address derived from it is a separate value.
+Its character element type is resolved for the target, retaining the C
+character type as metadata.
+
+Proposed field shape:
+
+```text
+StringLiteral {
+    id: ObjectId,
+    ty: Type { kind: Array { element: Type, length: N }, metadata: ... },
+    storage_duration: Static,
+    writable: false,
+    contents: StringContents,
+    metadata: { source_pieces: ..., encoding_prefix: ..., origin: ... },
+}
+
+StringContents {
+    code_units: U8Sequence | U16Sequence | U32Sequence,
+    bytes: ByteSequence,
+    text: Option<String>,
+}
+```
+
+The array type's storage metadata carries its target size and alignment.
+The element type carries its own storage representation and `c_type`,
+distinguishing ordinary `char`, UTF character types, and `wchar_t` even
+when their numeric representations match. Code-unit widths and encodings
+are resolved by IR sema for the target; additional target representations
+must be modeled explicitly if needed.
+
+### Three views of the same contents
+
+- `code_units` contains the decoded character units, including the final
+  terminating zero. Array length `N` counts these units, not Unicode
+  characters or storage bytes. Embedded zeros are preserved.
+- `bytes` contains the exact target representation of those units,
+  including the terminator, in target byte order. Rust lowering can use
+  this view without re-encoding the source literal. Its length agrees with
+  the array's resolved storage size.
+- `text` contains the corresponding Unicode text when decoding is valid
+  and lossless under the resolved encoding. It excludes only the one
+  implicit final terminator; explicit embedded or trailing zeros remain.
+  Invalid or undecodable sequences yield `None`, never replacement
+  characters or truncated contents. Rust lowering then uses units or bytes.
+
+IR sema produces these views together; they must describe the same
+contents. `text` is a convenient decoded string, not the original spelling
+with C escape syntax. Original literal pieces and prefixes remain origin
+metadata, including after adjacent literals are concatenated.
+
+For ordinary one-byte characters on the initial target:
+
+```text
+source:     "a\0b"
+code_units: [97, 0, 98, 0]
+bytes:      [97, 0, 98, 0]
+text:       Some("a\0b")
+length:     4
+```
+
+The `text` line uses escaped notation to display an actual embedded zero.
+For wide or UTF-16 literals, the text's UTF-8 bytes need not equal the
+object's target bytes. Rust lowering chooses a view compatible with the
+required element representation and use; the views are not interchangeable
+memory layouts. It also checks interior-zero constraints when choosing a
+C-string representation.
+
+### Object and initialization behavior
+
+Using the literal in pointer context produces the address of its first
+element. The object remains an array, available for size computations and
+array initialization. `char s[] = "abc"` creates a separate writable array;
+it does not turn `s` into a pointer to the literal. Initializer lowering
+uses the destination's resolved extent and initialization rules, rather
+than assuming every destination copies every byte of the literal object.
+
+`writable: false` describes the literal object's access contract. It does
+not rewrite the original C element type to `const char`. Object identity
+is represented independently of content equality; sharing content buffers
+must not itself decide whether literal object addresses are merged.
 
 ## Questions for this discussion
 
