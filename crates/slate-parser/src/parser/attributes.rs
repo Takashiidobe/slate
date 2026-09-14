@@ -117,8 +117,17 @@ pub(super) fn parse_attribute_groups(
                 let name = cursor.expect_ident("expected declspec name")?;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after declspec arguments")?;
-                let canonical = if name == "align" { "aligned" } else { &name };
-                attributes.push(parse_attribute(canonical, &arguments, biggest_alignment)?);
+                let canonical = match name.as_str() {
+                    "align" => "aligned",
+                    "allocate" => "section",
+                    _ => &name,
+                };
+                attributes.push(parse_attribute_spelling(
+                    &name,
+                    canonical,
+                    &arguments,
+                    biggest_alignment,
+                )?);
                 cursor.consume(&Token::Comma);
             }
         } else if cursor.consume(&Token::Ident("_Alignas".into()))
@@ -164,6 +173,13 @@ pub(super) fn parse_attribute_groups(
         {
             cursor.pos += 2;
             loop {
+                if cursor.consume(&Token::RBracket) {
+                    cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
+                    break;
+                }
+                if cursor.consume(&Token::Comma) {
+                    continue;
+                }
                 let mut name = cursor.expect_ident("expected C23 attribute name")?;
                 if cursor.consume(&Token::Colon) {
                     cursor.expect(Token::Colon, "expected `::` in attribute name")?;
@@ -173,7 +189,12 @@ pub(super) fn parse_attribute_groups(
                 }
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(parse_attribute(&name, &arguments, biggest_alignment)?);
+                attributes.push(match c23_attribute_name(&name) {
+                    Some(canonical) => {
+                        parse_attribute_spelling(&name, canonical, &arguments, biggest_alignment)?
+                    }
+                    None => unknown_attribute(&name, &arguments),
+                });
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -193,10 +214,7 @@ pub(super) fn parse_attribute(
     arguments: &[Span<Token>],
     biggest_alignment: i64,
 ) -> Result<Attribute, String> {
-    let canonical_name = name
-        .strip_prefix("__")
-        .and_then(|name| name.strip_suffix("__"))
-        .unwrap_or(name);
+    let canonical_name = unwrapped_attribute_name(name);
     let single_string = || match arguments {
         [single] => match &single.value {
             Token::StringLit(value) => Some(value.clone()),
@@ -233,6 +251,30 @@ pub(super) fn parse_attribute(
     };
     match canonical_name {
         "packed" if arguments.is_empty() => Ok(Attribute::Packed),
+        "address_space" | "pass_object_size" | "pass_dynamic_object_size" => {
+            Ok(match parse_attribute_expression(arguments) {
+                Ok(value) => match canonical_name {
+                    "address_space" => Attribute::AddressSpace(value),
+                    _ => Attribute::PassObjectSize {
+                        size_type: value,
+                        dynamic: canonical_name == "pass_dynamic_object_size",
+                    },
+                },
+                Err(_) => invalid_attribute(name, arguments),
+            })
+        }
+        "lifetimebound" if arguments.is_empty() => Ok(Attribute::LifetimeBound),
+        "overloadable" if arguments.is_empty() => Ok(Attribute::Overloadable),
+        "gnu_inline" if arguments.is_empty() => Ok(Attribute::GnuInline),
+        "nothrow" if arguments.is_empty() => Ok(Attribute::NoThrow),
+        "selectany" if arguments.is_empty() => Ok(Attribute::SelectAny),
+        "thread" if arguments.is_empty() => Ok(Attribute::ThreadLocal),
+        "noalias" if arguments.is_empty() => Ok(Attribute::NoAlias),
+        "restrict" if arguments.is_empty() => Ok(Attribute::RestrictReturn),
+        "optnone" if arguments.is_empty() => Ok(Attribute::OptimizeNone),
+        "code_seg" => Ok(single_string()
+            .map(Attribute::CodeSeg)
+            .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "aligned" => Ok(match single_int() {
             Some(value) => Attribute::Aligned(integer_argument(value, arguments)),
             None if arguments.is_empty() => {
@@ -357,6 +399,7 @@ pub(super) fn parse_attribute(
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
         "cdecl" | "stdcall" | "fastcall" | "vectorcall" | "thiscall" | "ms_abi" | "sysv_abi"
+        | "preserve_most" | "preserve_all" | "preserve_none"
             if arguments.is_empty() =>
         {
             let convention = match canonical_name {
@@ -366,6 +409,9 @@ pub(super) fn parse_attribute(
                 "vectorcall" => CallingConvention::Vectorcall,
                 "thiscall" => CallingConvention::Thiscall,
                 "ms_abi" => CallingConvention::MsAbi,
+                "preserve_most" => CallingConvention::PreserveMost,
+                "preserve_all" => CallingConvention::PreserveAll,
+                "preserve_none" => CallingConvention::PreserveNone,
                 _ => CallingConvention::SysVAbi,
             };
             Ok(Attribute::CallingConvention(convention))
@@ -409,13 +455,10 @@ pub(super) fn parse_attribute(
         "nodiscard" => Ok(single_string()
             .map(|value| Attribute::NoDiscard(Some(value)))
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
-        "maybe_unused" if arguments.is_empty() => Ok(Attribute::MaybeUnused),
+        "maybe_unused" | "unused" if arguments.is_empty() => Ok(Attribute::MaybeUnused),
         "fallthrough" if arguments.is_empty() => Ok(Attribute::Fallthrough),
         _ if canonical_name.is_attribute_name() => Ok(invalid_attribute(name, arguments)),
-        _ => Ok(Attribute::Unknown {
-            name: name.into(),
-            arguments: arguments.values().map(String::from).collect(),
-        }),
+        _ => Ok(unknown_attribute(name, arguments)),
     }
 }
 
@@ -476,7 +519,25 @@ impl AttributeName for str {
     fn is_attribute_name(&self) -> bool {
         matches!(
             self,
-            "aligned"
+            "packed"
+                | "address_space"
+                | "pass_object_size"
+                | "pass_dynamic_object_size"
+                | "lifetimebound"
+                | "overloadable"
+                | "gnu_inline"
+                | "nothrow"
+                | "selectany"
+                | "thread"
+                | "noalias"
+                | "restrict"
+                | "code_seg"
+                | "optnone"
+                | "unused"
+                | "preserve_most"
+                | "preserve_all"
+                | "preserve_none"
+                | "aligned"
                 | "vector_size"
                 | "mode"
                 | "visibility"
@@ -564,4 +625,137 @@ fn keyword_calling_convention(token: Option<&Token>) -> Option<CallingConvention
         "__thiscall" | "_thiscall" => CallingConvention::Thiscall,
         _ => return None,
     })
+}
+
+fn unwrapped_attribute_name(name: &str) -> &str {
+    name.strip_prefix("__")
+        .and_then(|name| name.strip_suffix("__"))
+        .unwrap_or(name)
+}
+
+fn c23_attribute_name(name: &str) -> Option<&str> {
+    let (namespace, local) = name.split_once("::").unwrap_or(("", name));
+    let local = unwrapped_attribute_name(local);
+    match (unwrapped_attribute_name(namespace), local) {
+        ("", "deprecated" | "nodiscard" | "maybe_unused" | "noreturn" | "fallthrough") => {
+            Some(local)
+        }
+        ("", "_Noreturn") => Some("noreturn"),
+        (
+            "gnu",
+            "packed"
+            | "gnu_inline"
+            | "nothrow"
+            | "selectany"
+            | "unused"
+            | "aligned"
+            | "vector_size"
+            | "mode"
+            | "visibility"
+            | "section"
+            | "target"
+            | "alias"
+            | "weakref"
+            | "nonnull"
+            | "weak"
+            | "used"
+            | "retain"
+            | "noinline"
+            | "always_inline"
+            | "noreturn"
+            | "constructor"
+            | "destructor"
+            | "malloc"
+            | "assume_aligned"
+            | "alloc_size"
+            | "alloc_align"
+            | "cleanup"
+            | "returns_nonnull"
+            | "warn_unused_result"
+            | "sentinel"
+            | "cold"
+            | "flatten"
+            | "hot"
+            | "leaf"
+            | "noipa"
+            | "noclone"
+            | "optimize"
+            | "naked"
+            | "interrupt"
+            | "no_split_stack"
+            | "returns_twice"
+            | "target_clones"
+            | "ifunc"
+            | "dllimport"
+            | "tls_model"
+            | "ms_struct"
+            | "stdcall"
+            | "cdecl"
+            | "fastcall"
+            | "thiscall"
+            | "ms_abi"
+            | "sysv_abi"
+            | "regparm"
+            | "pcs"
+            | "dllexport"
+            | "scalar_storage_order"
+            | "transparent_union"
+            | "format"
+            | "format_arg"
+            | "gcc_struct"
+            | "common"
+            | "nocommon"
+            | "pure"
+            | "const"
+            | "may_alias"
+            | "deprecated"
+            | "fallthrough",
+        ) => Some(local),
+        (
+            "clang",
+            "address_space"
+            | "pass_object_size"
+            | "pass_dynamic_object_size"
+            | "lifetimebound"
+            | "overloadable"
+            | "optnone"
+            | "preserve_most"
+            | "preserve_all"
+            | "preserve_none"
+            | "annotate"
+            | "availability"
+            | "cpu_dispatch"
+            | "cpu_specific"
+            | "ext_vector_type"
+            | "weak_import"
+            | "vectorcall"
+            | "always_inline"
+            | "noinline",
+        ) => Some(local),
+        ("msvc", "noinline") => Some("noinline"),
+        ("msvc", "forceinline") => Some("always_inline"),
+        _ => None,
+    }
+}
+
+fn parse_attribute_spelling(
+    spelling: &str,
+    canonical: &str,
+    arguments: &[Span<Token>],
+    biggest_alignment: i64,
+) -> Result<Attribute, String> {
+    Ok(
+        match parse_attribute(canonical, arguments, biggest_alignment)? {
+            Attribute::Invalid { .. } => invalid_attribute(spelling, arguments),
+            Attribute::Unknown { .. } => unknown_attribute(spelling, arguments),
+            attribute => attribute,
+        },
+    )
+}
+
+fn unknown_attribute(name: &str, arguments: &[Span<Token>]) -> Attribute {
+    Attribute::Unknown {
+        name: name.into(),
+        arguments: arguments.values().map(String::from).collect(),
+    }
 }

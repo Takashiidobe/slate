@@ -142,10 +142,7 @@ __attribute__((noinline)) int definition() __attribute__((pure)) {
 // DEFAULT-NEXT:                                       "p",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   attributes: [
-// DEFAULT-NEXT:                                       Unknown {
-// DEFAULT-NEXT:                                           name: "unused",
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       MaybeUnused,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],

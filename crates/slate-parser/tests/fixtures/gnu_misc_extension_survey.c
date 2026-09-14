@@ -403,10 +403,7 @@ done:
 // DEFAULT-NEXT:                   label: "done",
 // DEFAULT-NEXT:                   body: Attribute(
 // DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           Unknown {
-// DEFAULT-NEXT:                               name: "unused",
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           MaybeUnused,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },

@@ -5430,10 +5430,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               "argc",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           attributes: [
-// DEFAULT-NEXT:                               Unknown {
-// DEFAULT-NEXT:                                   name: "unused",
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               MaybeUnused,
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       ParameterDeclarationKind {
@@ -5454,10 +5451,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           attributes: [
-// DEFAULT-NEXT:                               Unknown {
-// DEFAULT-NEXT:                                   name: "unused",
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               MaybeUnused,
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],

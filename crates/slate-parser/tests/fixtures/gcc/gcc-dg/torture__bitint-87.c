@@ -302,10 +302,7 @@ main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -382,10 +379,7 @@ main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -920,10 +914,7 @@ main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {

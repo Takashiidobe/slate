@@ -393,6 +393,7 @@ impl Parser {
             pos
         };
         match tokens.value_at(pos) {
+            Some(Token::LBracket) if tokens.value_at(pos + 1) == Some(&Token::LBracket) => true,
             Some(Token::Keyword(keyword)) if keyword.is_storage_class_or_specifier() => true,
             Some(Token::Ident(name))
                 if matches!(

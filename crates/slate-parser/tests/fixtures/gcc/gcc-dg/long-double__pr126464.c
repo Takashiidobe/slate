@@ -63,10 +63,7 @@ int main() {
 // DEFAULT-NEXT:                   Double,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -172,10 +169,7 @@ int main() {
 // DEFAULT-NEXT:                   LongDouble,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -278,10 +272,7 @@ int main() {
 // DEFAULT-NEXT:                   Double,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
@@ -384,10 +375,7 @@ int main() {
 // DEFAULT-NEXT:                   LongDouble,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {

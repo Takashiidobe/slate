@@ -159,14 +159,8 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noinline",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noipa",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoInline,
+// DEFAULT-NEXT:                   NoIpa,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {

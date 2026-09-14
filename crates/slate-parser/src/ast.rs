@@ -619,6 +619,9 @@ pub enum CallingConvention {
     Thiscall,
     MsAbi,
     SysVAbi,
+    PreserveMost,
+    PreserveAll,
+    PreserveNone,
     RegParm(Expr),
     Pcs(PcsConvention),
 }
@@ -632,6 +635,21 @@ pub enum PcsConvention {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
+    AddressSpace(Expr),
+    PassObjectSize {
+        size_type: Expr,
+        dynamic: bool,
+    },
+    LifetimeBound,
+    Overloadable,
+    GnuInline,
+    NoThrow,
+    SelectAny,
+    ThreadLocal,
+    NoAlias,
+    RestrictReturn,
+    CodeSeg(String),
+    OptimizeNone,
     Aligned(Expr),
     AlignAs(AlignAsOperand),
     VectorSize(Expr),

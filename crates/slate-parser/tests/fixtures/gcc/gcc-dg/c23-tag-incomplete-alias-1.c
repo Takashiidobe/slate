@@ -254,10 +254,7 @@ int main() {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Unknown {
-// DEFAULT-NEXT:                       name: "gnu::noinline",
-// DEFAULT-NEXT:                       arguments: [],
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   NoInline,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarator: Function {
