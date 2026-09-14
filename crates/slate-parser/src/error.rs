@@ -35,9 +35,12 @@ impl ParseError {
         message: impl Into<String>,
     ) -> Self {
         let name = name.into();
+        let source = source.into();
+        let offset = offset.min(source.len());
+        let length = length.min(source.len() - offset);
         Self {
             message: message.into(),
-            source_code: NamedSource::new(name, source.into()).with_language("C"),
+            source_code: NamedSource::new(name, source).with_language("C"),
             span: (offset, length).into(),
         }
     }

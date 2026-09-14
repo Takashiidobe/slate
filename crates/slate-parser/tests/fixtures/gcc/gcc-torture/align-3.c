@@ -106,12 +106,13 @@ int main() {
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
-// DEFAULT-NEXT:                       left: AlignOf {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "func",
+// DEFAULT-NEXT:                       left: AlignOfExpr(
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "func",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
 // DEFAULT-NEXT:                               value: 256,

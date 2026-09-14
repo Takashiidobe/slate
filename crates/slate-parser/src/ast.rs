@@ -94,6 +94,7 @@ pub enum ExprKind {
         ty: Box<CType>,
         declarator: Declarator,
     },
+    AlignOfExpr(Expr),
     OffsetOf {
         ty: Box<CType>,
         declarator: Declarator,
@@ -201,6 +202,7 @@ impl std::fmt::Display for ExprKind {
             Self::SizeOfExpr(value) => write!(formatter, "sizeof {value}"),
             Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
             Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
+            Self::AlignOfExpr(value) => write!(formatter, "_Alignof {value}"),
             Self::OffsetOf { member, .. } => write!(formatter, "__builtin_offsetof(..., {member})"),
             Self::Generic { .. } => formatter.write_str("_Generic(...)"),
             Self::VaArg { list, .. } => write!(formatter, "__builtin_va_arg({list}, ...)"),

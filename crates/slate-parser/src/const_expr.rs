@@ -738,6 +738,7 @@ impl<'a> Parser<'a> {
                 declarator_size(ty, declarator).map(|size| size as i64)
             }
             ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
+            ExprKind::AlignOfExpr(_) => Err(ConstExprError::UnsupportedAlignOf),
             ExprKind::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
             ExprKind::TypesCompatible { .. } => {
                 Err(ConstExprError::NotConstant("types compatible"))
@@ -800,7 +801,10 @@ impl<'a> Parser<'a> {
                     UnaryOp::BitNot => Ok(!value),
                     UnaryOp::Not => Ok((value == 0) as i64),
                     UnaryOp::Imag => Ok(0),
-                    UnaryOp::AddrOf | UnaryOp::Deref | UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
+                    UnaryOp::AddrOf
+                    | UnaryOp::Deref
+                    | UnaryOp::PreIncrement
+                    | UnaryOp::PreDecrement => {
                         unreachable!("rejected above")
                     }
                 }
@@ -1272,19 +1276,19 @@ impl<'a> Parser<'a> {
             let operand = self.parse_unary()?;
             return Ok(self.node(ExprKind::SizeOfExpr(operand), start));
         }
-        if self.consume(&Token::Alignof) {
-            self.expect(Token::LParen)?;
-            let (ty, declarator, end) = self
-                .try_parse_type_name(self.position)
-                .ok_or(ConstExprError::ExpectedTypeName)?;
-            if self.token_at(end) != Some(&Token::RParen) {
-                return Err(ConstExprError::Expected {
-                    expected: Token::RParen,
-                    found: self.tokens.get(end).cloned(),
-                });
-            }
+        if self.peek() == Some(&Token::Alignof)
+            && self.peek_at(1) == Some(&Token::LParen)
+            && let Some(next) = self.peek_at(2)
+            && starts_type_name(next, &self.typedef_names)
+            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
+            && self.token_at(end) == Some(&Token::RParen)
+        {
             self.position = end + 1;
             return Ok(self.node(ExprKind::AlignOf { ty, declarator }, start));
+        }
+        if self.consume(&Token::Alignof) {
+            let operand = self.parse_unary()?;
+            return Ok(self.node(ExprKind::AlignOfExpr(operand), start));
         }
         if let Some(Token::Ident(name)) = self.peek()
             && matches!(name.as_str(), "__real__" | "__imag__" | "__real" | "__imag")

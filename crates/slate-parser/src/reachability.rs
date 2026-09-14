@@ -318,6 +318,7 @@ impl<'a> Reachability<'a> {
             }
             ExprKind::Paren(value)
             | ExprKind::SizeOfExpr(value)
+            | ExprKind::AlignOfExpr(value)
             | ExprKind::Unary { operand: value, .. }
             | ExprKind::Postfix { operand: value, .. }
             | ExprKind::Member { base: value, .. } => self.mark_expr(value),

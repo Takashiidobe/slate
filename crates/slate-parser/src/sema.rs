@@ -285,7 +285,8 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
         | ExprKind::CharLiteral(_)
         | ExprKind::SizeOfExpr(_)
         | ExprKind::SizeOfType { .. }
-        | ExprKind::AlignOf { .. } => true,
+        | ExprKind::AlignOf { .. }
+        | ExprKind::AlignOfExpr(_) => true,
         ExprKind::Unary { op, operand } => {
             matches!(
                 op,
@@ -595,6 +596,7 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
         }
         ExprKind::Paren(value)
         | ExprKind::SizeOfExpr(value)
+        | ExprKind::AlignOfExpr(value)
         | ExprKind::Unary { operand: value, .. }
         | ExprKind::Postfix { operand: value, .. }
         | ExprKind::Cast { value, .. }

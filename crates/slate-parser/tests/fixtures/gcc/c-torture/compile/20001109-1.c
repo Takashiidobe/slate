@@ -151,12 +151,13 @@ int tst[__alignof__ (bar) >= __alignof__ (int) ? 1 : -1];
 // DEFAULT-NEXT:                           Conditional {
 // DEFAULT-NEXT:                               condition: Binary {
 // DEFAULT-NEXT:                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                   left: AlignOf {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "bar",
+// DEFAULT-NEXT:                                   left: AlignOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "bar",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   right: AlignOf {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Ranked {
