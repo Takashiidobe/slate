@@ -289,7 +289,12 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
         ExprKind::Unary { op, operand } => {
             matches!(
                 op,
-                UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not
+                UnaryOp::Plus
+                    | UnaryOp::Minus
+                    | UnaryOp::BitNot
+                    | UnaryOp::Not
+                    | UnaryOp::Real
+                    | UnaryOp::Imag
             ) && is_integer_constant_expression(operand)
         }
         ExprKind::Paren(value) | ExprKind::Cast { value, .. } => {

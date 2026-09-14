@@ -773,10 +773,6 @@ impl<'a> Parser<'a> {
                 op: UnaryOp::Deref, ..
             } => Err(ConstExprError::NotConstant("dereference")),
             ExprKind::Unary {
-                op: UnaryOp::Real | UnaryOp::Imag,
-                ..
-            } => Err(ConstExprError::NotConstant("complex real/imag")),
-            ExprKind::Unary {
                 op: UnaryOp::PreIncrement,
                 ..
             }
@@ -799,16 +795,14 @@ impl<'a> Parser<'a> {
                 }
                 let value = Self::evaluate_expr(operand, is_defined)?;
                 match op {
-                    UnaryOp::Plus => Ok(value),
+                    UnaryOp::Plus | UnaryOp::Real => Ok(value),
                     UnaryOp::Minus => value.checked_neg().ok_or(ConstExprError::IntegerOverflow),
                     UnaryOp::BitNot => Ok(!value),
                     UnaryOp::Not => Ok((value == 0) as i64),
-                    UnaryOp::AddrOf
-                    | UnaryOp::Deref
-                    | UnaryOp::PreIncrement
-                    | UnaryOp::PreDecrement
-                    | UnaryOp::Real
-                    | UnaryOp::Imag => unreachable!("rejected above"),
+                    UnaryOp::Imag => Ok(0),
+                    UnaryOp::AddrOf | UnaryOp::Deref | UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
+                        unreachable!("rejected above")
+                    }
                 }
             }
             ExprKind::Binary { op, left, right } => {
@@ -887,18 +881,25 @@ impl<'a> Parser<'a> {
             ExprKind::IntegerLiteral(literal) => Ok(integer_literal_wide(literal)),
             ExprKind::Paren(inner) => Self::evaluate_wide(inner, is_defined),
             ExprKind::Unary {
-                op: op @ (UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not),
+                op:
+                    op @ (UnaryOp::Plus
+                    | UnaryOp::Minus
+                    | UnaryOp::BitNot
+                    | UnaryOp::Not
+                    | UnaryOp::Real
+                    | UnaryOp::Imag),
                 operand,
             } => {
                 let value = Self::evaluate_wide(operand, is_defined)?;
                 Ok(match op {
-                    UnaryOp::Plus => value,
+                    UnaryOp::Plus | UnaryOp::Real => value,
                     UnaryOp::Minus => {
                         WideInt::wrap(-value.value.clone(), value.width, value.signed)
                     }
                     UnaryOp::BitNot => {
                         WideInt::wrap(!value.value.clone(), value.width, value.signed)
                     }
+                    UnaryOp::Imag => WideInt::wrap(BigInt::from(0), value.width, value.signed),
                     _ => WideInt::from_i64(value.is_zero() as i64),
                 })
             }
