@@ -169,11 +169,19 @@ storage metadata, which describes representation.
 ```text
 Variable {
     id: VariableId,
+    name: String,
     ty: Type,
     storage_duration: Automatic | Static | Thread,
     linkage: None | Internal | External,
     declaration_metadata: { c_storage_class: ... },
-    initializer: ...,
+    initializer: Option<Initializer>,
+}
+
+Parameter {
+    id: VariableId,
+    name: Option<String>,
+    ty: Type,
+    metadata: ...,
 }
 
 Value {
@@ -183,8 +191,27 @@ Value {
 }
 ```
 
-These are partial shapes for this distinction, not complete variable or
-expression definitions. Original C storage classes are declaration
+These are partial shapes, not complete variable, parameter, or expression
+definitions. `Initializer` includes expression and structured aggregate
+initialization as described in the IR spec. An expression initializer can
+be a constant, a read of another variable, or any supported computation.
+Reads refer to resolved variable IDs through places; source names are
+retained for printing. `int b = a` initializes `b` from the current value
+of `a`; it does not make `b` an alias that follows later assignments to `a`.
+
+A variable retains its own declared, resolved type even when its initializer
+is another variable. Any required conversion is explicit in the initializer.
+No initializer means no explicit initializer was supplied; storage duration
+still determines whether semantic zero initialization is required. Later
+assignments are write operations, not replacements of the declaration's
+initializer field.
+
+A parameter always carries its resolved type, including in an unnamed
+prototype parameter. It has no declaration-time value or initializer: the
+caller supplies an argument value. Parameter attributes and the remaining
+function shape will be specified with functions.
+
+Original C storage classes are declaration
 metadata once their effects have been resolved into storage duration,
 linkage, and any other required semantics. A computed value such as `a + b`
 does not acquire a C storage class merely because its operands have one.
@@ -194,27 +221,37 @@ its own storage duration and lifetime.
 
 ## Numeric constants and operations
 
-**Proposed:** a constant value belongs to an expression node, separate from
-the type. The surrounding expression provides its node ID and type.
+**Decided:** a constant node combines a type and a value. A `BitInt` type
+contains width and signedness; the constant's payload supplies its value.
+It remains a distinct type from ordinary integers even at equal width, so
+IR sema can apply the appropriate rules before materializing conversions.
+
+The logical constant shape is:
 
 ```text
-NumericConstant = IntegerBits(BitVector) | FloatBits(BitVector)
+Constant {
+    ty: Type,
+    value: NumericPayload,
+}
+
+NumericPayload = IntegerBits(BitVector) | FloatBits(BitVector)
 ```
 
-For the requested `BitInt { width: N, signed: true/false, value: ... }`
-shape, the value-bearing node is a constant whose type holds the width and
-signedness:
+For example, with the integer payload printed as a number:
 
 ```text
-Value {
+Constant {
     ty: Type { kind: BitInt { width: 17, signed: true }, metadata: ... },
-    kind: Constant(IntegerBits(value)),
-    ...,
+    value: 3,
 }
 ```
 
-Putting the literal value inside the type would make different constants
-different types and would not describe a variable whose value changes.
+The same shape applies to ordinary integers and floats: a constant carries
+`I32`, `U64`, `F64`, etc. together with its payload. In the uniform `Value`
+wrapper above, `Value.ty` is the constant's type and `Value.kind` contains
+the constant payload; do not duplicate the type in both places. These are
+two views of the same typed node. Node identity and source origin follow
+the common expression-node convention.
 
 Integer bits match the resolved integer width; the type supplies signedness.
 Float bits encode the value in its resolved format and preserve distinctions
@@ -233,6 +270,3 @@ It does not change the integer type shared by every other expression.
 
 1. Does the proposed variable/value split capture the intended distinction
    between declaration storage classes and type storage metadata?
-2. Is the separate `BitInt` type and constant payload the right value-bearing
-   shape? The explicit numeric variants and type metadata ownership are
-   decided; this constant-node shape remains proposed.
