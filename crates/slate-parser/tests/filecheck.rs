@@ -161,6 +161,15 @@ fn show_ids_for_prefix(source: &str, prefix: &str) -> bool {
     })
 }
 
+fn fixture_args(fixture: &Path) -> Vec<String> {
+    decode_source_bytes(&std::fs::read(fixture).expect("read fixture arguments"))
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-ARGS "))
+        .flat_map(str::split_whitespace)
+        .map(str::to_string)
+        .collect()
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -252,6 +261,7 @@ fn run_fixture(
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1");
+    command.args(fixture_args(fixture));
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -368,6 +378,7 @@ fn run_error_fixture(
     let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
         .arg("parse")
         .arg(&parsed_fixture)
+        .args(fixture_args(fixture))
         .args(
             defines
                 .iter()

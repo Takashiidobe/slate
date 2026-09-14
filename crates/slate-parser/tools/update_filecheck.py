@@ -128,6 +128,9 @@ def render(
         command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
+        for line in source.splitlines():
+            if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
+                command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
@@ -153,6 +156,9 @@ def render_error(
         command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
+        for line in source.splitlines():
+            if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
+                command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     finally:
         parsed_fixture.unlink()

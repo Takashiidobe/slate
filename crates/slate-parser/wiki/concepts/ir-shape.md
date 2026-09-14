@@ -68,7 +68,7 @@ variant with metadata, including `c_type`, storage, and constness.
 
 ## Target resolution and type metadata
 
-**Decided:** IR semantic analysis (`src/ir/sema`), given the target and
+**Decided:** semantic analysis (`src/sema/`), given the target and
 compiler configuration, resolves C numeric types to concrete variants and
 computes their widths and storage representation. For an explicit variant
 such as `U64`, the numeric width is already fixed; sema resolves how that
@@ -78,6 +78,14 @@ width. Rust lowering does not repeat these decisions.
 
 This is the target-aware IR sema stage described in the IR spec, not the
 later pass that derives ranges, aliasing, and other analysis facts.
+
+Sema constructs typed IR directly; there is no separate semantic AST.
+The first implemented slice uses `Value { ty, node: Span<ValueKind> }`
+with constants and addition, preserving spelling/expansion spans, node IDs,
+header provenance, and macro origins. Numeric types currently carry only
+width and integer signedness. The complete type/storage metadata below
+remains the design target; see [implemented numeric seed](ir-spec.md#implemented-numeric-seed)
+for current scope and dump examples.
 
 **Decided:** storage information is metadata on the type, alongside
 constness and the original C type. Proposed field shape after resolution:

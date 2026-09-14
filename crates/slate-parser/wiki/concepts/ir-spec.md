@@ -42,19 +42,61 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 
 ### Code layout
 
-- `src/ir/sema/` — name and type resolution, target width resolution,
-  semantic diagnostics, and metadata capture over AST nodes. Produces no
-  IR nodes. Epic `slate-parser-lh7.1`.
-- `src/ir/` — AST → IR lowering, IR node types, and the text printer.
-  Consumes `src/ir/sema`. Epic `slate-parser-lh7.2` (blocked by lh7.1).
-- `src/sema.rs` — structural validation that needs no resolved names or
-  types. Its output is not guaranteed semantically valid.
+- `src/sema/` — semantic analysis and direct AST → typed IR lowering.
+  Resolves types and operation contracts while constructing IR nodes;
+  there is no intermediate semantic AST or second tree-copying pass.
+- `src/sema/validate.rs` — existing early validation, still exposed through
+  `TranslationUnit::analyze`. Passing it does not establish full semantic
+  validity.
+- `src/ir/` — typed node definitions, required semantic properties, source
+  spans, and text printing. Does not interpret AST nodes or compiler flags.
+
+### Implemented numeric seed
+
+`sema::numeric::Context::resolve` lowers integer and binary floating-point
+literals, parentheses, and same-concrete-type addition directly to
+`ir::Value`. Integer literal selection uses the existing C candidate order
+and target integer widths. Floating constants retain their exact value bits.
+Addition is not folded or reassociated. Signed overflow defaults to
+`undefined`, unsigned overflow to `wrap`; floating addition defaults to
+nearest-even rounding with ignored exceptions. The context exposes separate
+integer and floating semantic settings for future option resolution.
+
+The initial numeric type stores integer width/signedness or floating width.
+It does not yet implement the full type/storage metadata proposed below.
+Mixed-type additions requiring conversions, `_BitInt`, decimal/imaginary
+and target-dependent long-double literals, and other expressions return
+explicit unsupported errors. Flags and scoped pragma semantics are not yet
+wired into this path.
+
+Each `Value` owns `Span<ValueKind>`, retaining node identity, spelling and
+expansion locations, header provenance, and macro origin from its AST node.
+Parentheses are transparent; the surviving inner operation retains its own
+span. The printer always shows required operation semantics. Optional
+`--show-spans` prints spelling/expansion file IDs and byte ranges on every
+node; the accompanying `Files` from parsing resolves those IDs.
+
+```sh
+cargo run -- parse source.c --dump-ir-expressions --show-spans
+```
+
+This diagnostic mode prints expression roots from function expression and
+return statements, not functions or an executable module. It does not
+resolve return conversions, declarations, or control flow. Fixtures live in
+`tests/fixtures/sema/`; `SLATE-FILECHECK-ARGS` supplies extra renderer
+arguments to both the test harness and expectation generator.
+
+```text
+add<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
+add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
+add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x3ff0000000000000), const<f64>(bits=0x4000000000000000))
+```
 
 ### Validation and declaration pruning
 
 **Decided:** early validation reports structural errors and may remove
 structurally invalid items with diagnostics. Checks requiring scopes,
-resolved types, conversions, or layout belong to `src/ir/sema`. Failures
+resolved types, conversions, or layout belong to `src/sema/`. Failures
 there produce diagnostics; lowering must not assume that surviving early
 validation proves a node valid or silently discard failed operations.
 
@@ -69,15 +111,14 @@ The current parser calls `filter_translation_unit` before resolution, and
 `src/reachability.rs` indexes declarations by string names. Moving that
 filter after resolution is required for this design.
 
-### Prerequisites (not present today)
+### Remaining prerequisites
 
-- **Scopes and typing in sema.** `sema.rs` currently only validates
-  declarations.
-- **Target data layout.** `src/target/` has no sizes, alignments, char
-  signedness, `long` width, enum underlying types or bit-field layout.
-- **Macro expansion records.** `Span<T>` has `spelling`/`expansion` `Loc`s but
-  no macro identity, and `ConstExpr` nodes carry no spans, so a folded
-  `INT_MAX` is indistinguishable from `2147483647`. See [Provenance](#provenance).
+- **Scopes and general typing.** The numeric seed does not resolve names,
+  declarations, promotions, or conversions.
+- **Target data layout.** `TargetInfo` has integer/pointer widths and
+  character signedness, but no complete object layout or calling ABI.
+- **Full provenance model.** Existing spans and macro origins survive the
+  numeric lowering. The expansion records proposed below remain future work.
 
 ## Module shape
 

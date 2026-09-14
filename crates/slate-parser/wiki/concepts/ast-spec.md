@@ -17,17 +17,17 @@ Sema.
 ## Pipeline and responsibilities
 
 ```
-pp ──▶ parser ──▶ AST ──▶ sema.rs (structural checks) ──▶ src/ir/sema (resolution + semantic checks) ──▶ IR
+pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution + lowering) ──▶ typed IR
 ```
 
 | Stage         | Owns                                                                                   | Does not                                                     |
 | ------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Parser        | syntax, source form, spans, provenance, typedef-name tracking needed to parse          | evaluate, resolve names, compute types                       |
-| `sema.rs`     | structural checks, diagnostics, removal of structurally invalid items                  | type resolution, conversions, guarantee of semantic validity |
-| `src/ir/sema` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics | re-validate syntax                                           |
+| `src/sema/validate.rs` | existing early checks and diagnostics | guarantee of full semantic validity |
+| `src/sema/` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics, direct typed IR construction | produce an intermediate semantic AST |
 
 Early checks require no resolved names or types. Validation that depends on
-resolution belongs to `src/ir/sema`; surviving the early pass does not prove
+resolution belongs to `src/sema/`; surviving the early pass does not prove
 that a program is semantically valid.
 
 ## Invariants
@@ -60,7 +60,7 @@ that a program is semantically valid.
   original id since they relabel the same node). This is the node identity
   `Loc` can't provide: every token from one macro expansion shares an
   `expansion` `Loc`, but each gets a distinct `NodeId`, which is what lets
-  `src/ir/sema` key metadata by node rather than by location (see
+  `src/sema/` preserve identity rather than keying nodes by location (see
   [[ir-spec]]). `slate-parser parse --show-ids` prints it on every `Span`
   in the debug dump; `tests/fixtures/node_ids_macro_expansion.c` (enabled via
   `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an

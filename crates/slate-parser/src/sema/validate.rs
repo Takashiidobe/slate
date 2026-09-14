@@ -683,7 +683,7 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
     }
 }
 
-fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
+pub(super) fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
     match rank {
         IntegerRank::Short => target.short_width,
         IntegerRank::Int => target.int_width,
@@ -693,12 +693,12 @@ fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
     }
 }
 
-fn fits_rank(value: &BigUint, width: u32, signed: bool) -> bool {
+pub(super) fn fits_rank(value: &BigUint, width: u32, signed: bool) -> bool {
     let limit = BigUint::from(1u32) << (width - u32::from(signed));
     *value < limit
 }
 
-fn integer_candidates(literal: &IntegerLiteral) -> Vec<(IntegerRank, bool)> {
+pub(super) fn integer_candidates(literal: &IntegerLiteral) -> Vec<(IntegerRank, bool)> {
     use IntegerRank::{Int, Long, LongLong};
     let decimal = literal.radix == Radix::Decimal;
     match (literal.suffix.size, literal.suffix.unsigned) {

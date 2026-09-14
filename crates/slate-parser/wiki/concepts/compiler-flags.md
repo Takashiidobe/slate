@@ -294,9 +294,13 @@ contract, operation rules, and sequencing requirements. Required operation
 semantics must remain visible when optional metadata is hidden; current
 examples that hide overflow behavior need adjustment.
 
-At the time of this discussion, `TargetInfo` contains basic integer and
-pointer widths and character signedness; IR and IR sema remain scaffolding.
-These notes establish direction without claiming the flag integration exists.
+The first implementation seed now lives in `src/sema/`, which resolves AST
+numeric literals and same-type addition directly into typed IR. `src/ir/`
+owns nodes, spans, printing, and separate integer-overflow and floating-point
+properties. There is no intermediate semantic AST. `TargetInfo` still
+contains basic integer/pointer widths and character signedness; compiler
+flags and local overrides are not yet integrated. See the
+[numeric seed](ir-spec.md#implemented-numeric-seed) for supported scope.
 
 Open choices include the exact operation field shapes, pointer/null-access
 contracts, floating-point effect representation, compiler-flavor precedence

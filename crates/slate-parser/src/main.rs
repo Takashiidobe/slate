@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     if args.next().as_deref() != Some("parse") {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids]"
+            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir-expressions] [--show-spans]"
         ));
     }
     let path = args
@@ -21,9 +21,17 @@ fn main() -> miette::Result<()> {
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let mut show_comments = false;
     let mut show_ids = false;
+    let mut dump_ir_expressions = false;
+    let mut show_spans = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
-            if arg == "--show-comments" {
+            if arg == "--show-spans" {
+                show_spans = true;
+                false
+            } else if arg == "--dump-ir-expressions" {
+                dump_ir_expressions = true;
+                false
+            } else if arg == "--show-comments" {
                 show_comments = true;
                 false
             } else if arg == "--show-ids" {
@@ -36,6 +44,11 @@ fn main() -> miette::Result<()> {
         .collect();
     let compiler_args =
         CompilerArgParser::parse(remaining).map_err(|error| miette::miette!(error))?;
+    if show_spans && !dump_ir_expressions {
+        return Err(miette::miette!(
+            "--show-spans requires --dump-ir-expressions"
+        ));
+    }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
     if let Some(home) = env::var_os("HOME") {
@@ -53,6 +66,14 @@ fn main() -> miette::Result<()> {
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
+    if dump_ir_expressions {
+        let expressions = slate_parser::sema::resolve_expression_roots(&ast)
+            .map_err(|error| miette::miette!("{error}"))?;
+        for expression in expressions {
+            println!("{}", expression.display(show_spans));
+        }
+        return Ok(());
+    }
     let stdout = io::stdout();
     let mut renderer = Renderer::new(stdout.lock())
         .with_show_comments(show_comments)
