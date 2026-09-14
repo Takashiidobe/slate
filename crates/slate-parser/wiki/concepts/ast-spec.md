@@ -20,11 +20,11 @@ Sema.
 pp ──▶ parser ──▶ AST ──▶ sema.rs (structural checks) ──▶ src/ir/sema (resolution + semantic checks) ──▶ IR
 ```
 
-| Stage | Owns | Does not |
-| --- | --- | --- |
-| Parser | syntax, source form, spans, provenance, typedef-name tracking needed to parse | evaluate, resolve names, compute types |
-| `sema.rs` | structural checks, diagnostics, removal of structurally invalid items | type resolution, conversions, guarantee of semantic validity |
-| `src/ir/sema` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics | re-validate syntax |
+| Stage         | Owns                                                                                   | Does not                                                     |
+| ------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Parser        | syntax, source form, spans, provenance, typedef-name tracking needed to parse          | evaluate, resolve names, compute types                       |
+| `sema.rs`     | structural checks, diagnostics, removal of structurally invalid items                  | type resolution, conversions, guarantee of semantic validity |
+| `src/ir/sema` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics | re-validate syntax                                           |
 
 Early checks require no resolved names or types. Validation that depends on
 resolution belongs to `src/ir/sema`; surviving the early pass does not prove
@@ -106,13 +106,13 @@ InitDeclarator {
 }
 ```
 
-| Source | AST |
-| --- | --- |
-| `int a, *b = &a;` | 1 `Declaration`, 2 `InitDeclarator`s |
-| `typedef struct { int a; } T, *PT;` | storage `Typedef`, tag definition in the type specifier, declarators `T`, `*PT` |
-| `static struct S { int x; } s = { 1 };` | storage `Static`, tag definition, declarator `s` with initializer |
-| `struct S;` / `struct S { int x; };` | no declarators |
-| `int x, f(void);` | declarators `x` and `f(void)`; that one is a function is visible from the declarator |
+| Source                                  | AST                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------ |
+| `int a, *b = &a;`                       | 1 `Declaration`, 2 `InitDeclarator`s                                                 |
+| `typedef struct { int a; } T, *PT;`     | storage `Typedef`, tag definition in the type specifier, declarators `T`, `*PT`      |
+| `static struct S { int x; } s = { 1 };` | storage `Static`, tag definition, declarator `s` with initializer                    |
+| `struct S;` / `struct S { int x; };`    | no declarators                                                                       |
+| `int x, f(void);`                       | declarators `x` and `f(void)`; that one is a function is visible from the declarator |
 
 The same `Declaration` node is used at file scope, in blocks, in `for`
 initializers, and (with `FieldDeclaration`, below) in records.
@@ -139,21 +139,21 @@ parser accepts** where unambiguous and `sema.rs` rejects.
 The base type named by the specifiers. It never contains pointers, arrays
 or functions; those come only from declarators.
 
-| Variant | Source |
-| --- | --- |
-| `Void`, `Bool` | `void`, `_Bool`/`bool` |
-| `Char { signed: Option<bool> }` | `char` / `signed char` / `unsigned char` |
-| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | including `__int128_t`/`__uint128_t` |
-| `BitInt { width: Expr, signed }` | `_BitInt(N)`, width unevaluated |
-| `Float(FloatKind)` | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
-| `Complex(FloatKind)`, `Imaginary(FloatKind)` | |
-| `FixedPoint { kind, rank, saturated }` | `_Fract`/`_Accum` |
-| `Atomic(TypeName)` | `_Atomic(T)` specifier form |
-| `TypeOf { unqual: bool, operand: TypeOfOperand }` | `typeof(expr)` / `typeof(type-name)` |
-| `TypedefName(String)` | an identifier the parser knows is a typedef name |
-| `Tag(TagSpecifier)` | `struct`/`union`/`enum` |
-| `TargetBuiltin(String)` | `__builtin_va_list` etc. |
-| `Vector { element, size }` | GNU vector types |
+| Variant                                                            | Source                                                                 |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                 |
+| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`                               |
+| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | including `__int128_t`/`__uint128_t`                                   |
+| `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                        |
+| `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
+| `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                        |
+| `FixedPoint { kind, rank, saturated }`                             | `_Fract`/`_Accum`                                                      |
+| `Atomic(TypeName)`                                                 | `_Atomic(T)` specifier form                                            |
+| `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                   |
+| `TypedefName(String)`                                              | an identifier the parser knows is a typedef name                       |
+| `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                |
+| `TargetBuiltin(String)`                                            | `__builtin_va_list` etc.                                               |
+| `Vector { element, size }`                                         | GNU vector types                                                       |
 
 ### `Declarator`
 
@@ -323,33 +323,33 @@ Comment { text: String, kind: Line | Block, loc: Loc }
 
 `Expr = Box<Span<ExprKind>>`: one expression type, spanned at every node.
 
-| Variant | Source |
-| --- | --- |
-| `Identifier(String)` | unresolved name |
-| `IntegerLiteral(IntegerLiteral)` | see [Literals](#literals) |
-| `FloatLiteral(FloatLiteral)` | |
-| `CharLiteral(CharLiteral)` | |
-| `StringLiteral(StringLiteral)` | adjacent literals concatenated |
-| `Paren(Expr)` | parentheses, kept for source form |
-| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreInc \| PreDec, operand }` | |
-| `Postfix { op: PostInc \| PostDec, operand }` | |
-| `Binary { op, left, right }` | arithmetic, shifts, comparisons, bitwise, `&&`, `\|\|` |
-| `Assign { op, target, value }` | `=` and compound assignments |
-| `Conditional { condition, then_value: Option<Expr>, else_value }` | `?:`; `then_value: None` is GNU `a ?: b` |
-| `Comma { left, right }` | |
-| `Call { callee, arguments }` | |
-| `Member { base, field, arrow: bool }` | `.` / `->` |
-| `Index { base, index }` | as written |
-| `Cast { ty: TypeName, value }` | |
-| `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }` | C23 storage in compound literals |
-| `SizeOfExpr(Expr)`, `SizeOfType(TypeName)`, `AlignOf(TypeName)`, `AlignOfExpr(Expr)` | |
-| `OffsetOf { ty: TypeName, member: MemberDesignator }` | `offsetof`/`__builtin_offsetof` |
-| `Generic { controlling: GenericControl, associations: Vec<GenericAssociation> }` | |
-| `VaArg { list, ty: TypeName }` | |
-| `TypesCompatible(TypeName, TypeName)` | GNU |
-| `BitCast { ty: TypeName, value }` | |
-| `LabelAddress(String)` | GNU `&&label` |
-| `StatementExpression(CompoundStatement)` | GNU `({ ... })`, parsed |
+| Variant                                                                                        | Source                                                 |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `Identifier(String)`                                                                           | unresolved name                                        |
+| `IntegerLiteral(IntegerLiteral)`                                                               | see [Literals](#literals)                              |
+| `FloatLiteral(FloatLiteral)`                                                                   |                                                        |
+| `CharLiteral(CharLiteral)`                                                                     |                                                        |
+| `StringLiteral(StringLiteral)`                                                                 | adjacent literals concatenated                         |
+| `Paren(Expr)`                                                                                  | parentheses, kept for source form                      |
+| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreInc \| PreDec, operand }` |                                                        |
+| `Postfix { op: PostInc \| PostDec, operand }`                                                  |                                                        |
+| `Binary { op, left, right }`                                                                   | arithmetic, shifts, comparisons, bitwise, `&&`, `\|\|` |
+| `Assign { op, target, value }`                                                                 | `=` and compound assignments                           |
+| `Conditional { condition, then_value: Option<Expr>, else_value }`                              | `?:`; `then_value: None` is GNU `a ?: b`               |
+| `Comma { left, right }`                                                                        |                                                        |
+| `Call { callee, arguments }`                                                                   |                                                        |
+| `Member { base, field, arrow: bool }`                                                          | `.` / `->`                                             |
+| `Index { base, index }`                                                                        | as written                                             |
+| `Cast { ty: TypeName, value }`                                                                 |                                                        |
+| `CompoundLiteral { ty: TypeName, storage, initializer: InitializerList }`                      | C23 storage in compound literals                       |
+| `SizeOfExpr(Expr)`, `SizeOfType(TypeName)`, `AlignOf(TypeName)`, `AlignOfExpr(Expr)`           |                                                        |
+| `OffsetOf { ty: TypeName, member: MemberDesignator }`                                          | `offsetof`/`__builtin_offsetof`                        |
+| `Generic { controlling: GenericControl, associations: Vec<GenericAssociation> }`               |                                                        |
+| `VaArg { list, ty: TypeName }`                                                                 |                                                        |
+| `TypesCompatible(TypeName, TypeName)`                                                          | GNU                                                    |
+| `BitCast { ty: TypeName, value }`                                                              |                                                        |
+| `LabelAddress(String)`                                                                         | GNU `&&label`                                          |
+| `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`, parsed                                |
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)
@@ -408,7 +408,7 @@ Designator indices are expressions, not evaluated integers.
 
 `Attribute` is a closed set of known GNU/C23 attributes with parsed
 arguments. Unknown attributes are `Unknown { name, arguments }`, malformed
-ones `Invalid`. Attribute *placement* is preserved: specifiers, declarators,
+ones `Invalid`. Attribute _placement_ is preserved: specifiers, declarators,
 init-declarators, tag definitions, statements. `GnuAsm` holds the parsed
 template, operands with constraints, clobbers and labels.
 
@@ -431,19 +431,19 @@ roots. The parser preserves declarations for that resolution. See
 Where `src/ast.rs` does not match this spec yet. Each row is tracked under
 the AST redesign epic.
 
-| Current | Target | Also fixes |
-| --- | --- | --- |
-| enum bodies drop comments | `CommentGroup` as an `EnumItem` (`lh7.3.11`) | |
-| `InitDeclarator` and `FieldDeclarator` carry no provenance; `Stmt::Decl` has none at all | provenance on every declarator | |
-| `CType::Tag(TagSpecifier)` inside `CType`; `Reference` has no attributes; `TagBody::Record` holds `FieldItem`; `TagBody::Enum` has no `fixed_type` | `TypeSpecifier` (`lh7.3.5`), `MemberItem`, `EnumItem` | |
-| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag` | indexed by `TagId` once pruning moves to the IR pipeline | |
-| `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
-| `FunctionDecl.parameters: []` for both `(void)` and `()` | `ParameterList::{Void, Empty, IdentifierList}` | |
-| `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`) | |
-| `Designator::Array`/`ArrayRange` | `Index`/`IndexRange` | |
-| array bounds that fold are stored as `ExprKind::Integer` | unevaluated `Expr` (`lh7.3.12`) | `int a[1 << 3]` loses its expression |
-| bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser | argument-less `Aligned`, value chosen in `src/ir/sema` | |
-| `ConstExpr::Integer(i64)` for integer and char literals; raw string spelling | `IntegerLiteral`/`CharLiteral`/`StringLiteral`/`FloatLiteral` | suffix and char kind lost (`lh7.1.13`); escapes undecoded (`lh7.1.14`) |
-| `if`/loop bodies are `Vec<Stmt>`; `Case`/`Default`/`Labeled` are markers | `Box<Stmt>` bodies; `Labeled` containers; `Null` | braces not preserved |
-| `sema.rs` returns errors only; rejects tag definitions in parameter lists | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` | |
-| parser calls name-based `filter_translation_unit` before resolution | IR pipeline prunes resolved symbol dependencies from explicit roots | |
+| Current                                                                                                                                                                                       | Target                                                                                        | Also fixes                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| enum bodies drop comments                                                                                                                                                                     | `CommentGroup` as an `EnumItem` (`lh7.3.11`)                                                  |                                                                        |
+| `InitDeclarator` and `FieldDeclarator` carry no provenance; `Stmt::Decl` has none at all                                                                                                      | provenance on every declarator                                                                |                                                                        |
+| `CType::Tag(TagSpecifier)` inside `CType`; `Reference` has no attributes; `TagBody::Record` holds `FieldItem`; `TagBody::Enum` has no `fixed_type`                                            | `TypeSpecifier` (`lh7.3.5`), `MemberItem`, `EnumItem`                                         |                                                                        |
+| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |
+| `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied                                                                                                              | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator             | two type encodings                                                     |
+| `FunctionDecl.parameters: []` for both `(void)` and `()`                                                                                                                                      | `ParameterList::{Void, Empty, IdentifierList}`                                                |                                                                        |
+| `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`)                                                         |                                                                        |
+| `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |
+| array bounds that fold are stored as `ExprKind::Integer`                                                                                                                                      | unevaluated `Expr` (`lh7.3.12`)                                                               | `int a[1 << 3]` loses its expression                                   |
+| bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |
+| `ConstExpr::Integer(i64)` for integer and char literals; raw string spelling                                                                                                                  | `IntegerLiteral`/`CharLiteral`/`StringLiteral`/`FloatLiteral`                                 | suffix and char kind lost (`lh7.1.13`); escapes undecoded (`lh7.1.14`) |
+| `if`/loop bodies are `Vec<Stmt>`; `Case`/`Default`/`Labeled` are markers                                                                                                                      | `Box<Stmt>` bodies; `Labeled` containers; `Null`                                              | braces not preserved                                                   |
+| `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                                     | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                                                        |
+| parser calls name-based `filter_translation_unit` before resolution                                                                                                                           | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                                                        |

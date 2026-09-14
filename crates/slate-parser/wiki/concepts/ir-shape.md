@@ -18,18 +18,18 @@ and attribute shapes below are the next proposals for discussion.
 derived analysis. Required information may live in referenced tables; a
 side table does not by itself mean the information is optional.
 
-| Information | Owner | Required for correct emission? |
-| --- | --- | --- |
-| Numeric value domain | Canonical numeric type | Yes |
-| Object size, alignment, representation | Storage metadata on the type; object/field overrides | Yes when stored |
-| Declared constness | Type metadata | Required where qualification constrains access |
-| Storage class, storage duration, linkage | Variable declaration/object | Yes where applicable |
-| Calling convention and ABI classification | Resolved function signature/call contract | Yes at calls and FFI boundaries |
-| Original C type and typedef chain | Origin of an individual type use | No, after semantic and representation decisions are resolved |
-| Source spelling, literal radix/suffix, macro/header origin | Node/type-use origin metadata | No |
-| Overflow and conversion behavior | Operation | Yes |
-| Volatile/atomic access behavior | Memory access operation, with required storage properties on the object/type | Yes |
-| Proven range, known bits, no-overflow proof | Analysis facts for a value or operation | No |
+| Information                                                | Owner                                                                        | Required for correct emission?                               |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Numeric value domain                                       | Canonical numeric type                                                       | Yes                                                          |
+| Object size, alignment, representation                     | Storage metadata on the type; object/field overrides                         | Yes when stored                                              |
+| Declared constness                                         | Type metadata                                                                | Required where qualification constrains access               |
+| Storage class, storage duration, linkage                   | Variable declaration/object                                                  | Yes where applicable                                         |
+| Calling convention and ABI classification                  | Resolved function signature/call contract                                    | Yes at calls and FFI boundaries                              |
+| Original C type and typedef chain                          | Origin of an individual type use                                             | No, after semantic and representation decisions are resolved |
+| Source spelling, literal radix/suffix, macro/header origin | Node/type-use origin metadata                                                | No                                                           |
+| Overflow and conversion behavior                           | Operation                                                                    | Yes                                                          |
+| Volatile/atomic access behavior                            | Memory access operation, with required storage properties on the object/type | Yes                                                          |
+| Proven range, known bits, no-overflow proof                | Analysis facts for a value or operation                                      | No                                                           |
 
 Optional context can improve Rust names and idioms. It must not be needed
 to reconstruct arithmetic, storage, or calling semantics. This refines the
@@ -421,14 +421,14 @@ declarations belong to the loop's scope, covering its header and body.
 An absent C condition becomes constant `true`; absent init and step become
 empty regions. Their original omission is optional source metadata.
 
-| Event | Destination |
-| --- | --- |
-| Condition true | Body entry |
-| Condition false | `Exit(id)` |
-| Body completes normally | `LoopStep(id)` |
-| `continue` targeting this loop | `LoopStep(id)` |
-| Step completes normally | `LoopCondition(id)` |
-| `break` targeting this loop | `Exit(id)` |
+| Event                          | Destination         |
+| ------------------------------ | ------------------- |
+| Condition true                 | Body entry          |
+| Condition false                | `Exit(id)`          |
+| Body completes normally        | `LoopStep(id)`      |
+| `continue` targeting this loop | `LoopStep(id)`      |
+| Step completes normally        | `LoopCondition(id)` |
+| `break` targeting this loop    | `Exit(id)`          |
 
 This retains a C for loop without forcing it into a Rust iterator range.
 Any later iterator rewrite must establish the required facts about bound
@@ -957,19 +957,19 @@ cannot unwind or otherwise transfer control nonlocally. `returns_twice`
 must remain visible to control-flow handling. Detailed nonlocal-exit and
 unwinding support is a separate design choice, not a default `nothrow` flag.
 
-| Attribute information | Resolved owner | Intended use |
-| --- | --- | --- |
-| Calling convention | `FunctionType.abi` | Correct direct and indirect calls |
-| Symbol name, visibility, weak/import/export, section | `FunctionSymbol` | Correct symbol/linker behavior |
-| Alias or resolver | `FunctionImplementation` | Preserve symbol indirection |
-| No-return, returns-twice | `FunctionAttributes.control` | Correct control-flow treatment |
-| Constructor/destructor registration and priority | Execution requirements | Preserve startup/shutdown execution |
-| Target features, interrupt, naked | Execution requirements | Preserve target-specific execution requirements |
-| Nonnull/access/alignment requirements | Parameter/result contracts | Preserve declared contracts and guide analysis |
-| Allocation size, alignment, allocator/deallocator relationships | Result/function contracts | Guide allocation and ownership reasoning |
-| Pure/const effect contracts | Function contracts | Describe declared effects without claiming Rust purity |
-| Inline preference, hot/cold, optimization preferences | Hints | Optional output/code-generation guidance after semantic effects are resolved |
-| Deprecated, nodiscard, format, annotations | Hints/origin context at the applicable attachment | Diagnostics and contextual rewriting |
+| Attribute information                                           | Resolved owner                                    | Intended use                                                                 |
+| --------------------------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Calling convention                                              | `FunctionType.abi`                                | Correct direct and indirect calls                                            |
+| Symbol name, visibility, weak/import/export, section            | `FunctionSymbol`                                  | Correct symbol/linker behavior                                               |
+| Alias or resolver                                               | `FunctionImplementation`                          | Preserve symbol indirection                                                  |
+| No-return, returns-twice                                        | `FunctionAttributes.control`                      | Correct control-flow treatment                                               |
+| Constructor/destructor registration and priority                | Execution requirements                            | Preserve startup/shutdown execution                                          |
+| Target features, interrupt, naked                               | Execution requirements                            | Preserve target-specific execution requirements                              |
+| Nonnull/access/alignment requirements                           | Parameter/result contracts                        | Preserve declared contracts and guide analysis                               |
+| Allocation size, alignment, allocator/deallocator relationships | Result/function contracts                         | Guide allocation and ownership reasoning                                     |
+| Pure/const effect contracts                                     | Function contracts                                | Describe declared effects without claiming Rust purity                       |
+| Inline preference, hot/cold, optimization preferences           | Hints                                             | Optional output/code-generation guidance after semantic effects are resolved |
+| Deprecated, nodiscard, format, annotations                      | Hints/origin context at the applicable attachment | Diagnostics and contextual rewriting                                         |
 
 Function, parameter, result, type, and call-site attachment are distinct.
 An attribute constraining a pointee stays on that type use or access

@@ -359,24 +359,24 @@ single evaluation of side-effecting bases and indices when reusing a place.
 This resolves the member-access choice for `lh7.2.6` and `lh7.2.7` in favor
 of projections on places.
 
-| C                        | IR                                          | Metadata                                        |
-| ------------------------ | ------------------------------------------- | ----------------------------------------------- |
-| `a[i]` (array read)      | `read(index(a, i))`                         | `form=index`                                   |
-| `a[i] = v` (array)       | `write(index(a, i), v)`                     | `form=index`                                   |
-| `*p`                     | `read(deref(p))`                            | `form=deref`                                    |
-| `*p = v`                 | `write(deref(p), v)`                        | `form=deref`                                    |
-| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`             | `form=deref_offset` / `form=index`              |
-| `p + i`, `p++`           | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type                                       |
-| `p - q`                  | `ptr_diff(p, q)` → `i64`                    | elem type, `c=ptrdiff_t`                        |
-| `p < q`                  | `ptr_lt(p, q)`                              |                                                 |
-| `&x`                     | `addr_of(x)`                                |                                                 |
-| `arr` in pointer context | address of its first element, typed `*T`    | `decay[len=N]`                                  |
-| `f` as value             | `f` typed `*fn(..)`                         | `decay=function`                                |
-| `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable                      |
-| `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                                 |
-| `char* → const char*`    | (no node)                                   | `add_const`                                     |
-| `void* ↔ T*`             | `ptr_cast<*T>(p)`                           | `implicit`                                      |
-| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)`  |                                                 |
+| C                        | IR                                          | Metadata                           |
+| ------------------------ | ------------------------------------------- | ---------------------------------- |
+| `a[i]` (array read)      | `read(index(a, i))`                         | `form=index`                       |
+| `a[i] = v` (array)       | `write(index(a, i), v)`                     | `form=index`                       |
+| `*p`                     | `read(deref(p))`                            | `form=deref`                       |
+| `*p = v`                 | `write(deref(p), v)`                        | `form=deref`                       |
+| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`             | `form=deref_offset` / `form=index` |
+| `p + i`, `p++`           | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type                          |
+| `p - q`                  | `ptr_diff(p, q)` → `i64`                    | elem type, `c=ptrdiff_t`           |
+| `p < q`                  | `ptr_lt(p, q)`                              |                                    |
+| `&x`                     | `addr_of(x)`                                |                                    |
+| `arr` in pointer context | address of its first element, typed `*T`    | `decay[len=N]`                     |
+| `f` as value             | `f` typed `*fn(..)`                         | `decay=function`                   |
+| `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable         |
+| `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                    |
+| `char* → const char*`    | (no node)                                   | `add_const`                        |
+| `void* ↔ T*`             | `ptr_cast<*T>(p)`                           | `implicit`                         |
+| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)`  |                                    |
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
