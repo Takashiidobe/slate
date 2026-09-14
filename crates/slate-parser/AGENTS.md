@@ -97,6 +97,12 @@ preprocessing, parsing, and sema. Check `bd ready`
 / `bd list` for the current state of the bytecode-lowering and
 Rust-conversion work.
 
+### Coding
+
+Never use `assert!` and friends. Everything should be an explicit Result
+type, using `thiserror`. If you see a stray `assert!` or `assert_eq!`,
+think about refactoring it.
+
 ### Testing
 
 FileCheck expectations are generated. After changing a fixture or its
