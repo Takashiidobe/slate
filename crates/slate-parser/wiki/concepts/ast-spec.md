@@ -17,17 +17,18 @@ Sema.
 ## Pipeline and responsibilities
 
 ```
-pp ──▶ parser ──▶ AST ──▶ sema.rs (validate) ──▶ valid AST ──▶ src/ir/sema (types) ──▶ IR
+pp ──▶ parser ──▶ AST ──▶ sema.rs (structural checks) ──▶ src/ir/sema (resolution + semantic checks) ──▶ IR
 ```
 
 | Stage | Owns | Does not |
 | --- | --- | --- |
 | Parser | syntax, source form, spans, provenance, typedef-name tracking needed to parse | evaluate, resolve names, compute types |
-| `sema.rs` | validity: reject ill-formed C, report diagnostics, keep only valid nodes | type resolution, conversions |
-| `src/ir/sema` | name resolution, types, conversions, constant evaluation, layout | re-validate syntax |
+| `sema.rs` | structural checks, diagnostics, removal of structurally invalid items | type resolution, conversions, guarantee of semantic validity |
+| `src/ir/sema` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics | re-validate syntax |
 
-This mirrors clang's split between `Parse` and `Sema`, except that validation
-and type resolution are separate passes.
+Early checks require no resolved names or types. Validation that depends on
+resolution belongs to `src/ir/sema`; surviving the early pass does not prove
+that a program is semantically valid.
 
 ## Invariants
 
@@ -414,9 +415,16 @@ template, operands with constraints, clobbers and labels.
 ## Validation (`sema.rs`)
 
 `sema.rs` runs on the AST and returns the AST with invalid items removed,
-plus diagnostics. It checks that the program is well-formed C for the
-configured flavor and standard. It does not annotate types. Anything it
-keeps is guaranteed valid for `src/ir/sema`.
+plus diagnostics for structural errors it can establish without name or
+type resolution. It does not annotate types or guarantee that surviving
+items are semantically valid. `src/ir/sema` checks constraints that require
+resolved scopes, types, conversions, or layout for the configured flavor
+and standard, and reports failures before those items can lower to IR.
+
+For the IR pipeline, declaration pruning happens after name resolution,
+using resolved dependencies and explicit translation/linkage/attribute
+roots. The parser preserves declarations for that resolution. See
+[IR validation and pruning](ir-spec.md#validation-and-declaration-pruning).
 
 ## Migration
 
@@ -435,4 +443,5 @@ the AST redesign epic.
 | Enumerator values and array designators evaluated to `i64` in the parser | unevaluated `Expr` | `B = A + 1` loses its expression |
 | `_Generic` controlling identifier replaced by `"<type-name>"`; association types as joined strings | `GenericControl`, `TypeName` | `lh7.1.15` |
 | `if`/loop bodies are `Vec<Stmt>`; `Case`/`Default`/`Labeled` are markers | `Box<Stmt>` bodies; `Labeled` containers; `Null` | braces not preserved |
-| `sema.rs` returns errors only; rejects tag definitions in parameter lists | returns validated AST; accepts what clang accepts for the flavor | |
+| `sema.rs` returns errors only; rejects tag definitions in parameter lists | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` | |
+| parser calls name-based `filter_translation_unit` before resolution | IR pipeline prunes resolved symbol dependencies from explicit roots | |

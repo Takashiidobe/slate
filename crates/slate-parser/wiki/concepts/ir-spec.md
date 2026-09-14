@@ -40,11 +40,32 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 
 ### Code layout
 
-- `src/ir/sema/` — type resolution, target width resolution, and metadata
-  capture over AST nodes. Produces no IR nodes. Epic `slate-parser-lh7.1`.
+- `src/ir/sema/` — name and type resolution, target width resolution,
+  semantic diagnostics, and metadata capture over AST nodes. Produces no
+  IR nodes. Epic `slate-parser-lh7.1`.
 - `src/ir/` — AST → IR lowering, IR node types, and the text printer.
   Consumes `src/ir/sema`. Epic `slate-parser-lh7.2` (blocked by lh7.1).
-- `src/sema.rs` — existing AST validation; unchanged.
+- `src/sema.rs` — structural validation that needs no resolved names or
+  types. Its output is not guaranteed semantically valid.
+
+### Validation and declaration pruning
+
+**Decided:** early validation reports structural errors and may remove
+structurally invalid items with diagnostics. Checks requiring scopes,
+resolved types, conversions, or layout belong to `src/ir/sema`. Failures
+there produce diagnostics; lowering must not assume that surviving early
+validation proves a node valid or silently discard failed operations.
+
+For the IR pipeline, resolve declarations before pruning them. Reachability
+uses resolved symbol dependencies and explicit roots: requested translation
+entries, exported symbols, and declarations retained for linkage or
+attributes, including constructors and `used` declarations. Preserve the
+types and declarations required by those roots. Rust emission must not need
+to repeat name lookup to discover dependencies.
+
+The current parser calls `filter_translation_unit` before resolution, and
+`src/reachability.rs` indexes declarations by string names. Moving that
+filter after resolution is required for this design.
 
 ### Prerequisites (not present today)
 
@@ -75,12 +96,34 @@ Module
 **Decided:** a body is a list of statements containing typed expression
 trees.
 
-- Statements: `let`, assignment/`ptr_write`, expression statement, `return`,
+- Statements: `let`, assignment/`write`, expression statement, `return`,
   `if`, `loop`/`while`, `switch`, `break`, `continue`, `goto`, label, block.
 - Expressions are side-effect-free except calls. Every node has a `NodeId`
   and concrete type; metadata is looked up by `NodeId`.
-- A name in value position is a read. Locals are bound by `let`; shadowed
-  names are disambiguated (`c`, `c#1`).
+- Local and global references use stable binding IDs; field references use
+  field IDs. Names such as `c` and `c#1` are printer spellings, not identity.
+  Locals are bound by `let`; a local name in value position prints a read
+  of its place (see [Places and values](#places-and-values)).
+
+### Resolved control flow
+
+**Decided:** keep structured loops and switches, with resolved destinations.
+Loops, switches, and labels have stable IDs. `break` identifies its loop or
+switch; `continue` identifies its loop and continuation point; direct
+`goto` and label-address values identify labels rather than source names.
+Computed goto retains its evaluated destination value.
+
+- A `for` continuation evaluates the increment, then the condition.
+- A `while` continuation evaluates the condition; a `do`/`while`
+  continuation reaches the trailing condition.
+- Switch dispatch maps resolved case values/ranges and default to label
+  IDs. Fallthrough destinations are explicit, including cases nested
+  inside other statements; do not assume every switch is a list of
+  independent arms.
+
+Rust lowering consumes these destinations directly. It does not rediscover
+targets by walking AST parents or looking up label names. The source loop
+form remains available for producing readable Rust.
 
 ### Side effects are hoisted into statements
 
@@ -103,7 +146,7 @@ while ((ch = getc(f)) != EOF) { ... }
 ```
 
 ```
-ptr_write(a, i, x) [decay[len=4]];
+write(index(a, i), x);
 i = add(i, 1i32) [overflow=ub, from=post_inc];
 
 while { ch = getc(f); ne(ch, -1i32 [macro=EOF]) } {
@@ -121,7 +164,7 @@ Hard cases hoisting must respect (evaluation order and sequencing):
   remove it, or special-case never-escaping locals up front.
 - `&&`, `||`, `?:`, comma with side effects in a later operand: hoisting
   must turn into `if`, not unconditional statements.
-  `if (p && p->n++)` → `if p != null { let t = ptr_read(p, 0).n; ptr_write … ; if t != 0 { … } }`.
+  `if (p && p->n++)` → `if p != null { let t = read(field(deref(p), n)); write … ; if t != 0 { … } }`.
 - Loop conditions and `for` increments with side effects stay attached to
   their `while`/`for` as a statement block with a trailing expression, so
   they re-run per iteration without changing the loop's form.
@@ -156,6 +199,38 @@ The whole typedef chain is kept in metadata (`uint32_t` → `__uint32_t` →
 Layout is computed during lowering: field offsets, padding, alignment,
 bit-field storage units. Source field order and names kept; anonymous
 members get a synthesized name plus `anonymous` metadata.
+
+## Objects, lifetime, and initialization
+
+**Decided:** object identity, storage duration, and initialization are
+semantic information available to Rust lowering, not optional source-form
+metadata. Object declarations identify their concrete type, automatic,
+static, or thread storage duration, and lifetime scope. Static locals have
+stable global object identity even though their names have block scope.
+Compound literals retain their own object identity and resolved lifetime;
+they are not merely interchangeable aggregate values.
+
+- Distinguish uninitialized storage from initialized values. Track explicit
+  initialization and semantic zero initialization, including omitted
+  aggregate subobjects. Do not replace semantic zero initialization with
+  an assumed all-zero byte pattern or synthesize zero for an uninitialized
+  automatic object.
+- Resolve initializer designators to field IDs and element indices/ranges.
+  Keep aggregate initialization structured, with omitted-element defaults
+  and evaluation behavior explicit, rather than expanding every element
+  into a store. Braces, trailing commas, and designator spelling remain
+  source context.
+- Union initialization identifies the selected member and its value.
+  Bit-field access retains the field's width, signedness, and storage-unit
+  layout so reads and writes preserve the required behavior.
+- Variable-length arrays retain runtime extents, their evaluation points,
+  and their object lifetime. Subsequent size computations and indexing use
+  the captured extents; do not re-evaluate the original bound expression.
+  Runtime `sizeof` is represented as a computation rather than folded.
+
+These facts support Rust storage and initialization choices; ownership,
+escape, and definite-initialization analysis can derive additional facts
+in later passes. Related implementation work: `lh7.2.8` and `lh7.2.9`.
 
 ## Provenance
 
@@ -250,21 +325,50 @@ handle, an out-parameter, a C string, an opaque handle or a function pointer.
 **Lowering does not decide which.** It emits uniform pointer operations and
 keeps every local fact as metadata for the analysis pass and Slate.
 
-**Decided:** memory access through a pointer or array is an explicit
-read/write at an offset, in element units.
+### Places and values
+
+**Decided:** a typed place describes a storage location; a value is the
+result of computation. Places retain object and projection structure:
+
+```
+Place = Local(LocalId) | Global(GlobalId) | Deref(Value)
+      | Field(Place, FieldId) | Index(Place, Value)
+```
+
+`read(place)`, `write(place, value)`, and `addr_of(place)` consume places.
+`Index` projects into an array place. Pointer indexing uses
+`Deref(ptr_offset(pointer, index))`, with offsets in element units.
+Each place has a resolved type; field IDs refer to the record layout.
+Bit-fields are readable/writable projections but are not addressable.
+
+For `p->a[i]`, where `a` is an array member, the place is
+`index(field(deref(p), a), i)`. Reading or writing it accesses that element,
+without reading the whole record or flattening away the array member.
+Selecting a field from an aggregate value is a value projection and does
+not imply that the value has addressable storage.
+
+Local reads and assignments may print as ordinary names and `x = value`;
+this does not require allocating a storage slot for every local. Places
+fit the existing statement and typed-expression-tree representation.
+Accesses retain the applicable alignment and volatile/atomic behavior;
+forming a place alone does not read its stored value. Lowering must preserve
+single evaluation of side-effecting bases and indices when reusing a place.
+
+This resolves the member-access choice for `lh7.2.6` and `lh7.2.7` in favor
+of projections on places.
 
 | C                        | IR                                          | Metadata                                        |
 | ------------------------ | ------------------------------------------- | ----------------------------------------------- |
-| `a[i]` (read)            | `ptr_read(a, i)`                            | `form=index`, `decay[len=N]` if `a` is an array |
-| `a[i] = v`               | `ptr_write(a, i, v)`                        | same                                            |
-| `*p`                     | `ptr_read(p, 0)`                            | `form=deref`                                    |
-| `*p = v`                 | `ptr_write(p, 0, v)`                        | `form=deref`                                    |
-| `*(p + i)`               | `ptr_read(p, i)`                            | `form=deref_offset`                             |
+| `a[i]` (array read)      | `read(index(a, i))`                         | `form=index`                                   |
+| `a[i] = v` (array)       | `write(index(a, i), v)`                     | `form=index`                                   |
+| `*p`                     | `read(deref(p))`                            | `form=deref`                                    |
+| `*p = v`                 | `write(deref(p), v)`                        | `form=deref`                                    |
+| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`             | `form=deref_offset` / `form=index`              |
 | `p + i`, `p++`           | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type                                       |
 | `p - q`                  | `ptr_diff(p, q)` → `i64`                    | elem type, `c=ptrdiff_t`                        |
 | `p < q`                  | `ptr_lt(p, q)`                              |                                                 |
 | `&x`                     | `addr_of(x)`                                |                                                 |
-| `arr` as value           | `arr` typed `*T`                            | `decay[len=N]`                                  |
+| `arr` in pointer context | address of its first element, typed `*T`    | `decay[len=N]`                                  |
 | `f` as value             | `f` typed `*fn(..)`                         | `decay=function`                                |
 | `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable                      |
 | `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                                 |
@@ -272,23 +376,16 @@ read/write at an offset, in element units.
 | `void* ↔ T*`             | `ptr_cast<*T>(p)`                           | `implicit`                                      |
 | `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)`  |                                                 |
 
-Pointer qualifiers are metadata: `restrict`, `volatile`, pointee `const` is
-shown in the type (`*const T`) since Rust distinguishes it.
-
-**Open:** member access through pointers. Candidates:
-
-- Projection path on read/write: `ptr_read(p, 0).f`, `ptr_write(p, 0, .f[i], v)`
-  — one node per access, MIR-like.
-- Separate `field_ptr(p, f)` producing `*T` then `ptr_read(…, 0)` — uniform
-  but verbose for `p->a.b[i]`.
-
-Leaning toward projection paths, since `p->x = 5` should be one write.
+Original pointer qualifiers are retained as metadata; volatile/atomic
+access behavior is also resolved on the actual accesses. Pointee `const`
+is shown in the type (`*const T`) since Rust distinguishes it.
 
 ## Things C leaves implicit that the IR materializes
 
 - `main` falling off the end → `return 0i32 [implicit=main_return]`.
 - Non-void function falling off the end → `unreachable [ub]`.
-- `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T` metadata.
+- Constant `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T`
+  metadata; runtime array sizes use captured extents.
 - String literals: `c"..."` typed `*const i8`, metadata `c=char[N]`, `decay[len=N]`.
 - Tentative definitions and `extern` merging → one global with linkage.
 - Unprototyped `f()` (pre-C23) vs `f(void)`.
@@ -344,8 +441,7 @@ fn main() -> i32 {
 
 ## Open questions
 
-1. Member access through pointers: projection paths vs `field_ptr`.
-2. Hoisting `f(i++)`: always emit synthetic temps and let analysis remove
+1. Hoisting `f(i++)`: always emit synthetic temps and let analysis remove
    them, or special-case during lowering.
-3. What function "type parameters" represent in C.
-4. Metadata printer syntax (`[k=v]` trailing per node is the working form).
+2. What function "type parameters" represent in C.
+3. Metadata printer syntax (`[k=v]` trailing per node is the working form).
