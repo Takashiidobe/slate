@@ -6,6 +6,7 @@ mod include;
 mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
+use crate::compiler_args::LanguageStandard;
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
@@ -71,6 +72,7 @@ pub struct Preprocessor<'a> {
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
     build_time: SystemTime,
+    standard: LanguageStandard,
 }
 
 const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
@@ -85,7 +87,7 @@ const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
 ];
 
 impl<'a> Preprocessor<'a> {
-    pub fn new(search: &'a SearchPaths) -> Self {
+    pub fn new(search: &'a SearchPaths, standard: LanguageStandard) -> Self {
         let mut pp = Preprocessor {
             files: Files::new(),
             macros: HashMap::new(),
@@ -103,8 +105,10 @@ impl<'a> Preprocessor<'a> {
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
             build_time: SystemTime::now(),
+            standard,
         };
         pp.seed_builtin_macros();
+        pp.seed_standard_predefines();
         pp
     }
 
@@ -118,6 +122,27 @@ impl<'a> Preprocessor<'a> {
                 nodes.is_empty(),
                 "predefines should only contain #define directives"
             );
+        }
+    }
+
+    fn seed_standard_predefines(&mut self) {
+        match (
+            self.standard.stdc_version(),
+            self.macros.get_mut("__STDC_VERSION__"),
+        ) {
+            (Some(version), Some(entry)) => {
+                let replacement = &mut entry.definition.replacement;
+                if let Some(token) = replacement.first_mut() {
+                    token.value = Token::IntLit(format!("{version}L"));
+                    replacement.truncate(1);
+                }
+            }
+            (None, _) => {
+                self.macros.remove("__STDC_VERSION__");
+            }
+            (Some(_), None) => {
+                unreachable!("__STDC_VERSION__ is always seeded by BUILTIN_PREDEFINES")
+            }
         }
     }
 
@@ -182,7 +207,10 @@ impl<'a> Preprocessor<'a> {
                 .chain(src.match_indices('\n').map(|(index, _)| index + 1))
                 .collect(),
         );
-        let tokens = Lexer::new(file, src).with_newlines().tokenize();
+        let tokens = Lexer::new(file, src)
+            .with_newlines()
+            .with_standard(self.standard)
+            .tokenize();
         let items = syntax::parse(src, tokens)?;
         if let Some(guard) = include_guard(src, &items) {
             let path = self.files.path(file);

@@ -5,7 +5,7 @@ mod declarator;
 mod stmt;
 
 use crate::ast::*;
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
@@ -143,6 +143,7 @@ pub struct Parser {
     defines: Vec<String>,
     biggest_alignment: i64,
     flavor: CompilerFlavor,
+    standard: LanguageStandard,
     target: TargetInfo,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
@@ -170,6 +171,7 @@ impl Parser {
             defines: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             flavor: CompilerFlavor::default(),
+            standard: LanguageStandard::default(),
             target: TargetInfo::default(),
             tags: Rc::default(),
             line_starts: HashMap::new(),
@@ -191,6 +193,15 @@ impl Parser {
         self.flavor
     }
 
+    pub fn with_standard(mut self, standard: LanguageStandard) -> Self {
+        self.standard = standard;
+        self
+    }
+
+    pub fn standard(&self) -> LanguageStandard {
+        self.standard
+    }
+
     pub fn with_target(mut self, target: TargetInfo) -> Self {
         self.target = target;
         self
@@ -204,7 +215,7 @@ impl Parser {
         self.source_name = "<main>".into();
         self.source = src.into();
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search);
+        let mut pp = Preprocessor::new(&search, self.standard);
         pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
@@ -230,7 +241,7 @@ impl Parser {
             })
             .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search);
+        let mut pp = Preprocessor::new(&search, self.standard);
         pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();

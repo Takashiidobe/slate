@@ -1,4 +1,5 @@
 use crate::ast::{FileId, Loc, Span};
+use crate::compiler_args::LanguageStandard;
 use crate::files::raw_byte_for_char;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -445,6 +446,7 @@ pub struct Lexer {
     mark: usize,
     emit_newlines: bool,
     tokens: Vec<Span<Token>>,
+    standard: LanguageStandard,
 }
 
 impl Lexer {
@@ -480,11 +482,17 @@ impl Lexer {
             mark: 0,
             emit_newlines: false,
             tokens: Vec::new(),
+            standard: LanguageStandard::default(),
         }
     }
 
     pub fn with_newlines(mut self) -> Self {
         self.emit_newlines = true;
+        self
+    }
+
+    pub fn with_standard(mut self, standard: LanguageStandard) -> Self {
+        self.standard = standard;
         self
     }
 
@@ -659,7 +667,8 @@ impl Lexer {
             let token = match word.as_str() {
                 "sizeof" => Token::Sizeof,
                 "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
-                "_Bool" | "bool" => Token::Keyword(Keyword::Bool),
+                "_Bool" => Token::Keyword(Keyword::Bool),
+                "bool" if self.standard.is_c23_or_later() => Token::Keyword(Keyword::Bool),
                 "__bf16" => Token::Keyword(Keyword::BFloat16),
                 "char" => Token::Keyword(Keyword::Char),
                 "double" => Token::Keyword(Keyword::Double),
@@ -695,7 +704,8 @@ impl Lexer {
                 "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
                 "__int128" => Token::Keyword(Keyword::Int128),
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
-                "_Thread_local" | "thread_local" | "__thread" => {
+                "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
+                "thread_local" if self.standard.is_c23_or_later() => {
                     Token::Keyword(Keyword::ThreadLocal)
                 }
                 "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
@@ -720,7 +730,10 @@ impl Lexer {
                 "break" => Token::Keyword(Keyword::Break),
                 "continue" => Token::Keyword(Keyword::Continue),
                 "goto" => Token::Keyword(Keyword::Goto),
-                "_Static_assert" | "static_assert" => Token::Keyword(Keyword::StaticAssert),
+                "_Static_assert" => Token::Keyword(Keyword::StaticAssert),
+                "static_assert" if self.standard.is_c23_or_later() => {
+                    Token::Keyword(Keyword::StaticAssert)
+                }
                 _ => Token::Ident(word),
             };
             self.emit(token);

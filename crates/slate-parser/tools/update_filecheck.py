@@ -21,6 +21,7 @@ BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
 FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
+STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+([A-Za-z0-9_-]+)\s+(\S+)\s*$")
 QUOTED_C_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"/]+\.c)"', re.MULTILINE)
 
 
@@ -61,6 +62,14 @@ def configuration_defines(source: str, prefix: str) -> list[str]:
     return []
 
 
+def configuration_std_args(source: str, prefix: str) -> list[str]:
+    for line in source.splitlines():
+        match = STD_RE.match(line)
+        if match and match.group(1) == prefix:
+            return [f"-std={match.group(2)}"]
+    return []
+
+
 def error_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
 
@@ -92,13 +101,16 @@ def write_isolated_fixture(directory: Path, fixture: Path, source: str) -> Path:
     return directory / fixture.name
 
 
-def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]) -> str:
+def render(
+    repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str], std_args: list[str]
+) -> str:
     with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
         parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
         command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(flavor_args(source))
+        command.extend(std_args)
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
@@ -106,7 +118,12 @@ def render(repo: Path, fixture: Path, source: str, defines: list[str], isystem: 
 
 
 def render_error(
-    repo: Path, fixture: Path, source: str, defines: list[str], isystem: list[str]
+    repo: Path,
+    fixture: Path,
+    source: str,
+    defines: list[str],
+    isystem: list[str],
+    std_args: list[str],
 ) -> list[str]:
     parsed_name = f".{fixture.stem}.filecheck.{os.getpid()}.0.c"
     parsed_fixture = fixture.with_name(parsed_name)
@@ -116,6 +133,7 @@ def render_error(
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(flavor_args(source))
+        command.extend(std_args)
         result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
     finally:
         parsed_fixture.unlink()
@@ -195,7 +213,12 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     blocks = []
     for prefix in error_configurations(source):
         output = render_error(
-            repo, fixture, source, configuration_defines(source, prefix), isystem
+            repo,
+            fixture,
+            source,
+            configuration_defines(source, prefix),
+            isystem,
+            configuration_std_args(source, prefix),
         )
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
@@ -204,7 +227,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
     if error_configurations(source):
         return "\n".join(blocks)
     for prefix, defines in configurations(source):
-        output = render(repo, fixture, source, defines, isystem)
+        output = render(repo, fixture, source, defines, isystem, configuration_std_args(source, prefix))
         lines = redact_code_units(output.splitlines())
         block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
         for index, (line, escape, force) in enumerate(lines):

@@ -142,6 +142,17 @@ fn flavor(source: &str) -> Option<String> {
         .map(|name| name.trim().to_string())
 }
 
+fn std_for_prefix(source: &str, prefix: &str) -> Option<String> {
+    source.lines().find_map(|line| {
+        let rest = line.trim().strip_prefix("// SLATE-FILECHECK-STD ")?;
+        let mut fields = rest.split_whitespace();
+        if fields.next()? != prefix {
+            return None;
+        }
+        fields.next().map(str::to_string)
+    })
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -159,6 +170,7 @@ struct FixtureJob {
     defines: Vec<String>,
     isystem: Vec<String>,
     flavor: Option<String>,
+    standard: Option<String>,
     error: bool,
     slot: usize,
 }
@@ -170,6 +182,7 @@ fn run_job(job: FixtureJob) {
             &job.prefix,
             &job.defines,
             job.flavor.as_deref(),
+            job.standard.as_deref(),
             job.slot,
         );
     } else {
@@ -179,6 +192,7 @@ fn run_job(job: FixtureJob) {
             &job.defines,
             &job.isystem,
             job.flavor.as_deref(),
+            job.standard.as_deref(),
             job.slot,
         );
     }
@@ -190,6 +204,7 @@ fn run_fixture(
     defines: &[String],
     isystem: &[String],
     flavor: Option<&str>,
+    standard: Option<&str>,
     slot: usize,
 ) {
     let source = fixture_source(fixture);
@@ -230,6 +245,9 @@ fn run_fixture(
     }
     if let Some(flavor) = flavor {
         command.arg(format!("--flavor={flavor}"));
+    }
+    if let Some(standard) = standard {
+        command.arg(format!("-std={standard}"));
     }
     let rendered = command
         .output()
@@ -316,6 +334,7 @@ fn run_error_fixture(
     prefix: &str,
     defines: &[String],
     flavor: Option<&str>,
+    standard: Option<&str>,
     slot: usize,
 ) {
     let file_name = fixture.file_name().unwrap().to_string_lossy();
@@ -337,6 +356,7 @@ fn run_error_fixture(
                 .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
         )
         .args(flavor.map(|flavor| format!("--flavor={flavor}")))
+        .args(standard.map(|standard| format!("-std={standard}")))
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -938,6 +958,7 @@ fn fixtures_are_filechecked() {
                     defines: defines.to_vec(),
                     isystem: Vec::new(),
                     flavor: flavor.clone(),
+                    standard: std_for_prefix(&source, prefix),
                     error: true,
                     slot,
                 });
@@ -957,6 +978,7 @@ fn fixtures_are_filechecked() {
                 defines: defines.clone(),
                 isystem: isystem.clone(),
                 flavor: flavor.clone(),
+                standard: std_for_prefix(&source, prefix),
                 error: false,
                 slot,
             });
@@ -978,6 +1000,7 @@ fn fixtures_are_filechecked() {
                             defines: job.defines.clone(),
                             isystem: job.isystem.clone(),
                             flavor: job.flavor.clone(),
+                            standard: job.standard.clone(),
                             error: job.error,
                             slot: job.slot,
                         })
