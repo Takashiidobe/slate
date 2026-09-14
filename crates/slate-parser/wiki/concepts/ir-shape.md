@@ -874,11 +874,59 @@ assuming `extern "C"` covers every signature.
 
 ### Attributes by meaning and attachment
 
-**Proposed:** use typed attribute groups with resolved operands. Avoid an
-unstructured list of C attribute strings as the Rust emitter's interface.
+**Decided:** attribute storage is extensible. Preserve arbitrary GNU/vendor
+attribute names and arguments, even when no dedicated semantic handler
+exists. A closed enum of known attributes must not limit what reaches IR.
+Known attributes additionally produce typed effects for Rust lowering.
+
+Proposed occurrence shape, shared by functions, variables, parameters,
+results, types, fields, and statements:
+
+```text
+AttributeOccurrence {
+    id: AttributeId,
+    namespace: Option<String>,
+    name: String,
+    arguments: Option<TokenTree>,
+    interpreted_arguments: Option<Vec<AttributeArgument>>,
+    resolution: Uninterpreted | Resolved | IgnoredByCompiler,
+    metadata: { syntax: ..., spelling: ..., placement: ..., origin: ... },
+}
+
+AttributeArgument =
+    Constant(Constant)
+  | String(StringContents)
+  | Type(Type)
+  | Symbol(SymbolId)
+  | Parameter(ParamIndex)
+  | Identifier(String)
+  | List(Vec<AttributeArgument>)
+```
+
+`TokenTree` retains tokens, nested delimiters, and argument separators after
+preprocessing. It is the fallback for arbitrary argument grammars, not a
+comma-split list of strings. `None` distinguishes no argument clause from
+an empty parenthesized clause. Source spelling remains available separately.
+Known handlers interpret arguments according to that attribute's grammar;
+an identifier is not automatically an ordinary C variable reference.
+
+Keep occurrences in order, including repeated names and differing arguments.
+Do not store them in a map that overwrites duplicates. Their containing
+node identifies the semantic attachment; placement metadata retains the
+original attribute syntax and declaration position. Compatible GNU and
+namespaced spellings may normalize to the same recognized name while
+retaining their original spelling. Unknown names are preserved verbatim.
+
+The parser need only understand the attribute envelope and balanced argument
+tokens to retain an unfamiliar attribute. Adding semantic support for a
+new attribute should require a handler, not changing the generic attribute
+container or losing the attribute on every other node type.
+
+For functions, keep both the open occurrence list and the resolved groups:
 
 ```text
 FunctionAttributes {
+    occurrences: Vec<AttributeOccurrence>,
     control: {
         normal_return: MayReturn | NoNormalReturn,
         returns_twice: bool,
@@ -888,6 +936,20 @@ FunctionAttributes {
     hints: Vec<FunctionHint>,
 }
 ```
+
+Parameter, result, and type metadata expose the same occurrence list beside
+their resolved contracts. Effects that move to a signature, symbol, or other
+owner retain their source `AttributeId` references, including when several
+declarations contribute to one effective contract. `Resolved` means the
+semantic handler consumed the attribute; it does not mean Rust emission
+has implemented that effect.
+
+For example, an unfamiliar `__attribute__((vendor_hint("mode", (x, y))))`
+retains its name, string spelling, and nested argument tree with
+`resolution: Uninterpreted`. A recognized `alloc_size(1, 2)` retains its
+occurrence and additionally exposes a resolved relationship such as
+`Product(Argument(0), Argument(1))`. Rust-specific handlers can inspect
+preserved extension attributes without requiring C source re-parsing.
 
 Unknown behavior is conservative: an ordinary declaration may return and
 may have side effects. A no-return contract is not a claim that the function
@@ -923,11 +985,19 @@ Body-derived effect summaries belong to the analysis side table. Attributes
 on function-pointer types must remain available at indirect calls even
 when no particular function definition is known.
 
-Original attributes remain in origin metadata for diagnostics and context.
-IR sema either resolves a behavior-affecting attribute or reports an
-unsupported semantic feature. A compiler-ignored attribute may remain
-context only. It must not silently downgrade an unhandled calling
-convention or execution requirement to an optional hint.
+Preserving an attribute and implementing its semantics are separate
+capabilities. Uninterpreted occurrences remain available through IR and do
+not by themselves prevent parsing or IR retention. `IgnoredByCompiler` is
+used only when established for the configured compiler/target; lack of a
+handler does not establish that an attribute is ignorable.
+
+For a known behavior-affecting attribute, IR sema resolves the effect or
+reports the unsupported semantic feature. Rust emission can use an
+extension handler or report an unhandled requirement; it must not silently
+drop an ABI or execution effect. Hints can remain contextual metadata.
+Malformed attribute syntax is diagnosed separately from an unfamiliar
+attribute name. This permits broad attribute coverage while making the
+supported semantic subset explicit.
 
 ### Calls and attribute visibility
 
