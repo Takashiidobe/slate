@@ -153,6 +153,14 @@ fn std_for_prefix(source: &str, prefix: &str) -> Option<String> {
     })
 }
 
+fn show_ids_for_prefix(source: &str, prefix: &str) -> bool {
+    source.lines().any(|line| {
+        line.trim()
+            .strip_prefix("// SLATE-FILECHECK-SHOW-IDS ")
+            .is_some_and(|rest| rest.trim() == prefix)
+    })
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -171,6 +179,7 @@ struct FixtureJob {
     isystem: Vec<String>,
     flavor: Option<String>,
     standard: Option<String>,
+    show_ids: bool,
     error: bool,
     slot: usize,
 }
@@ -193,11 +202,16 @@ fn run_job(job: FixtureJob) {
             &job.isystem,
             job.flavor.as_deref(),
             job.standard.as_deref(),
+            job.show_ids,
             job.slot,
         );
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "each param is an independent fixture config knob"
+)]
 fn run_fixture(
     fixture: &Path,
     prefix: &str,
@@ -205,6 +219,7 @@ fn run_fixture(
     isystem: &[String],
     flavor: Option<&str>,
     standard: Option<&str>,
+    show_ids: bool,
     slot: usize,
 ) {
     let source = fixture_source(fixture);
@@ -248,6 +263,9 @@ fn run_fixture(
     }
     if let Some(standard) = standard {
         command.arg(format!("-std={standard}"));
+    }
+    if show_ids {
+        command.arg("--show-ids");
     }
     let rendered = command
         .output()
@@ -959,6 +977,7 @@ fn fixtures_are_filechecked() {
                     isystem: Vec::new(),
                     flavor: flavor.clone(),
                     standard: std_for_prefix(&source, prefix),
+                    show_ids: show_ids_for_prefix(&source, prefix),
                     error: true,
                     slot,
                 });
@@ -979,6 +998,7 @@ fn fixtures_are_filechecked() {
                 isystem: isystem.clone(),
                 flavor: flavor.clone(),
                 standard: std_for_prefix(&source, prefix),
+                show_ids: show_ids_for_prefix(&source, prefix),
                 error: false,
                 slot,
             });
@@ -1001,6 +1021,7 @@ fn fixtures_are_filechecked() {
                             isystem: job.isystem.clone(),
                             flavor: job.flavor.clone(),
                             standard: job.standard.clone(),
+                            show_ids: job.show_ids,
                             error: job.error,
                             slot: job.slot,
                         })

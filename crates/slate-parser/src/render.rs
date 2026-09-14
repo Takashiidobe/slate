@@ -8,6 +8,7 @@ use std::io::{self, Write};
 pub struct Renderer<W> {
     out: W,
     show_comments: bool,
+    show_ids: bool,
 }
 
 impl<W: Write> Renderer<W> {
@@ -15,6 +16,7 @@ impl<W: Write> Renderer<W> {
         Self {
             out,
             show_comments: false,
+            show_ids: false,
         }
     }
 
@@ -23,7 +25,13 @@ impl<W: Write> Renderer<W> {
         self
     }
 
+    pub fn with_show_ids(mut self, show_ids: bool) -> Self {
+        self.show_ids = show_ids;
+        self
+    }
+
     pub fn render(&mut self, ast: &TranslationUnit) -> io::Result<()> {
+        crate::ast::set_show_node_ids(self.show_ids);
         let stripped = if self.show_comments {
             None
         } else {
@@ -33,10 +41,20 @@ impl<W: Write> Renderer<W> {
         };
         let ast = stripped.as_ref().unwrap_or(ast);
         for tag in &ast.tags {
-            self.render_debug(&format!("tag[{}]", tag.value.id.0), &tag.value)?;
+            let label = if self.show_ids {
+                format!("tag[{}] #{}", tag.value.id.0, tag.id.0)
+            } else {
+                format!("tag[{}]", tag.value.id.0)
+            };
+            self.render_debug(&label, &tag.value)?;
         }
         for (index, decl) in ast.decls.iter().enumerate() {
-            self.render_debug(&format!("decl[{index}]"), &decl.value)?;
+            let label = if self.show_ids {
+                format!("decl[{index}] #{}", decl.id.0)
+            } else {
+                format!("decl[{index}]")
+            };
+            self.render_debug(&label, &decl.value)?;
         }
         Ok(())
     }

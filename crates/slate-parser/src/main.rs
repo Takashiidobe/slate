@@ -13,17 +13,21 @@ fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     if args.next().as_deref() != Some("parse") {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments]"
+            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids]"
         ));
     }
     let path = args
         .next()
         .ok_or_else(|| miette::miette!("missing source path"))?;
     let mut show_comments = false;
+    let mut show_ids = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
             if arg == "--show-comments" {
                 show_comments = true;
+                false
+            } else if arg == "--show-ids" {
+                show_ids = true;
                 false
             } else {
                 true
@@ -50,7 +54,9 @@ fn main() -> miette::Result<()> {
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
     let stdout = io::stdout();
-    let mut renderer = Renderer::new(stdout.lock()).with_show_comments(show_comments);
+    let mut renderer = Renderer::new(stdout.lock())
+        .with_show_comments(show_comments)
+        .with_show_ids(show_ids);
     renderer
         .render(&ast)
         .map_err(|error| miette::miette!(error))?;

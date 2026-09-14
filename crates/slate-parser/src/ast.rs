@@ -3,7 +3,9 @@ use crate::const_expr::{
     UnaryOp,
 };
 use custom_debug::Debug as CustomDebug;
+use std::cell::Cell;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 pub(crate) fn is_false(value: &bool) -> bool {
     !*value
@@ -330,8 +332,28 @@ impl Loc {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct NodeId(pub u32);
+
+static NEXT_NODE_ID: AtomicU32 = AtomicU32::new(0);
+
+impl NodeId {
+    fn next() -> Self {
+        Self(NEXT_NODE_ID.fetch_add(1, Ordering::Relaxed))
+    }
+}
+
+thread_local! {
+    static SHOW_NODE_IDS: Cell<bool> = const { Cell::new(false) };
+}
+
+pub fn set_show_node_ids(show: bool) {
+    SHOW_NODE_IDS.with(|cell| cell.set(show));
+}
+
 #[derive(Clone, PartialEq, Eq)]
 pub struct Span<T> {
+    pub id: NodeId,
     pub value: T,
     pub spelling: Loc,
     pub expansion: Loc,
@@ -340,6 +362,9 @@ pub struct Span<T> {
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if SHOW_NODE_IDS.with(Cell::get) {
+            write!(formatter, "#{} ", self.id.0)?;
+        }
         self.value.fmt(formatter)
     }
 }
@@ -347,6 +372,7 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
 impl<T> Span<T> {
     pub fn new(value: T, spelling: Loc, expansion: Loc) -> Self {
         Self {
+            id: NodeId::next(),
             value,
             spelling,
             expansion,
@@ -376,12 +402,23 @@ impl<T: std::fmt::Display> std::fmt::Display for Span<T> {
 
 impl<T> Span<T> {
     pub fn with_value<U>(self, value: U) -> Span<U> {
-        Span::new(value, self.spelling, self.expansion).with_macro_origin(self.macro_origin)
+        Span {
+            id: self.id,
+            value,
+            spelling: self.spelling,
+            expansion: self.expansion,
+            macro_origin: self.macro_origin,
+        }
     }
 
     pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Span<U> {
-        let macro_origin = self.macro_origin.clone();
-        Span::new(f(self.value), self.spelling, self.expansion).with_macro_origin(macro_origin)
+        Span {
+            id: self.id,
+            value: f(self.value),
+            spelling: self.spelling,
+            expansion: self.expansion,
+            macro_origin: self.macro_origin,
+        }
     }
 
     pub fn cover<U>(value: T, spans: &[Span<U>]) -> Self {

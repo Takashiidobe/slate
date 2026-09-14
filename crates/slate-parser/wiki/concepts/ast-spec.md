@@ -51,10 +51,20 @@ that a program is semantically valid.
 ## Locations and provenance
 
 - `Loc { file, offset, length }`: byte range.
-- `Span<T> { value, spelling, expansion, macro_origin }`: `spelling` is where
-  the tokens are written (possibly inside a macro definition). `expansion` is
-  where they appear in the including file. **Every** declaration, declarator,
-  statement and expression node is spanned.
+- `Span<T> { id, value, spelling, expansion, macro_origin }`: `spelling` is
+  where the tokens are written (possibly inside a macro definition).
+  `expansion` is where they appear in the including file. **Every**
+  declaration, declarator, statement and expression node is spanned.
+- `id: NodeId`, a globally unique id allocated when the `Span` is built
+  (`Span::new`/`Span::cover`; `Span::with_value`/`Span::map` keep the
+  original id since they relabel the same node). This is the node identity
+  `Loc` can't provide: every token from one macro expansion shares an
+  `expansion` `Loc`, but each gets a distinct `NodeId`, which is what lets
+  `src/ir/sema` key metadata by node rather than by location (see
+  [[ir-spec]]). `slate-parser parse --show-ids` prints it on every `Span`
+  in the debug dump; `tests/fixtures/node_ids_macro_expansion.c` (enabled via
+  `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an
+  expansion `Loc` still get distinct ids.
 - `Provenance { file, kind: System | User, line, header }`: `header` is the
   outermost header the main file directly included (`None` for the main
   file). `line` is 0-based. Carried by every declaration-level node
